@@ -1,0 +1,73 @@
+
+
+
+Hey bro.
+
+11/17/25: Learned how to embed p5 into HTML better.
+
+Starting tomorrow, let's start to look at how I can pass state between different sketches better.
+Let's build a window rendering system, so we can navigate and click on things,
+and trigger certain events when we click on windows (such as sounds, animations, etc.).
+
+Once we get the overhead in, we can be artsy with the particular animations and stuff.
+
+JBPaint.js, look, it's cool, and it's a step in the right direction
+but I was thinking very hard about each step, and how it fits into the website. 
+The truth is, it doesn't yet. We need to be more intentional about how everything is placed
+and how they all communicate their state.
+
+
+
+11/18/25: bruh I like made a color manager and that's it.
+I guess I made the template class as well. And window resizing and stuff. That was a lot to figure out...
+
+
+
+// for optimizations: https://claude.ai/chat/b51bd4d0-d68b-4fed-9d09-caa3c6ad42d1
+
+
+
+
+Cool, passing p in is pass-by-reference (YES!)
+
+
+
+
+Icon
+
+import colorManager
+
+p,
+x, y, w, h 
+name
+
+constructor
+
+isHovered()
+isSelected()
+print() (might add additional info based on name, etc)
+
+(consider zoom?)
+
+
+
+
+Palette
+(a color manager)
+
+(light mode and dark mode)
+(merely changes 1 - color, i.e. invert)
+
+
+
+siteNav (overhead for clicking on different sketches)
+
+
+
+
+Would like to add the functionality to:
+1. Read framerate, change render mode if necessary
+2. 
+
+
+
