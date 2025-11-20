@@ -156,23 +156,21 @@ export function entranceScreen(p, appState) {
 
     let clickCount = 0;
     let curve = {
-        x1: 0,
-        y1: 0,
-        x2: 0,
-        y2: 0,
-        x3: 0,
-        y3: 0,
-        x4: 0,
-        y4: 0,
+        x: [0, 0, 0, 0],
+        y: [0, 0, 0, 0],
         print: function(p, palette){
             if (clickCount === 0){
                 p.strokeWeight(5);
                 p.stroke(palette.getColor(4));
-                p.bezier(this.x1, this.y1, this.x2, this.y2, this.x3, this.y3, this.x4, this.y4);
-            }else{
-                palette.fillTheme(1);
-                p.circle(mouseLastPressed[0], mouseLastPressed[1], 8);
+                p.bezier(this.x[0], this.y[0], this.x[1], this.y[1], this.x[2], this.y[2], this.x[3], this.y[3]);
             }
+            // also print the clicked circles
+            for (let i = 0 ; i < 4 ; i++){
+                p.circle(this.x[i], this.y[i], 8)
+            }
+            palette.fillTheme(1);
+            p.circle(mouseLastPressed[0], mouseLastPressed[1], 8);
+        
         }
     }
     
@@ -387,18 +385,9 @@ export function entranceScreen(p, appState) {
         let x = p.mouseX;
         let y = p.mouseY;
         mouseLastPressed = [x, y];
-        if (clickCount === 0){
-            curve.x1 = x;
-            curve.y1 = y;
-        }else if (clickCount === 1){
-            curve.x2 = x;
-            curve.y2 = y;
-        }else if (clickCount === 2){
-            curve.x3 = x;
-            curve.y3 = y;
-        }else if (clickCount === 3){
-            curve.x4 = x;
-            curve.y4 = y;
+        if (clickCount < 4){
+            curve.x[clickCount] = x;
+            curve.y[clickCount] = y;
         }
         clickCount++;
         if (clickCount === 4) clickCount = 0;
