@@ -11,7 +11,7 @@ import {home} from "./sketches/home.js";
 import {soundLens} from "./sketches/soundLensSketch.js"
 import { template } from "./sketches/template.js";
 import { appState } from "./utils/appState.js";
-
+import { entranceScreen } from "./sketches/entranceScreen.js";
 
 
 
@@ -23,7 +23,8 @@ const sketches = {
     'home': home, // Could be a landing animation
     'sketch': sketch,
     'soundLens': soundLens,
-    'template': template
+    'template': template,
+    'entranceScreen': entranceScreen
 /*
     'waves': wavesSketch,
     'particles': particlesSketch,
@@ -54,18 +55,18 @@ function loadSketch(sketchName) {
     } else {
         // Fallback for unknown sketches
         console.log('Sketch not found:', sketchName);
-        loadSketch('home');
+        loadSketch('entranceScreen');
     }
 }
 
 // Handle URL hash changes
 window.addEventListener('hashchange', () => {
-    const hash = window.location.hash.slice(1) || 'home';
+    const hash = window.location.hash.slice(1) || 'entranceScreen';
     loadSketch(hash);
 });
 
 // Load initial sketch on page load
 window.addEventListener('load', () => {
-    const hash = window.location.hash.slice(1) || 'home';
+    const hash = window.location.hash.slice(1) || 'entranceScreen';
     loadSketch(hash);
 });

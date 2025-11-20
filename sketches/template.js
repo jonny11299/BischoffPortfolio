@@ -26,6 +26,10 @@ export function template(p, appState) {
     let name = "template"
     let resizeHandler;
     let frameCount = 0;
+    let curTime = Date.now();// Get current timestamp (milliseconds since Unix epoch)
+    // Compare with other timestamps
+    // const pastTime = now - 5000;  // 5 seconds ago
+    // const futureTime = now + 10000;  // 10 seconds from now
 
     // DOM elements managed by Processing
     let canvas;
@@ -152,6 +156,7 @@ export function template(p, appState) {
     p.updateFields = function(){
         sketchWidth = resizeHandler.width();
         sketchHeight = resizeHandler.height();
+        curTime = Date.now();
     };
     
     // Clean up when sketch is removed (important!)

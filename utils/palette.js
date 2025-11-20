@@ -28,9 +28,11 @@ export function Palette(p, appState){
     this.currentScheme = 'dark';
 
     this.fallbackScheme = 'dark';
-    this.fallbackColor = '1';
+    this.fallbackColor = '1'
 
     this.errorColor = [255, 0, 255]; // hot pink is error color
+
+    this.fallBackFont = 'Arial';
 
 
     // Define color schemes
@@ -49,7 +51,8 @@ export function Palette(p, appState){
             accent: [255, 200, 50],  // Golden orange
             text: [255, 255, 255],
             stroke: [200, 210, 225],
-            strokeWeight: 3
+            strokeWeight: 3,
+            font: 'Arial'
         },
         light: {
             background: [240, 240, 245],
@@ -62,7 +65,8 @@ export function Palette(p, appState){
             accent: [200, 120, 30],  // Burnt orange (sophisticated pop)
             text: [20, 20, 20],
             stroke: [60, 60, 70],
-            strokeWeight: 3
+            strokeWeight: 3,
+            font: 'Arial'
         },
         sunset: {
             background: [200, 255, 210],  // Very light cool gray (neutral base)
@@ -75,8 +79,23 @@ export function Palette(p, appState){
             accent: [255, 170, 80],       // Bright golden peach (clear highlight)
             text: [50, 45, 70],           // Dark slate purple (strong readability)
             stroke: [100, 90, 120],       // Deep purple-gray (clear definition)
-            strokeWeight: 3
-}
+            strokeWeight: 3,
+            font: 'Arial'
+        },
+        entrance: {
+            background: [20, 20, 30],
+            1: [100, 200, 255, 130],      // Cool blue
+            2: [255, 100, 150, 130],      // Warm pink
+            3: [100, 255, 255, 130],      // Bright mint green
+            4: [100, 255, 255, 210],      // Bright mint green
+            5: [255, 220, 100, 130],      // Warm yellow (energetic highlight)
+            6: [100, 255, 255, 130],      // Cyan (cool tech accent)
+            accent: [255, 200, 50, 190],  // Golden orange
+            text: [255, 255, 255, 255],   // White
+            stroke: [240, 240, 240, 255], // translucent yellow
+            strokeWeight: 3,
+            font: 'Arial'
+        }
     };
 
     // Methods
@@ -111,7 +130,12 @@ export function Palette(p, appState){
         // Can't find color in scheme:
         if (!scheme[colorName]){
             console.error("Color " + colorName + " not found in " + this.currentScheme + " in function getColor()");
-            return this.errorColor;
+            if (colorName.toLowerCase() === 'text'){
+                return this.fallbackColor;
+            }else{
+                return this.errorColor;
+            }
+            
         }
 
         let c = scheme[colorName];
@@ -279,6 +303,34 @@ export function Palette(p, appState){
     this.noStroke = function() {
         this.p.noStroke();
     };
+
+    this.fontTheme = function(setDefaultColor = true, stroke = false, strokeWeight = -1){
+        const scheme = this.schemes[this.currentScheme];
+
+        // Can't find current scheme:
+        if (!scheme){
+            console.error("Scheme " + this.currentScheme + " not found in function fontTheme()");
+            p.fill(this.errorColor);
+            p.textFont(this.fallBackFont);
+        }
+
+        // Can't find color in scheme:
+        if (!scheme['font']){
+            console.error("Font 'font' not found in function fontTheme()");
+            p.textFont(this.fallBackFont);
+        }else{
+            p.textFont(scheme['font']);
+            if (setDefaultColor) this.fillTheme('text');
+            if (stroke){
+                if (strokeWeight === -1) p.noStroke();
+                else p.strokeWeight(strokeWeight);
+            }else{
+                p.noStroke();
+            }
+        }
+
+                
+    }
 
 
 

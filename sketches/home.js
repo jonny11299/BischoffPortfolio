@@ -14,6 +14,10 @@ import { createResizeHandler } from '../utils/canvasManager.js';
 
 */
 
+/*
+    old garbage when i was figuring out how to do shit
+*/
+
 export function home(p, appState) {
     let resizeHandler;
     let frameCount = 0;
