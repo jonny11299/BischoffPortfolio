@@ -130,7 +130,7 @@ export function entranceScreen(p, appState) {
 
     let interFrames = [];
     let points = [];
-    const interFramesAmount = 4;
+    const interFramesAmount = 7;
     // interpolate between outerFrame and innerFrame based on i. Goes from outer --> inner for (0, interFramesAmount - 1)
     for (let i = 0 ; i < interFramesAmount ; i++){
         const t = i / interFramesAmount // need to do this to capture it
@@ -141,7 +141,7 @@ export function entranceScreen(p, appState) {
             get w() { return outerFrame.w + (innerFrame.w - outerFrame.w) * t; },
             get h() { return outerFrame.h + (innerFrame.h - outerFrame.h) * t; },
             print: function (p, palette) {
-                p.stroke(palette.getColor(4));
+                p.stroke(palette.getColor(3));
                 p.strokeWeight(1);
                 palette.fill([0, 0, 0, 0]);
                 p.rect(this.x, this.y, this.w, this.h);
@@ -174,6 +174,11 @@ export function entranceScreen(p, appState) {
         }
     }
     
+
+    // for treeFractal
+    const LengthRatio = 0.7;
+    const ThicknessRatio = 0.7;
+    const AngleSpread = 20; // 20 degrees, i.e. fit all children within 20 degrees spread
 
 
 
@@ -218,6 +223,7 @@ export function entranceScreen(p, appState) {
         palette.setScheme('entrance'); // currently controlled by keyboard
         // // Set text to align from center (both horizontal and vertical)
         p.textAlign(p.CENTER, p.CENTER);
+        p.angleMode(p.DEGREES);
 
         
         // Look into this if rendering / low framerate struggles appear:
@@ -279,26 +285,120 @@ export function entranceScreen(p, appState) {
             p.text(e.text, e.x + e.w/2, e.y + e.h/2);
         }
 
+        /* // don't print frames:
         outerFrame.print(p, palette);
         innerFrame.print(p, palette);
         for (let interFrame of interFrames){
             interFrame.print(p, palette);
         }
+            */
 
-        curve.print(p, palette);
+        // curve.print(p, palette);
 
         
         // draw a fractal.
         // starts at x, y
         // goes up, then splits
-        fractalDraw(sketchWidth/2, sketchHeight/2, 0, -200, 9);
+        // fractalDraw(sketchWidth/2, sketchHeight/2, 0, -200, 9);
+
+
+        /*
+
+        I would just like to print a fractal.
+
+        startingX, startingY, angle (where does it reach towards), length, thickness, color, numChildren
+
+        We place various fractals at different starting positions, and have them reach to the mouse.
+        We can figure the length and length decrease by the following:
+        totalLength = firstTerm / (1 - ratio) --> firstTerm = totalLength(1 - ratio)
+
+        for numChildren, let's just start with alternating 2 and 3
+
+        The number of children will be proportional to how many interFrames I'm within...
+        
+        */
+
+        // let's figure out this function call... 
+        // startingX, startingY is at the bottom middle of the page, angle is towards mouse, 
+        // length we take firstTerm = sum(1 - ratio) so sum is the distance to the mouse, ratio is above
+        // thickness 10, go to 2/3 each time. Color we'll start with some random one, but it'll be cool to make
+        // an incremental color selector that moves the color along a circle, if that makes sense.
+        // numChildren is how many interFrames we are within.
+
+        // let's wrap the below in a for loop that determines many inital calls to the treeFractal. I want these things to start from all around the screen.
+        let startingPoints = [
+            {x: 0, y: 0},
+            {x: sketchWidth/2, y: 0},
+            {x: sketchWidth, y: 0},
+            {x: 0, y: sketchHeight/2},
+            {x: sketchWidth, y: sketchHeight/2},
+            {x: 0, y: sketchHeight},
+            {x: sketchWidth/2, y: sketchHeight},
+            {x: sketchWidth, y: sketchHeight},
+        ];
+
+        for (let point of startingPoints){
+            let startx = point.x;
+            let starty = point.y;
+            let a = p.atan2((p.mouseY - starty), (p.mouseX - startx));
+
+            // sum is the minimum distance from the edge
+            let sum = p.mouseX;
+            if (sketchWidth - p.mouseX < sum) sum = sketchWidth - p.mouseX;
+            if (p.mouseY < sum) sum = p.mouseY;
+            if (sketchHeight - p.mouseY < sum) sum = sketchHeight - p.mouseY;
+            // stop it from exceeding the distance to the innerFrame 
+            // let maxLength = outerFrame.y + outerFrame.h - (innerFrame.y + innerFrame.h);
+            // if (sum > maxLength) sum = maxLength;
+
+            let l = sum * (1 - LengthRatio );
+            let c = palette.getColor(4);
+            let numChildren = 3;
+            let iter = 0; // number of times to run the fractal
+            for (let iframe of interFrames){
+                if (iframe.x <= p.mouseX && p.mouseX <= iframe.x + iframe.w && iframe.y <= p.mouseY && p.mouseY <= iframe.y + iframe.h){
+                    iter++;
+                }
+            }
+            // console.log("numChildren: " + numChildren + ", iter: " + iter); // these are being calculated correctly
+            
+            treeFractal(startx, starty, a, l, 10, c, numChildren, iter);
+        }
+
+
         
         palette.stroke(0);
         frameCount++;
     };
 
+    // Awesome. This shit works so well.
+    // I can totally see advancing the color printing of it, making the color more intuitive.
+    // Let's see if we can't 
+    function treeFractal(startingX, startingY, angle, length, thickness, color, numChildren, iter){
+        let p1 = [startingX, startingY];
+        let p2 = [startingX + length * p.cos(angle), startingY + length * p.sin(angle)];
+        p.strokeWeight(thickness);
+        p.stroke(color);
+        p.line(p1[0], p1[1], p2[0], p2[1]);
+        if (iter > 0){
+            if (numChildren > 2){
+                // make 3 children, each with 2 children of their own
+                let angles = [angle - AngleSpread, angle, angle + AngleSpread];
+                treeFractal(p2[0], p2[1], angles[0], length * LengthRatio, thickness * ThicknessRatio, color, 2, iter - 1);
+                treeFractal(p2[0], p2[1], angles[1], length * LengthRatio, thickness * ThicknessRatio, color, 2, iter - 1);
+                treeFractal(p2[0], p2[1], angles[2], length * LengthRatio, thickness * ThicknessRatio, color, 2, iter - 1);
+            }else{
+                // make 2 children, each with 3 children of their own
+                let angles = [angle - AngleSpread * 2 / 3, angle + AngleSpread * 2 / 3];
+                treeFractal(p2[0], p2[1], angles[0], length * LengthRatio, thickness * ThicknessRatio, color, 3, iter - 1);
+                treeFractal(p2[0], p2[1], angles[1], length * LengthRatio, thickness * ThicknessRatio, color, 3, iter - 1);
+            }
+        }
+    }
+
 
     // should work to call at ((x + w)/2, (y + h)/2, 0, 0, 7)
+    // this one sucks
     function fractalDraw(x, y, xOffset, yOffset, numLeft){
         if (numLeft > 0){
             palette.fillTheme(4);
