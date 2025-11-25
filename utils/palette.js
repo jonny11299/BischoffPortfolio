@@ -36,65 +36,72 @@ export function Palette(p, appState){
 
 
     // Define color schemes
+    // Should define button schemes...
+
+    // buttonColor
+    // buttonHovered
+    // buttonPressed
+    // buttonSelected
     this.schemes = {
-        // 1 for neutral
-        // 3 for selected
-        // 4 for hovered
         dark: {
             background: [20, 20, 30],
             1: [100, 200, 255],      // Cool blue
             2: [255, 100, 150],      // Warm pink
-            3: [100, 255, 150],      // Bright mint green
-            4: [180, 100, 255],      // Vibrant purple
-            5: [255, 220, 100],      // Warm yellow (energetic highlight)
-            6: [100, 255, 255],      // Cyan (cool tech accent)
+            buttonColor: [100, 255, 150],      // Bright mint green
+            buttonHovered: [180, 100, 255],      // Vibrant purple
+            buttonPressed: [255, 220, 100],      // Warm yellow (energetic highlight)
+            buttonSelected: [100, 255, 255],      // Cyan (cool tech accent)
             accent: [255, 200, 50],  // Golden orange
             text: [255, 255, 255],
             stroke: [200, 210, 225],
             strokeWeight: 3,
-            font: 'Arial'
+            font: 'Arial',
+            fontColor: [255, 255, 255]
         },
         light: {
             background: [240, 240, 245],
             1: [50, 100, 200],       // Deep blue
             2: [200, 50, 100],       // Deep rose
-            3: [50, 180, 100],       // Forest green
-            4: [120, 50, 180],       // Deep purple
-            5: [220, 140, 50],       // Amber/rust (warm earthy tone)
-            6: [50, 160, 180],       // Teal (cool professional accent)
+            buttonColor: [50, 180, 100],       // Forest green
+            buttonHovered: [120, 50, 180],       // Deep purple
+            buttonPressed: [220, 140, 50],       // Amber/rust (warm earthy tone)
+            buttonSelected: [50, 160, 180],       // Teal (cool professional accent)
             accent: [200, 120, 30],  // Burnt orange (sophisticated pop)
             text: [20, 20, 20],
             stroke: [60, 60, 70],
             strokeWeight: 3,
-            font: 'Arial'
+            font: 'Arial',
+            fontColor: [20, 20, 20]
         },
         sunset: {
             background: [200, 255, 210],  // Very light cool gray (neutral base)
             1: [100, 150, 230],           // Medium sky blue (stronger blue)
             2: [255, 180, 120],           // Rich peach (warmer, more saturated)
-            3: [255, 130, 150],           // Vibrant coral pink (punchier)
-            4: [200, 160, 240],           // Soft lavender (distinct from blues/pinks)
-            5: [120, 180, 210],           // Deep sky blue (cooler contrast)
-            6: [255, 140, 100],           // Bold salmon-orange (warm pop)
+            buttonColor: [255, 130, 150],           // Vibrant coral pink (punchier)
+            buttonHovered: [200, 160, 240],           // Soft lavender (distinct from blues/pinks)
+            buttonPressed: [120, 180, 210],           // Deep sky blue (cooler contrast)
+            buttonSelected: [255, 140, 100],           // Bold salmon-orange (warm pop)
             accent: [255, 170, 80],       // Bright golden peach (clear highlight)
             text: [50, 45, 70],           // Dark slate purple (strong readability)
             stroke: [100, 90, 120],       // Deep purple-gray (clear definition)
             strokeWeight: 3,
-            font: 'Arial'
+            font: 'Arial',
+            fontColor: [50, 45, 70]
         },
         entrance: {
             background: [20, 20, 30],
             1: [100, 200, 255, 130],      // Cool blue
             2: [255, 100, 150, 130],      // Warm pink
-            3: [100, 255, 255, 130],      // Bright mint green
-            4: [100, 255, 255, 210],      // Bright mint green
-            5: [255, 220, 100, 130],      // Warm yellow (energetic highlight)
-            6: [100, 255, 255, 130],      // Cyan (cool tech accent)
+            buttonColor: [100, 255, 255, 130],      // Bright mint green
+            buttonHovered: [100, 255, 255, 210],      // Bright mint green
+            buttonPressed: [255, 220, 100, 130],      // Warm yellow (energetic highlight)
+            buttonSelected: [100, 255, 255, 130],      // Cyan (cool tech accent)
             accent: [255, 200, 50, 190],  // Golden orange
             text: [255, 255, 255, 255],   // White
             stroke: [240, 240, 240, 255], // translucent yellow
             strokeWeight: 3,
-            font: 'Arial'
+            font: 'Arial',
+            fontColor: [255, 255, 255, 255]
         }
     };
 
@@ -117,8 +124,31 @@ export function Palette(p, appState){
 
 
 
-    // put the error checks in a function
-    this.getColor = function(colorName) {
+
+    // get a color from the currently selected scheme
+    // allows for modifying transparency "alpha" of the colors now.
+    // YOU HAVE TO PASS IN COLORNAME AS A STRING IF IT'S ACCESSING THEME COLOR, else it defaults to RGP
+    this.getColor = function(colorName, alpha = 255) {
+        if (typeof colorName !== 'string'){
+            let c = colorName;
+            if (Array.isArray(c)){
+                if (c.length === 4){
+                    [r, g, b, a] = c;
+                }else if (c.length === 3){
+                    [r, g, b] = c;
+                    a = alpha;
+                }else{
+                    throw new Error('getColor with non-string getting an array of length not 3 or 4 ');
+                }
+            }else if (typeof c === 'number') {
+                // treat as greyscale
+                [r, g, b, a] = [c, c, c, alpha]
+            }else{
+                throw new Error("getColor with non-string got neither array nor number, but " + typeof c);
+            }
+        }
+
+
         const scheme = this.schemes[this.currentScheme];
 
         // Can't find current scheme:
@@ -145,13 +175,13 @@ export function Palette(p, appState){
                 [r, g, b, a] = c;
             }else if (c.length === 3){
                 [r, g, b] = c;
-                a = 255;
+                a = alpha;
             }else{
                 throw new Error('getColor getting an array of length not 3 or 4 ');
             }
         }else if (typeof c === 'number') {
             // treat as greyscale
-            [r, g, b, a] = [c, c, c, 255]
+            [r, g, b, a] = [c, c, c, alpha]
         }else{
             throw new Error("getColor got neither array nor number, but " + typeof c);
         }
@@ -177,6 +207,42 @@ export function Palette(p, appState){
 
         return scheme['strokeWeight'];
     }
+
+
+    this.getFont = function(){
+        const scheme = this.schemes[this.currentScheme];
+
+        // Can't find current scheme:
+        if (!scheme){
+            console.error("Scheme " + this.currentScheme + " not found in function getFont()");
+            return this.errorColor;
+        }
+
+        // Can't find color in scheme:
+        if (!scheme['font']){
+            console.error("font not found in " + this.currentScheme + " in function getFont()");
+            return this.fallBackFont;
+        }
+
+        return scheme['font']
+    }
+
+
+
+
+
+    /* All of the following functions, except maybe lerpColors and fontScheme, are completely useless
+    because I can already easily do any of them with p.fill(palette.getColor('colorname')); any time I want
+    to select a specific color.
+
+    The reason this grew so enormous is because I didn't stop and wander around and think about
+    why I felt I needed to do this,
+    I just kept on building it out hugely because I felt I needed to.
+    I was too feverishly coding in a "get it done, and abstractly setup everything" instead of
+    "I am trying to create a specific product here that I'm aiming for."
+
+    */
+
 
 
     // sets the background based on custom color

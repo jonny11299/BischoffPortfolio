@@ -2,8 +2,8 @@
 
 
 
-let defaultWidthOffset = 200
-let defaultHeightOffset  = 100;
+let defaultWidthOffset = 0
+let defaultHeightOffset  = 0;
 
 
 export function createResizeHandler(p, widthOffset = defaultWidthOffset, heightOffset = defaultHeightOffset){

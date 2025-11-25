@@ -1,5 +1,5 @@
 
-import { createResizeHandler } from '../utils/canvasManager.js';
+import { createResizeHandler } from '../utils/resizeHandler.js';
 import { Palette } from '../utils/palette.js';
 import { appState } from '../utils/appState.js';
 
@@ -560,12 +560,12 @@ export function entranceScreen(p, appState) {
     p.keyReleased = function() {
         console.log("Key released: " + p.key + ", keyCode: " + p.keyCode);
         if (p.key === 'l'){
-            /*console.log("vals:\n"
+            console.log("vals:\n"
                 + "w, h: " + sketchWidth + ", " + sketchHeight + "\n"
                 + "width, height: " + p.width + ", " + p.height + "\n"
                 + "windowWidth, windowHeight: " + p.windowWidth + ", " + p.windowHeight + "\n"
                 + "displayWidth, displayHeight: " + p.displayWidth + ", " + p.displayHeight
-            );*/
+            );
             console.log("Selected sketch:\n" + appState.selectedApp);
             console.log("current framerate: " + p.frameRate());
             console.log("Focused? " + isFocused());

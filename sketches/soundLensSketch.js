@@ -1,6 +1,6 @@
 
 
-import { createResizeHandler } from '../utils/canvasManager.js';
+import { createResizeHandler } from '../utils/resizeHandler.js';
 
 // Writeup:
 

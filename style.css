@@ -25,7 +25,7 @@ canvas {
   position: relative;   /* or fixed if you want it to stay on screen while scrolling */
   top: 0;
   left: 0;
-  width: 90%;         /* or 100% for full width */
+  width: 100%;         /* or 100% for full width */
   height: 100%;        /* or 100% for full height */
   /* border: 1px solid #ccc; */
 }
@@ -48,7 +48,7 @@ body {
 }
 
 nav {
-  width: 10%;
+  width: 0%;
   min-width: 100px; /* Prevents it from getting too narrow */
   background-color: #222;
   padding: 20px;

@@ -1,7 +1,7 @@
 
 import { createResizeHandler } from '../utils/resizeHandler.js';
 import { Palette } from '../utils/palette.js';
-import { appState } from '../utils/appState.js';
+import CubesLayer from '../graphics/CubesLayer.js';
 
 
 /*
@@ -17,6 +17,21 @@ import { appState } from '../utils/appState.js';
 */
 
 
+/*
+
+Needs a 
+1. Button class
+2. Slider class (shit, maybe just get the data class in here from Claude or that other guy)
+3. Buffer
+
+*/
+
+
+
+// lowercase because it's a "factory function", not a class.
+// These sketches setup a P5 instance mode by defining methods on p. 
+// I'm not creating nstances of them, just calling them.
+
 
 
 // 1920 x 1080 gives a 16:9 aspect ratio.
@@ -29,6 +44,8 @@ const DESIGN_ASPECT = DESIGN_WIDTH / DESIGN_HEIGHT;
 const PHONE_DESIGN_WIDTH = 1080;
 const PHONE_DESIGN_HEIGHT = 1920;
 const PHONE_ASPECT = PHONE_DESIGN_WIDTH / PHONE_DESIGN_HEIGHT;
+
+
 
 
 
@@ -92,8 +109,8 @@ class Button {
 
 
 
-export function template(p, appState) {
-    let name = "template"
+export function entrance2(p, appState) {
+    let name = "entrance2"
     let resizeHandler;
     let frameCount = 0;
     let curTime = Date.now();// Get current timestamp (milliseconds since Unix epoch)
@@ -109,7 +126,7 @@ export function template(p, appState) {
     // Where the p draw's x, y, w, h actually sit, their actual pixels,
     // not the render of design. We stretch the design and place it on these pixels.
     // displayX is the x position of the beginning of our buffer, so when there's black bars on the sides, it's inlaid a bit
-    let displayX, displayY, displayW, displayH; 
+    let designX, designY, designW, designH; 
     let vertical = false; // this flag will eventually be used for calculating positioning on mobile
     // current design width and height based on if we're vertical or not
     let curDW, curDH;
@@ -128,22 +145,36 @@ export function template(p, appState) {
     let mouseDown = false;
 
     // icons:
+    let rectRound = 5;
+
+    let bw = 200;
+    let bx = curDW / 2 - bw / 2;
+
     let buttons = [];
     buttons.push(new Button({
-        x: 100,
-        y: 100,
-        w: 300,
+        name: "enter",
+        x: bx,
+        y: DESIGN_HEIGHT / 2 - 50,
+        w: bw,
         h: 100,
-        text: "Test button"
+        text: "Enter"
     }))
     buttons.push(new Button({
-        x: 450,
-        y: 100,
-        w: 300,
+        name: "enterMuted",
+        x: bx,
+        y: DESIGN_HEIGHT / 2 + 100,
+        w: bw,
         h: 100,
-        text: "Test toggle button",
+        text: "Enter (Muted)",
         isToggle: true
     }))
+
+
+
+    // layer that handles the cubes:
+    let cubesLayer;
+
+
 
 
     // Processing re-definitions:
@@ -217,6 +248,9 @@ export function template(p, appState) {
         
         // Look into this if rendering / low framerate struggles appear:
         // p.pixelDensity(1); 
+
+        // Create the cubes layer (after you have curDW and curDH)
+        cubesLayer = new CubesLayer(p, curDW, curDH, 30); // 30 cubes
     };
 
     p.draw = function() {
@@ -228,69 +262,56 @@ export function template(p, appState) {
         
 
 
+        // Render cubes and draw them FIRST (behind everything)
+        let cubesImage = cubesLayer.render();
+        pg.image(cubesImage, 0, 0);
+
+
+
         pg.stroke(palette.getColor('stroke'));
         // Sample, for detecting colors:
         // set palette stroke
         let strokew = 1;
-        pg.strokeWeight(strokew);
+
+
+
+        // text:
+
+        // text x
+        let tx = curDW / 2;
+        let text1 = "Welcome to my portfolio.\nFor best viewing experience, please use\na widescreen browser with stereo audio."
+
+        // rect behind:
         pg.fill(palette.getColor('1'));
-        pg.circle(curDW/2, curDH/2, 100);
+        pg.rect(curDW/2 - 400, 150, 800, 200, rectRound);
 
-        strokew++;
-        pg.strokeWeight(strokew);
-        pg.fill(palette.getColor('2'));
-        pg.circle(curDW/4, curDH/4, 70);
-
-        strokew++;
-        pg.strokeWeight(strokew);
-        pg.fill(palette.getColor('3'));
-        pg.circle(3*curDW/4, curDH/4, 70);
-
-        strokew++;
-        pg.strokeWeight(strokew);
-        pg.fill(palette.getColor('4'));
-        pg.circle(curDW/4, 3*curDH/4, 70);
-
-        strokew++;
-        pg.strokeWeight(strokew);
-        pg.fill(palette.getColor('5'));
-        pg.circle(3*curDW/4, 3*curDH/4, 70);
-
-        strokew++;
-        pg.strokeWeight(strokew);
-        pg.fill(palette.getColor('6'));
-        pg.circle(5*curDW/6, curDH/2, 50);
+        pg.textAlign(p.CENTER, p.CENTER);
+        pg.textFont(palette.getFont());
+        pg.fill(palette.getColor('fontColor'));
+        pg.textSize(40);
+        pg.text(text1, tx, 250);
 
 
-        // check that rgba alpha
-        pg.stroke(palette.getColor('1'));
-        pg.strokeWeight(2);
-        for (let x = 30 ; x < curDH ; x+= 15){
-            let y = x / 2;
-            let side = 70;
-            let colorNum = Math.floor((frameCount / 100) % 6 + 1);
-            colorNum = colorNum.toString();
+        /* 
+            Welcome to my portfolio.
+            For best viewing experience, please use
+            a browser with stereo audio.
 
-            // palette.fillTheme(colorNum, 30);
-            pg.fill(palette.getColor(colorNum, 30));
-            pg.rect(x, y, side, side);
-        }
-
-        palette.stroke(0);
-        pg.strokeWeight(0);
-        
-
-
+            enter
+            enter (muted)
+        */
 
 
         // print buttons:
+
+        // re-center the buttons
         for (let b of buttons){
+            let bw = 200;
+            let bx = curDW / 2 - bw / 2;
+            b.x = bx;
+            b.w = bw;
             printButton(b);
         }
-
-
-
-
 
 
 
@@ -298,7 +319,7 @@ export function template(p, appState) {
         // first, print the actual background:
         p.background(LETTERBOX_BAR_COLOR);
         // Scale buffer to actual canvas size and print:
-        p.image(pg, displayX, displayY, displayW, displayH);
+        p.image(pg, designX, designY, designW, designH);
         // Iterate frames:
         frameCount++;;
     };
@@ -337,7 +358,7 @@ export function template(p, appState) {
         pg.stroke(palette.getColor(b.strokeColor));
 
         // need to ensure pg has centered text, then print the rectangle, then the text
-        pg.rect(b.x, b.y, b.w, b.h);
+        pg.rect(b.x, b.y, b.w, b.h, rectRound);
 
         // text:
         pg.textAlign(p.CENTER, p.CENTER);
@@ -405,10 +426,10 @@ export function template(p, appState) {
     // mouse moves between 0, 0, windowWidth, and windowHeight
     // we need to map that to curDW, curDH
     function dx(xRelativeToWindow){
-        return p.map(xRelativeToWindow, displayX, displayX + displayW, 0, curDW);
+        return p.map(xRelativeToWindow, designX, designX + designW, 0, curDW);
     }
     function dy(yRelativeToWindow){
-        return p.map(yRelativeToWindow, displayY, displayY + displayH, 0, curDH);
+        return p.map(yRelativeToWindow, designY, designY + designH, 0, curDH);
     }
     function mousex(){
         return dx(p.mouseX);
@@ -465,7 +486,7 @@ export function template(p, appState) {
     }
 
 
-
+    // aka updateResolution
     function calculateDisplayBounds() {
         let oldVertical = vertical;
 
@@ -479,6 +500,13 @@ export function template(p, appState) {
         }else{
             vertical = false;
             curDesignAspect = DESIGN_ASPECT;
+        }
+        if (vertical){
+            curDW = PHONE_DESIGN_WIDTH;
+            curDH = PHONE_DESIGN_HEIGHT;    
+        }else{
+            curDW = DESIGN_WIDTH;
+            curDH = DESIGN_HEIGHT;
         }
 
         /*
@@ -496,20 +524,30 @@ export function template(p, appState) {
         }
 
 
+
+
         
         if (canvasAspect > curDesignAspect) {
             // Canvas is wider - pillarbox (bars on sides)
-            displayH = p.height;
-            displayW = p.height * curDesignAspect;
-            displayX = (p.width - displayW) / 2;
-            displayY = 0;
+            designH = p.height;
+            designW = p.height * curDesignAspect;
+            designX = (p.width - designW) / 2;
+            designY = 0;
         } else {
             // Canvas is taller - letterbox (bars on top/bottom)
-            displayW = p.width;
-            displayH = p.width / curDesignAspect;
-            displayX = 0;
-            displayY = (p.height - displayH) / 2;
+            designW = p.width;
+            designH = p.width / curDesignAspect;
+            designX = 0;
+            designY = (p.height - designH) / 2;
+        }
+
+
+
+        if (cubesLayer){
+            cubesLayer.rescale(curDW, curDH)
         }
     }
 
 }
+
+
