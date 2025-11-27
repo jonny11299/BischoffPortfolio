@@ -13,6 +13,7 @@ import { template } from "./sketches/template.js";
 import { appState } from "./utils/appState.js";
 import { entranceScreen } from "./sketches/entranceScreen.js";
 import { entrance2 } from "./sketches/entrance2.js";
+import { entrance3 } from "./sketches/entrance3.js";
 
 
 
@@ -26,7 +27,8 @@ const sketches = {
     'soundLens': soundLens,
     'template': template,
     'entranceScreen': entranceScreen,
-    'entrance2': entrance2
+    'entrance2': entrance2,
+    'entrance3': entrance3
 /*
     'waves': wavesSketch,
     'particles': particlesSketch,

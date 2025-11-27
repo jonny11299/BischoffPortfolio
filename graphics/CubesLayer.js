@@ -27,8 +27,15 @@ export default class CubesLayer {
     this.width = width;
     this.height = height;
     
-    // WEBGL graphics buffer
-    this.gl = this.p.createGraphics(width, height, this.p.WEBGL);
+    // FIXED resolution - never changes
+    this.renderScale = 0.5;
+    
+    // Calculate actual render dimensions
+    const renderW = Math.floor(width * this.renderScale);
+    const renderH = Math.floor(height * this.renderScale);
+    
+    // WEBGL graphics buffer at reduced resolution
+    this.gl = this.p.createGraphics(renderW, renderH, this.p.WEBGL);
     this.gl.pixelDensity(1);
     
     // Framebuffers for bloom pipeline
@@ -48,26 +55,114 @@ export default class CubesLayer {
     this.vaporYellow = [255, 230, 80];
     this.vaporPink = [255, 80, 150];
   }
-  
+
   _initCubes(numCubes) {
-    // Spread cubes based on the actual design dimensions
-    const spreadX = this.width * 0.6; // 60% of width
-    const spreadY = this.height * 0.5; // 50% of height
-    const spreadZ = 800; // Depth range
+    // Spread cubes based on RENDER dimensions
+    const renderWidth = this.width * this.renderScale;
+    const renderHeight = this.height * this.renderScale;
+    
+    const spreadX = renderWidth * 0.6;
+    const spreadY = renderHeight * 0.5;
+    const spreadZ = 800;
+    
+    const maxAttempts = 100; // Prevent infinite loops
     
     for (let i = 0; i < numCubes; i++) {
+      let validPosition = false;
+      let attempts = 0;
+      let x, y, z, size, bobAmount, boundingSphereRadius;
+      
+      while (!validPosition && attempts < maxAttempts) {
+        attempts++;
+        
+        // Generate random position and size
+        x = this.p.random(-spreadX, spreadX);
+        y = this.p.random(-spreadY, spreadY);
+        z = this.p.random(-spreadZ, 200);
+        size = this.p.random(30, 100);
+        bobAmount = this.p.random(20, 60);
+        
+        // Bounding sphere radius = half diagonal of cube + bob range
+        boundingSphereRadius = (size * Math.sqrt(3)) / 2 + bobAmount;
+        
+        // Check against all existing cubes
+        validPosition = true;
+        for (let existing of this.cubes) {
+          const dx = x - existing.x;
+          const dy = y - existing.y;
+          const dz = z - existing.z;
+          const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          
+          // Add their bounding sphere radii + 20% padding
+          const minDistance = (boundingSphereRadius + existing.boundingSphereRadius) * 1.2;
+          
+          if (distance < minDistance) {
+            validPosition = false;
+            break;
+          }
+        }
+      }
+      
+      if (!validPosition) {
+        console.warn(`Could not find non-overlapping position for cube ${i} after ${maxAttempts} attempts`);
+        // Continue anyway with last attempt - better than having fewer cubes
+      }
+      
+      const hue = this.p.random(160, 280);
+      const specularRGB = this._hsbToRgb(hue, 60, 90);
+      const emissiveRGB = this._hsbToRgb(hue, 80, 30);
+      
       this.cubes.push({
-        x: this.p.random(-spreadX, spreadX),
-        y: this.p.random(-spreadY, spreadY),
-        z: this.p.random(-spreadZ, 200),
-        size: this.p.random(30, 100),
+        x,
+        y,
+        z,
+        size,
+        boundingSphereRadius, // Store this for future reference
         phaseOffset: this.p.random(0, Math.PI * 2),
         rotationSpeed: this.p.random(0.3, 1.2),
         bobSpeed: this.p.random(1.5, 3),
-        bobAmount: this.p.random(20, 60),
-        hue: this.p.random(160, 280),
+        bobAmount,
+        specularR: specularRGB[0],
+        specularG: specularRGB[1],
+        specularB: specularRGB[2],
+        emissiveR: emissiveRGB[0],
+        emissiveG: emissiveRGB[1],
+        emissiveB: emissiveRGB[2],
       });
     }
+  }
+  
+  // Convert HSB (0-360, 0-100, 0-100) to RGB (0-255, 0-255, 0-255)
+  _hsbToRgb(h, s, b) {
+    s = s / 100;
+    b = b / 100;
+    h = h / 60;
+    
+    const c = b * s;
+    const x = c * (1 - Math.abs((h % 2) - 1));
+    const m = b - c;
+    
+    let r, g, bl;
+    
+    if (h < 1) {
+      [r, g, bl] = [c, x, 0];
+    } else if (h < 2) {
+      [r, g, bl] = [x, c, 0];
+    } else if (h < 3) {
+      [r, g, bl] = [0, c, x];
+    } else if (h < 4) {
+      [r, g, bl] = [0, x, c];
+    } else if (h < 5) {
+      [r, g, bl] = [x, 0, c];
+    } else {
+      [r, g, bl] = [c, 0, x];
+    }
+    
+    return [
+      Math.round((r + m) * 255),
+      Math.round((g + m) * 255),
+      Math.round((bl + m) * 255)
+    ];
   }
   
   render() {
@@ -88,9 +183,7 @@ export default class CubesLayer {
     gl.pointLight(40, 20, 60, 0, 400, 100);
     gl.ambientLight(15, 10, 25);
     
-    gl.colorMode(this.p.HSB, 360, 100, 100);
-    
-    // Render all cubes
+    // Render all cubes (no color mode switching needed!)
     for (let cube of this.cubes) {
       const cubeTime = t + cube.phaseOffset;
       
@@ -106,18 +199,16 @@ export default class CubesLayer {
       gl.stroke(0);
       gl.strokeWeight(5);
       
-      // Materials
-      gl.colorMode(this.p.HSB, 360, 100, 100);
-      gl.specularMaterial(cube.hue, 60, 90);
+      // Use pre-calculated RGB colors
+      gl.specularMaterial(cube.specularR, cube.specularG, cube.specularB);
       gl.shininess(50);
-      gl.emissiveMaterial(cube.hue, 80, 30);
+      gl.emissiveMaterial(cube.emissiveR, cube.emissiveG, cube.emissiveB);
       
       gl.box(cube.size);
       
       gl.pop();
     }
     
-    gl.colorMode(this.p.RGB, 255);
     this.sceneBuffer.end();
     
     // === PASS 2: Horizontal blur ===
@@ -158,7 +249,7 @@ export default class CubesLayer {
     gl.tint(255, 180);
     gl.image(this.blurVBuffer.color, 0, 0, gl.width, gl.height);
     gl.tint(255, 100);
-    gl.image(this.blurVBuffer.color, 0, 0, gl.width * 1.02, gl.height * 1.02);
+    gl.image(this.blurVBuffer.color, 0, 0, gl.width * 1.01, gl.height * 1.01);
     gl.pop();
     
     gl.blendMode(this.p.BLEND);
@@ -256,7 +347,33 @@ export default class CubesLayer {
   resize(newWidth, newHeight) {
     this.width = newWidth;
     this.height = newHeight;
-    this.gl.resizeCanvas(newWidth, newHeight);
+    
+    // Calculate new render dimensions at fixed scale
+    const renderW = Math.floor(newWidth * this.renderScale);
+    const renderH = Math.floor(newHeight * this.renderScale);
+    
+    // Dispose old framebuffers
+    if (this.sceneBuffer) this.sceneBuffer.remove();
+    if (this.blurHBuffer) this.blurHBuffer.remove();
+    if (this.blurVBuffer) this.blurVBuffer.remove();
+    
+    // Dispose old graphics buffer
+    if (this.gl) {
+      this.gl.remove();
+    }
+    
+    // Create new buffer at fixed render scale
+    this.gl = this.p.createGraphics(renderW, renderH, this.p.WEBGL);
+    this.gl.pixelDensity(1);
+    
+    // Recreate framebuffers
+    this.sceneBuffer = this.gl.createFramebuffer({ antialias: true });
+    this.blurHBuffer = this.gl.createFramebuffer();
+    this.blurVBuffer = this.gl.createFramebuffer();
+    
+    // Recreate shaders
+    this.blurHShader = this.gl.createShader(this._blurVert(), this._blurHFrag());
+    this.blurVShader = this.gl.createShader(this._blurVert(), this._blurVFrag());
   }
   
   // Rescale cube positions based on new dimensions (preserves relative positions)
@@ -273,8 +390,6 @@ export default class CubesLayer {
     }
     
     // Update dimensions and resize canvas
-    this.width = newWidth;
-    this.height = newHeight;
-    this.gl.resizeCanvas(newWidth, newHeight);
+    this.resize(newWidth, newHeight);
   }
 }

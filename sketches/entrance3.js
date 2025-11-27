@@ -2,6 +2,7 @@
 import { createResizeHandler } from '../utils/resizeHandler.js';
 import { Palette } from '../utils/palette.js';
 import CubesLayer from '../graphics/CubesLayer.js';
+import Button from '../utils/button.js';
 
 
 /*
@@ -50,67 +51,10 @@ const PHONE_ASPECT = PHONE_DESIGN_WIDTH / PHONE_DESIGN_HEIGHT;
 
 
 
-// Coordinate function system is relative to the design width and height above.
-class Button {
-    constructor(config) {
-        this.name = config.name;
-        this.x = config.x;
-        this.y = config.y;
-        this.w = config.w || 200;
-        this.h = config.h || 60;
-        this.text = config.text;
-        this.isToggle = config.isToggle || false; // affects how it functions, either as a toggle or non-toggle button
-        this.isSelected = false; // has been selected (overlaps with isPressed when not toggle)
-        this.isHovered = false; // is hovered over
-        this.isPressed = false; // physically pressing down with the mouse
-        this.color = config.color || 'buttonColor';
-        this.colorHovered = config.colorHovered || 'buttonHovered';
-        this.colorPressed = config.colorPressed || 'buttonPressed';
-        this.colorSelected = config.colorSelected || 'buttonSelected';
-        this.strokeWeight = config.strokeWeight || 'strokeWeight';
-        this.strokeColor = config.strokeColor || 'stroke';
-    }
-    
-    // Should check hover, pressed, and release when the mouse is moved, pressed, released.
-    checkHover(designX, designY) {
-        this.isHovered = designX > this.x && designX < this.x + this.w && designY > this.y && designY < this.y + this.h;
-        return this.isHovered;
-    }
-    
-    checkPressed(designX, designY) {
-        let pressed
-        this.isPressed = designX > this.x && designX < this.x + this.w && designY > this.y && designY < this.y + this.h;
-        return pressed;
-    }
-
-    clicked(){
-        // console.log("clicked " + this.text + " , and is it a toggle? " + this.isToggle);
-        if (this.isToggle){
-            this.isSelected = !this.isSelected;
-        }
-    }
-
-    // returns true if it was previously pressed
-    release(){
-        if (this.isPressed){
-            // this means we were clicked
-            this.clicked();
-        }
-        let pressed = this.isPressed;
-        this.isPressed = false;
-
-        return pressed;
-    }
-
-    // print upon pg, the "processing graphics" buffer.
-    // We should not print from here -- we should print from within
-    // the main function, because this actually has p and pg
-}
 
 
-
-export function entrance2(p, appState) {
-    let name = "entrance2"
+export function entrance3(p, appState) {
+    let name = "entrance3"
     let resizeHandler;
     let frameCount = 0;
     let curTime = Date.now();// Get current timestamp (milliseconds since Unix epoch)
@@ -157,7 +101,10 @@ export function entrance2(p, appState) {
         y: DESIGN_HEIGHT / 2 - 50,
         w: bw,
         h: 100,
-        text: "Enter"
+        text: "Enter",
+        onClick: (button) => {
+            console.log("You clicked " + button.name);
+        }
     }))
     buttons.push(new Button({
         name: "enterMuted",
@@ -166,7 +113,33 @@ export function entrance2(p, appState) {
         w: bw,
         h: 100,
         text: "Enter (Muted)",
+        onClick: (button) => {
+            console.log("You clicked " + button.name);
+        }
     }))
+    buttons.push(new Button({
+        name: "fullscreen",
+        x: 45,
+        y: 45,
+        w: 45,
+        h: 45,
+        get text(){return this.isSelected ? 'x' : '';},
+        onClick: (button) => {
+            if (button.isSelected){
+                // unselecting fullscreen mode
+                console.log("escaping fullscreen...");
+                p.fullscreen(false);
+            }else{
+                // selecting fullscreen mode
+                console.log("going fullscreen...");
+                p.fullscreen(true);
+            }
+        },
+        isToggle: true
+    }))
+
+    /* 
+            get x() { return outerFrame.x + (innerFrame.x - outerFrame.x) * t; },*/
 
 
 
@@ -295,11 +268,15 @@ export function entrance2(p, appState) {
 
         // re-center the buttons
         for (let b of buttons){
-            let bw = 200;
-            let bx = curDW / 2 - bw / 2;
-            b.x = bx;
-            b.w = bw;
-            printButton(b);
+            if (b.name === 'enter' || b.name === 'enterMuted'){
+                let bw = 200;
+                let bx = curDW / 2 - bw / 2;
+                b.x = bx;
+                b.w = bw;
+                printButton(b);
+            }else{
+                printButton(b);
+            }
         }
 
 
@@ -318,25 +295,6 @@ export function entrance2(p, appState) {
     // --------------------------- PRINTS / GRAPHICS: ---------------------------
 
     function printButton(b){
-        /*
-        constructor(config) {
-        this.name = config.name;
-        this.x = config.x;
-        this.y = config.y;
-        this.w = config.w || 200;
-        this.h = config.h || 60;
-        this.text = config.text;
-        this.isPressed = false;
-        this.isHovered = false;
-        this.isToggle = false;
-        this.isSelected = false;
-        this.color = config.color || '1';
-        this.colorHovered = config.colorHovered || '3';
-        this.colorPressed = config.colorPressed || '4';
-        this.colorSelected = config.colorSelected || '2';
-        this.strokeWidth = config.strokeWidth || 'strokeWeight';
-        this.strokeColor = config.strokeColor || 'stroke';
-    }*/
         // determine if the color to use is based on theme or raw:
         pg.fill(palette.getColor(b.color));
         if (b.isSelected) pg.fill(palette.getColor(b.colorSelected));

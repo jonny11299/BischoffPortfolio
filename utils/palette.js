@@ -92,8 +92,8 @@ export function Palette(p, appState){
             background: [20, 20, 30],
             1: [100, 200, 255, 130],      // Cool blue
             2: [255, 100, 150, 130],      // Warm pink
-            buttonColor: [100, 255, 255, 130],      // Bright mint green
-            buttonHovered: [100, 255, 255, 210],      // Bright mint green
+            buttonColor: [50, 200, 200, 130],      // Bright mint green
+            buttonHovered: [100, 220, 220, 210],      // Bright mint green
             buttonPressed: [255, 220, 100, 130],      // Warm yellow (energetic highlight)
             buttonSelected: [100, 255, 255, 130],      // Cyan (cool tech accent)
             accent: [255, 200, 50, 190],  // Golden orange
@@ -102,6 +102,91 @@ export function Palette(p, appState){
             strokeWeight: 3,
             font: 'Arial',
             fontColor: [255, 255, 255, 255]
+        },
+
+        // CLASSIC TRON - Deep blue/cyan with orange accents
+        tronClassic: {
+            background: [5, 10, 20],              // Almost black blue
+            1: [0, 200, 255, 130],                // Cyan glow
+            2: [0, 150, 255, 130],                // Deep cyan
+            buttonColor: [0, 220, 255, 130],      // Bright cyan
+            buttonHovered: [100, 240, 255, 210],  // Lighter cyan
+            buttonPressed: [255, 140, 0, 180],    // Orange flash
+            buttonSelected: [0, 255, 255, 180],   // Electric cyan
+            accent: [255, 140, 0, 190],           // Tron orange
+            text: [200, 240, 255, 255],           // Cool white
+            stroke: [0, 255, 255, 200],           // Cyan stroke
+            strokeWeight: 2,
+            font: 'Courier New',                  // Tech font
+            fontColor: [200, 240, 255, 255]
+        },
+
+        // TRON LEGACY - Cooler palette with ice blue
+        tronLegacy: {
+            background: [8, 12, 18],              // Deep navy
+            1: [80, 200, 255, 130],               // Ice blue
+            2: [140, 180, 255, 130],              // Lavender blue
+            buttonColor: [100, 210, 255, 190],    // Sky blue
+            buttonHovered: [150, 230, 255, 230],  // Bright ice
+            buttonPressed: [255, 180, 80, 180],   // Warm amber
+            buttonSelected: [120, 220, 255, 180], // Selected blue
+            accent: [255, 170, 80, 190],          // Amber accent
+            text: [220, 240, 255, 255],           // Icy white
+            stroke: [100, 220, 255, 200],         // Blue glow
+            strokeWeight: 2,
+            font: 'Orbitron',
+            fontColor: [220, 240, 255, 255]
+        },
+
+        // NEON GRID - More purple/magenta to match your cubes
+        neonGrid: {
+            background: [15, 5, 25],              // Deep purple-black
+            1: [150, 100, 255, 130],              // Electric purple
+            2: [255, 50, 200, 130],               // Hot pink
+            buttonColor: [180, 100, 255, 130],    // Neon purple
+            buttonHovered: [200, 150, 255, 210],  // Bright purple
+            buttonPressed: [255, 220, 0, 180],    // Yellow flash
+            buttonSelected: [255, 100, 255, 180], // Magenta
+            accent: [0, 255, 200, 190],           // Cyan-green contrast
+            text: [240, 220, 255, 255],           // Warm white
+            stroke: [180, 120, 255, 200],         // Purple glow
+            strokeWeight: 2,
+            font: 'Audiowide',
+            fontColor: [240, 220, 255, 255]
+        },
+
+        // DARK CYBER - Matches your cube's purple/cyan range
+        darkCyber: {
+            background: [10, 8, 18],              // Almost black
+            1: [100, 200, 255, 130],              // Your current cyan
+            2: [200, 100, 255, 130],              // Purple to match cubes
+            buttonColor: [150, 150, 255, 130],    // Mid purple-blue
+            buttonHovered: [180, 180, 255, 210],  // Lighter
+            buttonPressed: [0, 255, 200, 180],    // Cyan flash
+            buttonSelected: [200, 150, 255, 180], // Purple select
+            accent: [0, 255, 180, 190],           // Cyan-teal
+            text: [230, 230, 255, 255],           // Clean white
+            stroke: [150, 180, 255, 200],         // Soft glow
+            strokeWeight: 2,
+            font: 'Share Tech Mono',
+            fontColor: [230, 230, 255, 255]
+        },
+
+        // DIGITAL VOID - Ultra minimal, cold
+        digitalVoid: {
+            background: [2, 4, 8],                // True black-blue
+            1: [0, 180, 255, 100],                // Transparent cyan
+            2: [80, 140, 255, 100],               // Transparent blue
+            buttonColor: [0, 200, 255, 100],      // Ghost cyan
+            buttonHovered: [0, 255, 255, 180],    // Solid cyan
+            buttonPressed: [255, 255, 255, 200],  // White flash
+            buttonSelected: [0, 255, 255, 150],   // Bright cyan
+            accent: [255, 255, 255, 220],         // Pure white
+            text: [180, 220, 255, 255],           // Ice white
+            stroke: [0, 200, 255, 150],           // Thin cyan
+            strokeWeight: 1,
+            font: 'Rajdhani',
+            fontColor: [180, 220, 255, 255]
         }
     };
 
@@ -128,12 +213,18 @@ export function Palette(p, appState){
     // get a color from the currently selected scheme
     // allows for modifying transparency "alpha" of the colors now.
     // YOU HAVE TO PASS IN COLORNAME AS A STRING IF IT'S ACCESSING THEME COLOR, else it defaults to RGP
-    this.getColor = function(colorName, alpha = 255) {
+    this.getColor = function(colorName, alpha = -1) {
+
+        let c;
+        let r, g, b, a;
+
         if (typeof colorName !== 'string'){
             let c = colorName;
             if (Array.isArray(c)){
                 if (c.length === 4){
                     [r, g, b, a] = c;
+                    // this statement says, "if we've specified a different alpha, accept it. Else, leave from the palette."
+                    if (alpha !== -1) a = alpha;
                 }else if (c.length === 3){
                     [r, g, b] = c;
                     a = alpha;
@@ -168,11 +259,13 @@ export function Palette(p, appState){
             
         }
 
-        let c = scheme[colorName];
-        let r, g, b, a;
+        c = scheme[colorName];
+
         if (Array.isArray(c)){
             if (c.length === 4){
                 [r, g, b, a] = c;
+                // this statement says, "if we've specified a different alpha, accept it. Else, leave from the palette."
+                if (alpha !== -1) a = alpha;
             }else if (c.length === 3){
                 [r, g, b] = c;
                 a = alpha;
@@ -187,6 +280,7 @@ export function Palette(p, appState){
         }
 
         // Successful case:
+        if (a === -1) a = 255;
         return [r, g, b, a];
     };
 
