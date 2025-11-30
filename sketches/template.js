@@ -195,7 +195,7 @@ export function template(p, appState) {
 
         // Colors
         p.colorMode(p.RGB);
-        palette.setScheme('entrance'); // currently controlled by keyboard
+        palette.settheme('entrance'); // currently controlled by keyboard
         palette.fontTheme();
 
         // ensure text is aligned
@@ -393,11 +393,11 @@ export function template(p, appState) {
             console.log("current framerate: " + p.frameRate());
         }
 
-        // Apply color schemes:
-        if (p.key === '1') palette.setScheme('dark');
-        if (p.key === '2') palette.setScheme('light');
-        if (p.key === '3') palette.setScheme('sunset');
-        if (p.key === '4') palette.setScheme('entrance');
+        // Apply color themes:
+        if (p.key === '1') palette.settheme('dark');
+        if (p.key === '2') palette.settheme('light');
+        if (p.key === '3') palette.settheme('sunset');
+        if (p.key === '4') palette.settheme('entrance');
     };
 
 

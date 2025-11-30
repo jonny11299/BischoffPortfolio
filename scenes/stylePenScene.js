@@ -4,9 +4,7 @@ import Button from "../utils/button.js";
 
 
 
-
-
-export default class StylePens extends Scene {
+export default class StylePenScene extends Scene {
 
 
     // define that global shit:
@@ -26,6 +24,22 @@ export default class StylePens extends Scene {
         this.particles = [];
 
         this.curPenStyle = 'sketch';
+
+
+        this.setup();
+    }
+
+
+
+    setup(){
+
+    };
+
+
+
+    // Main render method
+    draw(buffer, mx, my) {
+      // console.log(`[${this.name}] draw() - mouse: (${mx}, ${my}), size: ${this.appState.w}x${this.appState.h}`);
     }
 
 

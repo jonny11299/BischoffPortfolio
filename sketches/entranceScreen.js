@@ -220,7 +220,7 @@ export function entranceScreen(p, appState) {
 
         // Colors and Styles
         p.colorMode(p.RGB);
-        palette.setScheme('entrance'); // currently controlled by keyboard
+        palette.settheme('entrance'); // currently controlled by keyboard
         // // Set text to align from center (both horizontal and vertical)
         p.textAlign(p.CENTER, p.CENTER);
         p.angleMode(p.DEGREES);
@@ -571,11 +571,11 @@ export function entranceScreen(p, appState) {
             console.log("Focused? " + isFocused());
         }
 
-        // Apply color schemes:
-        if (p.key === '1') palette.setScheme('dark');
-        if (p.key === '2') palette.setScheme('light');
-        if (p.key === '3') palette.setScheme('sunset');
-        if (p.key === '4') palette.setScheme('entrance');
+        // Apply color themes:
+        if (p.key === '1') palette.settheme('dark');
+        if (p.key === '2') palette.settheme('light');
+        if (p.key === '3') palette.settheme('sunset');
+        if (p.key === '4') palette.settheme('entrance');
 
         // wavemesh calculations:
         if (p.keyCode === 38){ // up arrow

@@ -2,7 +2,7 @@
 
     Stores all the colors for sketches
 
-    Allows you to change the colorscheme effortlessly
+    Allows you to change the colortheme effortlessly
 
 
 */
@@ -23,11 +23,12 @@
 export function Palette(p, appState){
 
     this.p = p;
+    this.appState = appState;
 
-    // Current scheme
-    this.currentScheme = 'dark';
+    // Current theme
+    this.currentTheme = 'dark';
 
-    this.fallbackScheme = 'dark';
+    this.fallbacktheme = 'dark';
     this.fallbackColor = '1'
 
     this.errorColor = [255, 0, 255]; // hot pink is error color
@@ -35,14 +36,14 @@ export function Palette(p, appState){
     this.fallBackFont = 'Arial';
 
 
-    // Define color schemes
-    // Should define button schemes...
+    // Define color themes
+    // Should define button themes...
 
     // buttonColor
     // buttonHovered
     // buttonPressed
     // buttonSelected
-    this.schemes = {
+    this.themes = {
         dark: {
             background: [20, 20, 30],
             1: [100, 200, 255],      // Cool blue
@@ -191,26 +192,27 @@ export function Palette(p, appState){
     };
 
     // Methods
-    this.setScheme = function(schemeName) {
-        if (!this.schemes[schemeName]){
-            // can't find schemeName
+    this.settheme = function(themeName) {
+        if (!this.themes[themeName]){
+            // can't find themeName
             // Error handling:
-            console.error("Scheme " + schemeName + " not found in function setScheme()");
-            this.currentScheme = this.fallbackScheme;
+            console.error("theme " + themeName + " not found in function settheme()");
+            this.currentTheme = this.fallbacktheme;
         }else{
-            // found schemeName in schemes
-            this.currentScheme = schemeName;
+            // found themeName in themes
+            this.currentTheme = themeName;
+            appState.theme = themeName;
         }
     };
 
-    this.getScheme = function(){
-        return this.currentScheme;
+    this.gettheme = function(){
+        return this.currentTheme;
     }
 
 
 
 
-    // get a color from the currently selected scheme
+    // get a color from the currently selected theme
     // allows for modifying transparency "alpha" of the colors now.
     // YOU HAVE TO PASS IN COLORNAME AS A STRING IF IT'S ACCESSING THEME COLOR, else it defaults to RGP
     this.getColor = function(colorName, alpha = -1) {
@@ -240,17 +242,17 @@ export function Palette(p, appState){
         }
 
 
-        const scheme = this.schemes[this.currentScheme];
+        const theme = this.themes[this.currentTheme];
 
-        // Can't find current scheme:
-        if (!scheme){
-            console.error("Scheme " + this.currentScheme + " not found in function getColor()");
+        // Can't find current theme:
+        if (!theme){
+            console.error("theme " + this.currentTheme + " not found in function getColor()");
             return this.errorColor;
         }
 
-        // Can't find color in scheme:
-        if (!scheme[colorName]){
-            console.error("Color " + colorName + " not found in " + this.currentScheme + " in function getColor()");
+        // Can't find color in theme:
+        if (!theme[colorName]){
+            console.error("Color " + colorName + " not found in " + this.currentTheme + " in function getColor()");
             if (colorName.toLowerCase() === 'text'){
                 return this.fallbackColor;
             }else{
@@ -259,7 +261,7 @@ export function Palette(p, appState){
             
         }
 
-        c = scheme[colorName];
+        c = theme[colorName];
 
         if (Array.isArray(c)){
             if (c.length === 4){
@@ -285,47 +287,47 @@ export function Palette(p, appState){
     };
 
     this.getStrokeWeight = function(){
-        const scheme = this.schemes[this.currentScheme];
+        const theme = this.themes[this.currentTheme];
 
-        // Can't find current scheme:
-        if (!scheme){
-            console.error("Scheme " + this.currentScheme + " not found in function getStrokeWeight()");
+        // Can't find current theme:
+        if (!theme){
+            console.error("theme " + this.currentTheme + " not found in function getStrokeWeight()");
             return 1; // default to strokeWeight of 1
         }
 
-        // Can't find strokeWeight in scheme:
-        if (!scheme['strokeWeight']){
-            console.error("strokeWeight not found in " + this.currentScheme + " in function getStrokeWeight()");
+        // Can't find strokeWeight in theme:
+        if (!theme['strokeWeight']){
+            console.error("strokeWeight not found in " + this.currentTheme + " in function getStrokeWeight()");
             return 1; // default to strokeWeight of 1
         }
 
-        return scheme['strokeWeight'];
+        return theme['strokeWeight'];
     }
 
 
     this.getFont = function(){
-        const scheme = this.schemes[this.currentScheme];
+        const theme = this.themes[this.currentTheme];
 
-        // Can't find current scheme:
-        if (!scheme){
-            console.error("Scheme " + this.currentScheme + " not found in function getFont()");
+        // Can't find current theme:
+        if (!theme){
+            console.error("theme " + this.currentTheme + " not found in function getFont()");
             return this.errorColor;
         }
 
-        // Can't find color in scheme:
-        if (!scheme['font']){
-            console.error("font not found in " + this.currentScheme + " in function getFont()");
+        // Can't find color in theme:
+        if (!theme['font']){
+            console.error("font not found in " + this.currentTheme + " in function getFont()");
             return this.fallBackFont;
         }
 
-        return scheme['font']
+        return theme['font']
     }
 
 
 
 
 
-    /* All of the following functions, except maybe lerpColors and fontScheme, are completely useless
+    /* All of the following functions, except maybe lerpColors and fonttheme, are completely useless
     because I can already easily do any of them with p.fill(palette.getColor('colorname')); any time I want
     to select a specific color.
 
@@ -384,12 +386,12 @@ export function Palette(p, appState){
 
     // fills based on theme
     this.fillTheme = function(colorName, alpha = -1){
-        // okay, so the scheme color may or may not have an alpha component.
+        // okay, so the theme color may or may not have an alpha component.
         // we also may or may not use alpha here. So, these cases:
-        // no alpha in scheme, no alpha defined = use solid color
-        // alpha in scheme, no alpha defined = use alpha in scheme
-        // no alpha in scheme, alpha defined = use alpha defined
-        // alpha in scheme, alpha defined = use alpha defined
+        // no alpha in theme, no alpha defined = use solid color
+        // alpha in theme, no alpha defined = use alpha in theme
+        // no alpha in theme, alpha defined = use alpha defined
+        // alpha in theme, alpha defined = use alpha defined
         let c = this.getColor(colorName);
         let r, g, b;
         let err = false;
@@ -465,21 +467,21 @@ export function Palette(p, appState){
     };
 
     this.fontTheme = function(setDefaultColor = true, stroke = false, strokeWeight = -1){
-        const scheme = this.schemes[this.currentScheme];
+        const theme = this.themes[this.currentTheme];
 
-        // Can't find current scheme:
-        if (!scheme){
-            console.error("Scheme " + this.currentScheme + " not found in function fontTheme()");
+        // Can't find current theme:
+        if (!theme){
+            console.error("theme " + this.currentTheme + " not found in function fontTheme()");
             p.fill(this.errorColor);
             p.textFont(this.fallBackFont);
         }
 
-        // Can't find color in scheme:
-        if (!scheme['font']){
+        // Can't find color in theme:
+        if (!theme['font']){
             console.error("Font 'font' not found in function fontTheme()");
             p.textFont(this.fallBackFont);
         }else{
-            p.textFont(scheme['font']);
+            p.textFont(theme['font']);
             if (setDefaultColor) this.fillTheme('text');
             if (stroke){
                 if (strokeWeight === -1) p.noStroke();

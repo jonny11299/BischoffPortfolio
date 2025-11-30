@@ -244,7 +244,7 @@ export function entrance3(p, appState) {
 
         // Colors
         p.colorMode(p.RGB);
-        palette.setScheme('tronLegacy'); // currently controlled by keyboard
+        palette.settheme('tronLegacy'); // currently controlled by keyboard
         palette.fontTheme();
 
         // ensure text is aligned
@@ -471,16 +471,16 @@ export function entrance3(p, appState) {
             appState.logSelf();
         }
 
-        // Apply color schemes:
-        if (p.key === '1') palette.setScheme('dark');
-        if (p.key === '2') palette.setScheme('light');
-        if (p.key === '3') palette.setScheme('sunset');
-        if (p.key === '4') palette.setScheme('entrance');
-        if (p.key === '5') palette.setScheme('tronClassic');
-        if (p.key === '6') palette.setScheme('tronLegacy');
-        if (p.key === '7') palette.setScheme('neonGrid');
-        if (p.key === '8') palette.setScheme('darkCyber');
-        if (p.key === '9') palette.setScheme('digitalVoid');
+        // Apply color themes:
+        if (p.key === '1') palette.settheme('dark');
+        if (p.key === '2') palette.settheme('light');
+        if (p.key === '3') palette.settheme('sunset');
+        if (p.key === '4') palette.settheme('entrance');
+        if (p.key === '5') palette.settheme('tronClassic');
+        if (p.key === '6') palette.settheme('tronLegacy');
+        if (p.key === '7') palette.settheme('neonGrid');
+        if (p.key === '8') palette.settheme('darkCyber');
+        if (p.key === '9') palette.settheme('digitalVoid');
     };
 
 

@@ -40,13 +40,13 @@ export default class Scene {
 
 
   // Main setup method
-  setup(buffer, w, h) {
-    console.log(`[${this.name}] setup() - size: ${w}x${h}`);
+  setup() {
+    console.log(`[${this.name}] setup() - size: ${this.appState.w}x${this.appState.h}`);
   }
   
   // Main render method
-  draw(buffer, mx, my, w, h) {
-    console.log(`[${this.name}] draw() - mouse: (${mx}, ${my}), size: ${w}x${h}`);
+  draw(buffer, mx, my) {
+    console.log(`[${this.name}] draw() - mouse: (${mx}, ${my}), size: ${this.appState.w}x${this.appState.h}`);
   }
 
 

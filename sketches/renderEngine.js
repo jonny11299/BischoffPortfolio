@@ -3,7 +3,7 @@ import { createResizeHandler } from '../utils/resizeHandler.js';
 import { Palette } from '../utils/palette.js';
 import Button from '../utils/button.js';
 
-import StylePens from '../scenes/stylePenScene.js';
+import StylePenScene from '../scenes/stylePenScene.js';
 
 
 /*
@@ -82,6 +82,7 @@ export function renderEngine(p, appState) {
 
     // Colors:
     let palette = new Palette(p, appState);
+    // appState.palette = palette;
 
 
 
@@ -149,7 +150,7 @@ export function renderEngine(p, appState) {
 
         // Colors
         p.colorMode(p.RGB);
-        palette.setScheme('tronLegacy'); // currently controlled by keyboard
+        palette.settheme('tronLegacy'); // currently controlled by keyboard
         palette.fontTheme();
 
         // ensure text is aligned
@@ -162,7 +163,10 @@ export function renderEngine(p, appState) {
         // Look into this if rendering / low framerate struggles appear:
         // p.pixelDensity(1); 
         
-        curScene = new StylePens('StylePens1', p, appState);
+        // create the new scene and enter it 
+        curScene = new StylePenScene('StylePens1', p, appState);
+        curScene.onEnter();
+
         appState.logSelf();
     };
 
@@ -176,6 +180,7 @@ export function renderEngine(p, appState) {
 
 
         // need to print my scene in here somewhere...
+        curScene.draw(pg, mousex(), mousey())
 
 
         // finalize the draw function:
@@ -263,16 +268,16 @@ export function renderEngine(p, appState) {
             appState.logSelf();
         }
 
-        // Apply color schemes:
-        if (p.key === '1') palette.setScheme('dark');
-        if (p.key === '2') palette.setScheme('light');
-        if (p.key === '3') palette.setScheme('sunset');
-        if (p.key === '4') palette.setScheme('entrance');
-        if (p.key === '5') palette.setScheme('tronClassic');
-        if (p.key === '6') palette.setScheme('tronLegacy');
-        if (p.key === '7') palette.setScheme('neonGrid');
-        if (p.key === '8') palette.setScheme('darkCyber');
-        if (p.key === '9') palette.setScheme('digitalVoid');
+        // Apply color themes:
+        if (p.key === '1') palette.settheme('dark');
+        if (p.key === '2') palette.settheme('light');
+        if (p.key === '3') palette.settheme('sunset');
+        if (p.key === '4') palette.settheme('entrance');
+        if (p.key === '5') palette.settheme('tronClassic');
+        if (p.key === '6') palette.settheme('tronLegacy');
+        if (p.key === '7') palette.settheme('neonGrid');
+        if (p.key === '8') palette.settheme('darkCyber');
+        if (p.key === '9') palette.settheme('digitalVoid');
 
 
         // now, we run the scene's 'key released'
@@ -302,35 +307,35 @@ export function renderEngine(p, appState) {
         console.log("p mousex, mousey to " + p.mouseX + ", " + p.mouseY);
         console.log("dx/dy mousex, mousey to " + mousex() + ", " + mousey());
         */
-       curScene.mouseMoved(mousex(), mousey());
-       /*
-       for (let b of buttons){
+        curScene.mouseMoved(mousex(), mousey());
+        /*
+        for (let b of buttons){
             b.checkHover(mousex(), mousey());
-       }
+        }
             */
     }
     
     function mousePressed(){
         mouseDown = true;
         // console.log("mousePressed at " + mousex() + ", " + mousey());
-       curScene.mousePressed(mousex(), mousey());
+        curScene.mousePressed(mousex(), mousey());
 
-       /*
-       for (let b of buttons){
+        /*
+        for (let b of buttons){
             b.checkPressed(mousex(), mousey());
-       }*/
+        }*/
 
         // set isPressed for elements
     }
     function mouseReleased(){
         // console.log("mouseReleased at " + mousex() + ", " + mousey());
-       curScene.mouseReleased(mousex(), mousey());
+        curScene.mouseReleased(mousex(), mousey());
 
         // do whatever you must
         /*
-       for (let b of buttons){
+        for (let b of buttons){
             b.release(mousex(), mousey());
-       }*/
+        }*/
 
         mouseDown = false;
     }
