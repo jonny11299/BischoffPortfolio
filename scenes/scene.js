@@ -4,10 +4,28 @@
 // BASE SCENE CLASS
 // ============================================
 export default class Scene {
-  constructor(name) {
+  constructor(name, p, appState) {
+    console.log("Launching scene " + name);
+
+    // checking errors for "bro i'mma need a functioning p and appState"
+    if (!p){
+      throw new Error("no p given to scene '" + name + "'");
+    }
+    if (!appState){
+      throw new Error("no appState given to scene '" + name + "'");
+    }
+
+
     this.name = name;
     this.buttons = [];
     this.shapes = [];
+    this.p = p,
+    this.appState = appState
+
+    // ui (duplicate of appState but still useful...)
+    this.mouseDown = false;
+
+    console.log("Launched scene " + name);
   }
   
   // Called when scene becomes active
@@ -30,24 +48,44 @@ export default class Scene {
   draw(buffer, mx, my, w, h) {
     console.log(`[${this.name}] draw() - mouse: (${mx}, ${my}), size: ${w}x${h}`);
   }
-  
-  // Mouse events
-  mousePressed(mx, my) {
-    console.log(`[${this.name}] mousePressed(${mx}, ${my})`);
-    
+
+
+
+  mouseMoved(mx, my){
+    //console.log(`[${this.name}] mouseMoved(${mx}, ${my})`);
+
+    for (let b of this.buttons){
+          b.checkHover(mx, my);
+    }
   }
   
-  mouseMoved(mx, my) {
-    console.log(`[${this.name}] mouseMoved(${mx}, ${my})`);
+  mousePressed(mx, my){
+    // console.log(`[${this.name}] mousePressed(${mx}, ${my})`);
+    this.mouseDown = true;
+
+    for (let b of this.buttons){
+      b.checkPressed(mx, my);
+    }
+
+      // set isPressed for elements
+  }
+  mouseReleased(mx, my){
+    // console.log(`[${this.name}] mouseReleased(${mx}, ${my})`);
+
+    for (let b of this.buttons){
+      b.release(mx, my);
+    }
+
+    this.mouseDown = false;
   }
   
-  mouseReleased(mx, my) {
-    console.log(`[${this.name}] mouseReleased(${mx}, ${my})`);
-  }
-  
+
   // Keyboard events
   keyPressed(key, keyCode) {
     console.log(`[${this.name}] keyPressed(${key}, ${keyCode})`);
+  }
+  keyReleased(key, keyCode) {
+    console.log(`[${this.name}] keyReleased(${key}, ${keyCode})`);
   }
   
   // Window resize

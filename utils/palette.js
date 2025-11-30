@@ -126,10 +126,10 @@ export function Palette(p, appState){
             background: [8, 12, 18],              // Deep navy
             1: [80, 200, 255, 130],               // Ice blue
             2: [140, 180, 255, 130],              // Lavender blue
-            buttonColor: [100, 210, 255, 190],    // Sky blue
-            buttonHovered: [150, 230, 255, 230],  // Bright ice
-            buttonPressed: [255, 180, 80, 180],   // Warm amber
-            buttonSelected: [120, 220, 255, 180], // Selected blue
+            buttonColor: [100, 210, 255, 220],    // Sky blue
+            buttonHovered: [150, 230, 255, 240],  // Bright ice
+            buttonPressed: [255, 180, 80, 220],   // Warm amber
+            buttonSelected: [120, 220, 255, 220], // Selected blue
             accent: [255, 170, 80, 190],          // Amber accent
             text: [220, 240, 255, 255],           // Icy white
             stroke: [100, 220, 255, 200],         // Blue glow

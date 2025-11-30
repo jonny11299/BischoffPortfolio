@@ -1,8 +1,9 @@
 
 import { createResizeHandler } from '../utils/resizeHandler.js';
 import { Palette } from '../utils/palette.js';
-import CubesLayer from '../graphics/CubesLayer.js';
 import Button from '../utils/button.js';
+
+import StylePens from '../scenes/stylePenScene.js';
 
 
 /*
@@ -52,8 +53,8 @@ const PHONE_ASPECT = PHONE_DESIGN_WIDTH / PHONE_DESIGN_HEIGHT;
 
 
 
-export function entrance3(p, appState) {
-    let name = "entrance3"
+export function renderEngine(p, appState) {
+    let name = "renderEngine"
     let resizeHandler;
     let frameCount = 0;
     let curTime = Date.now();// Get current timestamp (milliseconds since Unix epoch)
@@ -84,114 +85,18 @@ export function entrance3(p, appState) {
 
 
 
-    // Scenes:
-    // (no scenes yet for this one... just loading the ol' way!)
+    // MY SCENE:
+
+    let curScene; // will be assigned in setup:  = new StylePens(p, appState)
     let moment = 0; // tells what buttons to press, if we have entered or not
+
+
 
     // IO:
     let mouseDown = false;
     let muted = false;
     let volume = 50;
-
-    // icons:
-    let rectRound = 5;
-
-    let bw = 200;
-    let bx = curDW / 2 - bw / 2;
-
-
-
-
-    let buttons = [];
-    buttons.push(new Button({
-        name: "enter",
-        x: bx,
-        y: DESIGN_HEIGHT / 2 - 50,
-        w: bw,
-        h: 100,
-        text: "Audio On",
-        onClick: (button) => {
-            console.log("You clicked " + button.name);
-            appState.volume = 50;
-            appState.muted = false;
-            moment = 1;
-        }
-    }));
-    buttons.push(new Button({
-        name: "enterMuted",
-        x: bx,
-        y: DESIGN_HEIGHT / 2 + 100,
-        w: bw,
-        h: 100,
-        text: "Muted",
-        onClick: (button) => {
-            console.log("You clicked " + button.name);
-            muted = true;
-            volume = 0;
-            appState.muted = muted;
-            appState.volume = volume;
-            moment = 1;
-        }
-    }));
-    buttons.push(new Button({
-        name: "fullscreen",
-        x: bx,
-        y: DESIGN_HEIGHT / 2 - 50,
-        w: bw,
-        h: 100,
-        text: function(){ return this.isSelected ? 'Escape' : 'Fullscreen';},
-        onClick: (button) => {
-            if (button.isSelected){
-                // selecting fullscreen mode
-                console.log("going fullscreen...");
-                appState.fullscreen = true;
-                p.fullscreen(true);
-                moment = 2;
-            }else{
-                // unselecting fullscreen mode
-                // should technically never get here... because we go to "moment 2" right away
-                console.log("escaping fullscreen...");
-                appState.fullscreen = false;
-                p.fullscreen(false);
-            }
-        },
-        isToggle: true
-    }));
-    buttons.push(new Button({
-        name: "browserMode",
-        x: bx,
-        y: DESIGN_HEIGHT / 2 + 100,
-        w: bw,
-        h: 100,
-        get text(){return 'Browser Mode';},
-        onClick: (button) => {
-            console.log("You clicked " + button.name);
-            moment = 2;
-        }
-    }));
-    buttons.push(new Button({
-        name: "newWorld",
-        x: bx,
-        y: DESIGN_HEIGHT / 2,
-        w: bw,
-        h: 100,
-        text: "New World",
-        onClick: (button) => {
-            console.log("You clicked " + button.name);
-            moment = 3;
-            window.location.hash = "stylePenTest";
-        }
-    }));
-        
-
-    /* 
-            get x() { return outerFrame.x + (innerFrame.x - outerFrame.x) * t; },*/
-
-
-
-    // layer that handles the cubes:
-    let cubesLayer;
-
+    
 
 
 
@@ -256,9 +161,8 @@ export function entrance3(p, appState) {
         
         // Look into this if rendering / low framerate struggles appear:
         // p.pixelDensity(1); 
-
-        // Create the cubes layer (after you have curDW and curDH)
-        cubesLayer = new CubesLayer(p, curDW, curDH, 30); // 30 cubes
+        
+        curScene = new StylePens('StylePens1', p, appState);
         appState.logSelf();
     };
 
@@ -271,124 +175,11 @@ export function entrance3(p, appState) {
         
 
 
-        // Render cubes and draw them FIRST (behind everything)
-        let cubesImage = cubesLayer.render();
-        pg.image(cubesImage, 0, 0, curDW, curDH);
-
-
-
-        pg.stroke(palette.getColor('stroke'));
-        // Sample, for detecting colors:
-        // set palette stroke
-        let strokew = 1;
-
-
-
-        // text:
-
-        // moment 0:
-        if (moment === 0){
-            let tx = curDW / 2;
-            let text1 = "Welcome to my portfolio.\nFor best viewing experience, please use\na widescreen browser with stereo audio.\n\nWould you like audio enabled?"
-
-            // rect behind:
-            pg.fill(palette.getColor('1', 230));
-            pg.rect(curDW/2 - 500, 100, 1000, 300, rectRound);
-
-            pg.textAlign(p.CENTER, p.CENTER);
-            pg.textFont(palette.getFont());
-            pg.fill(palette.getColor('fontColor'));
-            pg.textSize(40);
-            pg.text(text1, tx, 250);
-
-            for (let b of buttons){
-                if (b.name === 'enter' || b.name === 'enterMuted'){
-                    let bw = 200;
-                    let bx = curDW / 2 - bw / 2;
-                    b.x = bx;
-                    b.w = bw;
-                    printButton(b);
-                }
-            }
-        }else if (moment === 1){ // moment 1
-            let tx = curDW / 2;
-            let text1 = "Would you like to go fullscreen mode,\nor stay viewing in your browser?"
-
-            // rect behind:
-            pg.fill(palette.getColor('1', 230));
-            pg.rect(curDW/2 - 500, 100, 1000, 300, rectRound);
-
-            pg.textAlign(p.CENTER, p.CENTER);
-            pg.textFont(palette.getFont());
-            pg.fill(palette.getColor('fontColor'));
-            pg.textSize(40);
-            pg.text(text1, tx, 250);
-
-            for (let b of buttons){
-                if (b.name === 'fullscreen' || b.name === 'browserMode'){
-                    let bw = 200;
-                    let bx = curDW / 2 - bw / 2;
-                    b.x = bx;
-                    b.w = bw;
-                    printButton(b);
-                }
-            }
-
-        }else if (moment === 2){
-            // who even knows what to do
-            // (this is where we move to a different sketch with the audio running)
-
-            // this.printMyVars();
-
-            let tx = curDW / 2;
-            let text1 = "Dive into a new world."
-
-            // rect behind:
-            pg.fill(palette.getColor('1', 230));
-            pg.rect(curDW/2 - 500, 100, 1000, 300, rectRound);
-
-            pg.textAlign(p.CENTER, p.CENTER);
-            pg.textFont(palette.getFont());
-            pg.fill(palette.getColor('fontColor'));
-            pg.textSize(40);
-            pg.text(text1, tx, 250);
-
-            for (let b of buttons){
-                if (b.name === 'newWorld'){
-                    let bw = 200;
-                    let bx = curDW / 2 - bw / 2;
-                    b.x = bx;
-                    b.w = bw;
-                    printButton(b);
-                }
-            }
-        }else{
-
-        }
-
-
-        /* 
-            Welcome to my portfolio.
-            For best viewing experience, please use
-            a browser with stereo audio.
-
-            enter
-            enter (muted)
-        */
-
-
-        // print buttons:
-
-        // Enter buttons:
-        if (moment === 0){
-        }else{
-
-        }
-
+        // need to print my scene in here somewhere...
 
 
         // finalize the draw function:
-        // first, print the actual background:
+        // first, print the letterboxes:
         p.background(LETTERBOX_BAR_COLOR);
         // Scale buffer to actual canvas size and print:
         p.image(pg, designX, designY, designW, designH);
@@ -400,6 +191,7 @@ export function entrance3(p, appState) {
 
     // --------------------------- PRINTS / GRAPHICS: ---------------------------
 
+    // this appState should hold palette...
     function printButton(b){
         // determine if the color to use is based on theme or raw:
         pg.fill(palette.getColor(b.color));
@@ -466,7 +258,7 @@ export function entrance3(p, appState) {
             );
             console.log("Selected sketch:\n" + appState.selectedApp);
             console.log("current framerate: " + p.frameRate());
-            console.log("Cube performance stats:");
+            // console.log("Cube performance stats:");
             // console.log(cubesLayer.getPerformanceStats());
             appState.logSelf();
         }
@@ -481,6 +273,10 @@ export function entrance3(p, appState) {
         if (p.key === '7') palette.setScheme('neonGrid');
         if (p.key === '8') palette.setScheme('darkCyber');
         if (p.key === '9') palette.setScheme('digitalVoid');
+
+
+        // now, we run the scene's 'key released'
+        curScene.keyReleased(p.key, p.keyCode);
     };
 
 
@@ -506,29 +302,35 @@ export function entrance3(p, appState) {
         console.log("p mousex, mousey to " + p.mouseX + ", " + p.mouseY);
         console.log("dx/dy mousex, mousey to " + mousex() + ", " + mousey());
         */
+       curScene.mouseMoved(mousex(), mousey());
+       /*
        for (let b of buttons){
             b.checkHover(mousex(), mousey());
        }
+            */
     }
     
     function mousePressed(){
         mouseDown = true;
         // console.log("mousePressed at " + mousex() + ", " + mousey());
+       curScene.mousePressed(mousex(), mousey());
 
+       /*
        for (let b of buttons){
             b.checkPressed(mousex(), mousey());
-       }
+       }*/
 
         // set isPressed for elements
     }
     function mouseReleased(){
         // console.log("mouseReleased at " + mousex() + ", " + mousey());
+       curScene.mouseReleased(mousex(), mousey());
 
         // do whatever you must
-
+        /*
        for (let b of buttons){
             b.release(mousex(), mousey());
-       }
+       }*/
 
         mouseDown = false;
     }
@@ -551,6 +353,7 @@ export function entrance3(p, appState) {
     // Releases the old buffer, creates a new one.
     // Also updates our curDW and curDH
     // currently only runs when we switch between vertical/horizontal
+    // runs from within calculateDisplayBounds, so don't go callin' that from here...
     function resetBuffer(){
 
         if (pg) pg.remove();
@@ -567,6 +370,7 @@ export function entrance3(p, appState) {
     }
 
 
+
     // aka updateResolution
     function calculateDisplayBounds() {
         let oldVertical = vertical;
@@ -580,15 +384,9 @@ export function entrance3(p, appState) {
         if (domWidth < domHeight){
             vertical = true;
             curDesignAspect = PHONE_ASPECT;
-            appState.vertical = true;
-            appState.w = PHONE_DESIGN_WIDTH;
-            appState.h = PHONE_DESIGN_HEIGHT;
         }else{
             vertical = false;
             curDesignAspect = DESIGN_ASPECT;
-            appState.vertical = false;
-            appState.w = DESIGN_WIDTH;
-            appState.h = DESIGN_HEIGHT;
         }
 
         if (oldVertical !== vertical){
@@ -614,10 +412,12 @@ export function entrance3(p, appState) {
 
 
 
-
+        /*
+        vestigal code... you could uncomment it, and cubesLayer would always return false, and it wouldn't break anything...
         if (cubesLayer){
             cubesLayer.rescale(curDW, curDH)
         }
+            */ 
     }
 
 }

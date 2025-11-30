@@ -23,7 +23,7 @@ export default class Button {
         this.y = config.y;
         this.w = config.w || 200;
         this.h = config.h || 60;
-        this.text = config.text;
+        this._textGetter = config.text; // Store the getter function or static text
         this.isToggle = config.isToggle || false; // affects how it functions, either as a toggle or non-toggle button
         this.isSelected = false; // has been selected (overlaps with isPressed when not toggle)
         this.isHovered = false; // is hovered over
@@ -36,6 +36,17 @@ export default class Button {
         this.strokeColor = config.strokeColor || 'stroke';
         this.onClick = config.onClick || null; // Add callback function
     }
+
+
+    get text() {
+        // If _textGetter is a function, call it with 'this' context
+        // Otherwise return it as a static string
+        return typeof this._textGetter === 'function' 
+            ? this._textGetter.call(this) 
+            : this._textGetter || this.name;
+    }
+
+    
     
     // Should check hover, pressed, and release when the mouse is moved, pressed, released.
     checkHover(designX, designY) {

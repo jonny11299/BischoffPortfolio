@@ -1,12 +1,27 @@
 
+import Timer from "./timer.js";
 
-// Global state that persists across sketches
-// will have to include more details that get wiped when selecting a different sketch
 
 export let appState = {
     theme: 'dark',
-    soundEnabled: true,
-    volume: 50, // integer from 0 to 100
-    userName: 'Visitor',
-    selectedApp: 'template'
+    muted: true,
+    volume: 50, // integer from 0 to 100,
+    timer: new Timer,
+    get userName(){ return 'Visitor from ' + this.timer.format(new Date)},
+    selectedApp: 'template',
+
+    w: 100,
+    h: 100,
+    vertical: false,
+    fullscreen: false,
+
+    logSelf() {
+        const data = {};
+        for (let key in this) {
+            if (typeof this[key] !== 'function') {
+                data[key] = this[key];
+            }
+        }
+        console.log(data);
+    },
 };

@@ -14,6 +14,14 @@ import { appState } from "./utils/appState.js";
 import { entranceScreen } from "./sketches/entranceScreen.js";
 import { entrance2 } from "./sketches/entrance2.js";
 import { entrance3 } from "./sketches/entrance3.js";
+import { stylePenSketch } from "./sketches/stylePenSketch.js";
+
+
+
+
+// to add a new sketch (accessible via #hash),
+// 1. import it at the top
+// 2. add it to 'const sketches', 
 
 
 
@@ -28,7 +36,8 @@ const sketches = {
     'template': template,
     'entranceScreen': entranceScreen,
     'entrance2': entrance2,
-    'entrance3': entrance3
+    'entrance3': entrance3,
+    'stylePenTest': stylePenSketch
 /*
     'waves': wavesSketch,
     'particles': particlesSketch,
@@ -63,6 +72,10 @@ function loadSketch(sketchName) {
     }
 }
 
+
+// automatically called every time I run:
+        // window.location.hash = 'stylePenTest';
+// in any sketch
 // Handle URL hash changes
 window.addEventListener('hashchange', () => {
     const hash = window.location.hash.slice(1) || 'entranceScreen';
