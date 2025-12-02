@@ -15,6 +15,7 @@ import { entranceScreen } from "./sketches/entranceScreen.js";
 import { entrance2 } from "./sketches/entrance2.js";
 import { entrance3 } from "./sketches/entrance3.js";
 import { stylePenSketch } from "./sketches/stylePenSketch.js";
+import { entranceInteractive } from "./sketches/entranceInteractive.js";
 
 
 
@@ -37,12 +38,16 @@ const sketches = {
     'entranceScreen': entranceScreen,
     'entrance2': entrance2,
     'entrance3': entrance3,
-    'stylePenTest': stylePenSketch
+    'stylePenTest': stylePenSketch,
+    'entranceInteractive': entranceInteractive
 /*
     'waves': wavesSketch,
     'particles': particlesSketch,
     'fractals': fractalsSketch,*/
 };
+
+const rootSketch = 'entrance3';
+
 
 function loadSketch(sketchName) {
 
@@ -68,7 +73,7 @@ function loadSketch(sketchName) {
     } else {
         // Fallback for unknown sketches
         console.log('Sketch not found:', sketchName);
-        loadSketch('entranceScreen');
+        loadSketch(rootSketch);
     }
 }
 
@@ -78,12 +83,12 @@ function loadSketch(sketchName) {
 // in any sketch
 // Handle URL hash changes
 window.addEventListener('hashchange', () => {
-    const hash = window.location.hash.slice(1) || 'entranceScreen';
+    const hash = window.location.hash.slice(1) || rootSketch;
     loadSketch(hash);
 });
 
 // Load initial sketch on page load
 window.addEventListener('load', () => {
-    const hash = window.location.hash.slice(1) || 'entranceScreen';
+    const hash = window.location.hash.slice(1) || rootSketch;
     loadSketch(hash);
 });

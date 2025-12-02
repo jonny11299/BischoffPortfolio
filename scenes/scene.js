@@ -4,7 +4,7 @@
 // BASE SCENE CLASS
 // ============================================
 export default class Scene {
-  constructor(name, p, appState) {
+  constructor(name, p, palette, appState) {
     console.log("Launching scene " + name);
 
     // checking errors for "bro i'mma need a functioning p and appState"
@@ -14,13 +14,24 @@ export default class Scene {
     if (!appState){
       throw new Error("no appState given to scene '" + name + "'");
     }
+    if (!palette){
+      throw new Error("no palette given to scene '" + name + "'");
+    }
 
 
     this.name = name;
     this.buttons = [];
-    this.shapes = [];
+    this.textBoxes = [];
     this.p = p,
     this.appState = appState
+    this.palette = palette;
+    this.w = appState.w;
+    this.h = appState.h;
+
+    // be sure to overwrite this, now
+    this.curGroup = 0;
+    this.curOrder = 0;
+    this.groupSizes = [1]; // stores how we iterate through groups / through order
 
     // ui (duplicate of appState but still useful...)
     this.mouseDown = false;
@@ -47,6 +58,27 @@ export default class Scene {
   // Main render method
   draw(buffer, mx, my) {
     console.log(`[${this.name}] draw() - mouse: (${mx}, ${my}), size: ${this.appState.w}x${this.appState.h}`);
+  }
+
+
+  setElementVisibility(){
+    for (let b of this.buttons){
+      let visible = b.group === -1;
+      if (!visible && this.curGroup === b.group){
+        visible = this.curOrder >= b.order;
+      }
+
+      b.setVisibility(visible);
+    }
+
+    for (let t of this.textBoxes){
+      let visible = t.group === -1;
+      if (!visible && this.curGroup === t.group){
+        visible = this.curOrder >= t.order;
+      }
+
+      t.setVisibility(visible);
+    }
   }
 
 
@@ -88,9 +120,13 @@ export default class Scene {
     console.log(`[${this.name}] keyReleased(${key}, ${keyCode})`);
   }
   
+
   // Window resize
-  onResize(w, h) {
-    console.log(`[${this.name}] onResize(${w}, ${h})`);
+  resize(w, h) {
+    console.log(`[${this.name}] resize(${w}, ${h})`);
+    this.w = w;
+    this.h = h;
+    setup(); // gotta re-place those elements.
   }
   
   // Update (for animations/physics)

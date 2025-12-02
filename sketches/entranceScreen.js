@@ -23,7 +23,7 @@ import { appState } from '../utils/appState.js';
 // I'm not creating nstances of them, just calling them.
 
 export function entranceScreen(p, appState) {
-    let name = "template"
+    let name = "entranceScreen"
     let resizeHandler;
     let frameCount = 0;
     let curTime = Date.now();// Get current timestamp (milliseconds since Unix epoch)

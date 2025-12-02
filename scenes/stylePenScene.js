@@ -17,7 +17,7 @@ export default class StylePenScene extends Scene {
         
         
         this.buttons = [];
-        this.shapes = [];
+        this.textBoxes = [];
 
         // Add your own properties
         this.bgColor = [20, 20, 40];

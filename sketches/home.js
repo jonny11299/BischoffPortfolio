@@ -22,6 +22,7 @@ export function home(p, appState) {
     let resizeHandler;
     let frameCount = 0;
     let name = "Home"
+    let nextPage = 'entranceInteractive';
 
     let canvas;
 
@@ -114,5 +115,10 @@ export function home(p, appState) {
             );
         }
     };
+
+    p.mouseReleased = function() {
+        console.log("mouse released");
+        window.location.hash = nextPage; // MOVE TO NEXT PAGE HERE
+    }
 
 }

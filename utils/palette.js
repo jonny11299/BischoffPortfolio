@@ -118,7 +118,7 @@ export function Palette(p, appState){
             text: [200, 240, 255, 255],           // Cool white
             stroke: [0, 255, 255, 200],           // Cyan stroke
             strokeWeight: 2,
-            font: 'Courier New',                  // Tech font
+            font: 'Rajdhani',                  // Tech font
             fontColor: [200, 240, 255, 255]
         },
 
