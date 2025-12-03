@@ -286,6 +286,29 @@ export function Palette(p, appState){
         return [r, g, b, a];
     };
 
+
+
+    // opacity should be (0 - 1);
+    this.getColorWithOpacity = function(colorName, opacity, alpha = -1){
+
+        if (typeof opacity !== 'number'){
+            console.error("Not sure why you'd pass in " + typeof opacity + " for opacity...");
+        }
+        if (opacity < 0){
+            opacity = 0;
+        }
+        if (opacity > 1){
+            opacity = 1;
+        }
+
+        let c = this.getColor(colorName, alpha);
+        let r, g, b, a;
+        [r, g, b, a] = [c[0], c[1], c[2], c[3]];
+        a = a * opacity;
+        return [r, g, b, a];
+    }
+
+
     this.getStrokeWeight = function(){
         const theme = this.themes[this.currentTheme];
 

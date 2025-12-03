@@ -16,6 +16,7 @@ const PHONE_ASPECT = PHONE_DESIGN_WIDTH / PHONE_DESIGN_HEIGHT;
 
 
 // in a perfect world, button would extend textBox, but for now, we just update both classes with new models...
+import Animation from "./Animation.js";
 
 
 // Coordinate function system is relative to the design width and height above.
@@ -52,6 +53,10 @@ export default class Button {
         this.group = config.group || -1;
         this.order = config.order || -1;
         this.timeInit = Date.now();
+
+        this.opacity = 1; // (ranges from 0 - 1, used for fade ins and fade outs controlled by animation);
+        this.animation = new Animation(this); // set to false if there's no animation
+        this.autoFadeIn = config.autoFadeIn ?? false; // should just be true or false
     }
 
     get text() {
@@ -86,13 +91,35 @@ export default class Button {
         }
     }
 
-    setVisibility(visible) {
-        if (typeof visible === 'boolean') {
+    
+
+    fadeIn(fadeInTime = 1000){
+        this.animation.fadeIn(fadeInTime);
+    }
+    fadeOut(fadeOutTime = 1000){
+        this.animation.fadeOut(fadeOutTime);
+    }
+    glideTo(x, y, glideTime = 1000){
+        this.animation.glide(x, y, glideTime);
+    }
+
+
+    // scene change should set this visible or not... as in, from scene, we tell the button to set visibility or not.
+    setVisibility(visible){
+        if (typeof visible === 'boolean'){
+            // could also do scene change stuff here, like reset timeInit, etc
+            
+            // we only want to do the following if we WERE invisible but are now visible...
+            if (visible && !this.isVisible && this.autoFadeIn){
+                this.fadeIn();
+            }
+
             this.isVisible = visible;
-        } else {
+        }else{
             this.isVisible = false;
         }
     }
+
     
     checkHover(mx, my) {
         if (!this.isVisible) {
@@ -154,7 +181,13 @@ export default class Button {
 
     print(buffer, palette, appState) {
         if (this.isVisible) {
-            this.updateDimensions(buffer, palette); // ⭐ NEW
+            this.updateDimensions(buffer, palette); 
+            if (this.animation.isActive()){
+                // could be a bug here if we need to run animation.updateFields() to set variables correctly,
+                // yet animation's 'this.isAnimating' is false...
+                // however, I think we checked that sufficiently in Animation.
+                this.animation.updateFields();
+            }
 
             let x = this.x;
             let y = this.y;
@@ -166,13 +199,13 @@ export default class Button {
             }
 
             // Determine fill color based on state
-            buffer.fill(palette.getColor(this.color));
-            if (this.isSelected) buffer.fill(palette.getColor(this.colorSelected));
-            if (this.isHovered) buffer.fill(palette.getColor(this.colorHovered));
-            if (this.isPressed) buffer.fill(palette.getColor(this.colorPressed));
+            buffer.fill(palette.getColorWithOpacity(this.color, this.opacity));
+            if (this.isSelected) buffer.fill(palette.getColorWithOpacity(this.colorSelected, this.opacity));
+            if (this.isHovered) buffer.fill(palette.getColorWithOpacity(this.colorHovered, this.opacity));
+            if (this.isPressed) buffer.fill(palette.getColorWithOpacity(this.colorPressed, this.opacity));
 
             buffer.strokeWeight(this.strokeWeight);
-            buffer.stroke(palette.getColor(this.strokeColor));
+            buffer.stroke(palette.getColorWithOpacity(this.strokeColor, this.opacity));
 
             buffer.rect(x, y, this.w, this.h, this.rectRound);
 
@@ -180,7 +213,7 @@ export default class Button {
             buffer.noStroke();
             buffer.textAlign(buffer.CENTER, buffer.CENTER);
             buffer.textFont(palette.getFont());
-            buffer.fill(palette.getColor('fontColor'));
+            buffer.fill(palette.getColorWithOpacity('fontColor', this.opacity));
             buffer.textSize(this.textSize); // ⭐ Use this.textSize instead of hardcoded 24
             buffer.text(this.text, x + this.w/2, y + this.h/2);
         }

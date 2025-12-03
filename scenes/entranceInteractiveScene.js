@@ -1,6 +1,7 @@
 import Scene from "./scene.js";
 import Button from "../utils/button.js";
 import TextBox from "../utils/textBox.js";
+import Animation from "../utils/Animation.js";
 
 
 
@@ -61,7 +62,7 @@ export default class EntranceInteractiveScene extends Scene {
         this.timeToWait = 2000; // time in ms to wait between renders
         this.curGroup = 0;
         this.curOrder = 0;
-        this.groupSizes = [1, 3, 3]; // stores how we iterate through groups / through order
+        this.groupSizes = [1, 3, 4]; // stores how we iterate through groups / through order
 
 
         this.setup();
@@ -90,7 +91,8 @@ export default class EntranceInteractiveScene extends Scene {
         text: 'This portfolio is built using JavaScript\nand animated with the p5 library.',
         textSize: 24,
         group: 1,
-        order: 0
+        order: 0,
+        autoFadeIn: true
       }));
 
       this.textBoxes.push(new TextBox({
@@ -103,7 +105,8 @@ export default class EntranceInteractiveScene extends Scene {
         text: 'You can use your keyboard and your mouse\nto interact.',
         textSize: 24,
         group: 1,
-        order: 1
+        order: 1,
+        autoFadeIn: true
       }));
 
       this.textBoxes.push(new TextBox({
@@ -116,7 +119,8 @@ export default class EntranceInteractiveScene extends Scene {
         text: 'Go ahead. Change the theme with\nkeys 1 - 4 on your keyboard.',
         textSize: 24,
         group: 1,
-        order: 2
+        order: 2,
+        autoFadeIn: true
       }));
 
       /* ------------------------------------------------- */
@@ -151,7 +155,8 @@ export default class EntranceInteractiveScene extends Scene {
         text: "Wasn't that nice?\nPress 'b' anytime to toggle the background animation.",
         textSize: 24,
         group: 2,
-        order: 0
+        order: 0,
+        autoFadeIn: true
       }));
 
       this.textBoxes.push(new TextBox({
@@ -164,7 +169,8 @@ export default class EntranceInteractiveScene extends Scene {
         text: 'You can click on this icon at any moment\nto view controls.',
         textSize: 24,
         group: 2,
-        order: 1
+        order: 1,
+        autoFadeIn: true
       }));
 
       /* put the button right below */
@@ -184,6 +190,7 @@ export default class EntranceInteractiveScene extends Scene {
           autoSize: true,
           group: 2,
           order: 2,
+          autoFadeIn: true,
           onClick: (button) => {
             console.log("pressed " + button.name + " : toggled ? " + button.isSelected);
           }
@@ -191,8 +198,9 @@ export default class EntranceInteractiveScene extends Scene {
 
 
 
+
       this.setElementVisibility();
-      this.setGroupOrder(2, 1);
+      // this.setGroupOrder(2, 1);
     };
 
 
@@ -219,6 +227,7 @@ export default class EntranceInteractiveScene extends Scene {
         // this.printButton(buffer, b); // member of "Scene"
         b.print(buffer, this.palette, this.appState);
       }
+      
 
       /*
       if (this.frameCount % 100 === 0){
@@ -245,10 +254,11 @@ export default class EntranceInteractiveScene extends Scene {
       this.nextOrder();
     }
 
+    /*
     for (let s of this.textBoxes){
       console.log("Text size of " + s.name + ": " + s.textSize);
 
-    }
+    }*/
   }
 
   nextOrder(){
@@ -259,8 +269,18 @@ export default class EntranceInteractiveScene extends Scene {
     }
     if (this.curGroup >= this.groupSizes.length) this.curGroup = 0;
     this.setElementVisibility();
+
+    // build the above function, check if we're doing any cool newx newy type stuff
     console.log('+group ' + this.curGroup + ", order " + this.curOrder);
     
+    // quick animation:
+    if (this.curGroup === 2 && this.curOrder === 3){
+      let newx = Math.random() * this.appState.w;
+      let newy = Math.random() * this.appState.h;
+      for (let b of this.buttons){
+        b.glideTo(newx, newy, 1500);
+      }
+    }
   }
   prevOrder(){
     this.curOrder--;
@@ -273,6 +293,16 @@ export default class EntranceInteractiveScene extends Scene {
     }
     this.setElementVisibility();
     console.log('-group ' + this.curGroup + ", order " + this.curOrder);
+
+
+    // quick animation:
+    if (this.curGroup === 2 && this.curOrder === 3){
+      let newx = Math.random() * this.appState.w;
+      let newy = Math.random() * this.appState.h;
+      for (let b of this.buttons){
+        b.glideTo(newx, newy, 1500);
+      }
+    }
   }
 
 
@@ -287,9 +317,7 @@ export default class EntranceInteractiveScene extends Scene {
 
 
 
-
 // On return:
-// let's get them all printing from center.
-// let's get their size to be automatically determined.
 // let's get them to be smoothly entering and exiting.
 // let's get that "data" import thing in here.
+
