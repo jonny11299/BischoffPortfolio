@@ -35,9 +35,34 @@
       <a href="#template">Template</a>
     </nav>-->
 
+    <style>
+      .nav-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+      }
+      
+      .nav-button:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+    </style>
+
+    <a href="./pages/pageDna.html" class="nav-button" style="right: 20px; left: auto;">
+      First Sketch →
+    </a>
+
+
 
     <div id="sketch-container">
-        <script type="module" src="main.js"></script>
+        <!-- <script type="module" src="main.js"></script> -->
+        <script src="./sketches/landingSketch.js"></script>
     </div>
   </body>
 </html>

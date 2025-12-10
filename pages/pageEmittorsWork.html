@@ -1,0 +1,71 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sketch</title>
+
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="manifest" href="../images/site.webmanifest">
+
+    <!-- gimme those cool fonts: -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Share+Tech+Mono&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+
+
+    <script src="../libraries/p5.min.js"></script>
+    <script src="../libraries/p5.sound.min.js"></script>
+  </head>
+
+  <!-- Navbar is rendered with classic CSS Styling -->
+  <!-- Eventually I might make this fully accessible from within the processing sketch -->
+  <!-- I will also have to create a fallback option for if processing fails to load -->
+  <body>
+    <!--<nav>
+      <a href="#entranceScreen">entrance screen</a>
+      <a href="#entrance2">entrance2</a>
+      <a href="#home">Home</a>
+      <a href="#sketch">Sketch</a>
+      <a href="#soundLens">SoundLens</a>
+      <a href="#template">Template</a>
+    </nav>-->
+
+    <style>
+      .nav-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+      }
+      
+      .nav-button:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+    </style>
+
+    <a href="./pageEmittors.html" class="nav-button">
+        ← Prev Sketch
+    </a>
+    <a href="./pageBlank.html" class = "nav-button" style="right: 20px; left: auto;">
+        Next Sketch →
+    </a>
+
+    
+
+    <div id="sketch-container">
+        <!-- <script type="module" src="main.js"></script> -->
+         <script src="../sketches/emittorsWork.js"></script>
+    </div>
+
+  </body>
+</html>

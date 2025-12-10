@@ -1,0 +1,239 @@
+
+
+
+Hey bro.
+
+11/17/25: Learned how to embed p5 into HTML better.
+
+Starting tomorrow, let's start to look at how I can pass state between different sketches better.
+Let's build a window rendering system, so we can navigate and click on things,
+and trigger certain events when we click on windows (such as sounds, animations, etc.).
+
+Once we get the overhead in, we can be artsy with the particular animations and stuff.
+
+JBPaint.js, look, it's cool, and it's a step in the right direction
+but I was thinking very hard about each step, and how it fits into the website. 
+The truth is, it doesn't yet. We need to be more intentional about how everything is placed
+and how they all communicate their state.
+
+
+
+11/18/25: bruh I like made a color manager and that's it.
+I guess I made the template class as well. And window resizing and stuff. That was a lot to figure out...
+
+
+
+// for optimizations: https://claude.ai/chat/b51bd4d0-d68b-4fed-9d09-caa3c6ad42d1
+
+
+
+
+Cool, passing p in is pass-by-reference (YES!)
+
+
+
+
+Icon
+
+import colorManager
+
+p,
+x, y, w, h 
+name
+
+constructor
+
+isHovered()
+isSelected()
+print() (might add additional info based on name, etc)
+
+(consider zoom?)
+
+
+
+
+Palette
+(a color manager)
+
+(light mode and dark mode)
+(merely changes 1 - color, i.e. invert)
+
+
+
+siteNav (overhead for clicking on different sketches)
+
+
+
+
+Would like to add the functionality to:
+1. Read framerate, change render mode if necessary
+2. 
+
+
+
+
+
+
+
+Okay, barebones level. (Like a presentation with animation behind it).
+
+(animation runs in the background)
+
+1.
+Welcome to my portfolio.
+For best viewing experience, please use
+a browser with stereo audio.
+
+enter
+enter (muted)
+
+
+2. 
+This portfolio is built using JavaScript 
+and animated with the p5 library.
+
+You can use your keyboard and your mouse
+to interact.
+
+Go ahead. Change the theme with
+keys 1 - 4 on your keyboard.
+
+
+3.
+Wasn't that nice? 
+Press 'b' anytime to toggle the background animation.
+
+You can click on this icon at any moment
+to view controls.
+
+(icon toggles this:)
+'b' toggle background animation
+'m' mute / unmute
+'right arrow' skip forwards
+'left arrow' skip backwards
+'1 - 9' change theme
+
+4.
+You can use your mouse, too.
+Click in this canvas to draw something.
+
+Pick your brush size here,
+and pick your color here.
+Select this button to erase.
+
+{tiny drawing app}
+
+
+5. 
+Page URL is indexed at the top using the 
+'#' pound symbol, 
+(controvertially also called the hashtag)
+
+If you copy the URL here and include the
+number after the hashtag, it will skip
+to this moment in the portfolio.
+
+
+6. 
+Let's get to some projects, shall we?
+Here's an audiovisualizer I built:
+
+(press [blank] to activate your microphone)
+(press [blank] to play a pre-recorded song)
+    (... wow, what a song. Did you know I wrote this?)
+    (I create a lot of music.)
+    (My favorite DAW is Ableton, and I love)
+    (going analog with guitar, pedalboards, and piano.)
+                    (you could say i have a passion for ambience)
+
+
+7.
+That was pretty cool.
+Have you ever heard of Conway's game of life?
+
+It's a simple simulation meant to demonstrate
+how emergent behavior can arise from simple rules.
+
+
+
+Click the various buttons above,
+and click the one on the right if you want to 
+understand how it works.
+(explain the rules to the game, pixel generation, etc)
+
+
+Some people believe consciousness is an emergent phenomena.
+Some people prefer living life over describing it.
+
+Either way, the game sparks my curiosity.
+
+
+8. 
+Okay, let's try something quick.
+Press this button to switch to 3D
+
+Now create a drawing, and press play.
+
+
+Heh, I couldn't resist.
+
+
+9. 
+I've also made a few other useful things:
+Spotify --> Tidal transfer
+(Made with Python)
+(I intend to give this a nice UI someday)
+
+(other projects)
+
+
+10. 
+Here's some other things I'm working on:
+- Finance app (Python)
+- Fish app 
+
+Here's some things I want to add to the website:
+- Cute seeds / trees animation 
+- JBPaint 
+
+
+
+11. 
+Okay, that's as far as I've gotten in the simulation.
+
+Again, it's built using javascript and p5.
+
+AI does integrate into my workflow to an extent, but I mainly
+use it for: (click here to find out)
+1. Syntax reminders (how to make function calls, etc)
+2. Checking my designs for bugs that I miss
+3. Quick simplification in a pinch (i.e. "please generate 10 color palettes using this format" when I just need to prove I can switch colors)
+    (I did manually modify 1-4, though...)
+    
+In general, I prefer to use a p5's "reference" page for
+learning more about what's possible with this package.
+
+AI is not used for:
+1. Large-scale architecture design (I designed how all the elements interact and share data...)
+2. Building individual elements (again, I design how all the elements interact and share data...)
+3. Writing large chunks of code for me (jeez, if I don't think through how this piece works, how will I attach a different piece to it?)
+4. doing things that I don't understand.
+
+If AI gives me a pattern I don't conceptually grasp,
+I ask questions and do research until I do understand every piece.
+
+
+
+
+11.
+Here's a summary of my strengths:
+And my resume:
+
+
+Thanks.
+
+
+
+12.
+Feel free to play with any of the apps:
+
