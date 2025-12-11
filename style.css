@@ -11,6 +11,7 @@ html, body {
 
 canvas {
   display: block;
+  outline: none;
 }
 
 
@@ -66,4 +67,16 @@ nav a {
 
 nav a:hover {
   color: #4CAF50;
+}
+
+
+button.nav-button {
+    font-family: Arial, sans-serif;  /* Match the font */
+    border: none;                     /* Remove button border */
+    cursor: pointer;                  /* Show pointer on hover */
+    outline: none;                    /* Remove focus outline */
+}
+
+button.nav-button:focus {
+    outline: none;                    /* Remove focus outline */
 }

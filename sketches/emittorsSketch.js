@@ -66,6 +66,93 @@ let color_decay = COLOR_DECAY;
 
 let maxForce = 0;
 
+
+
+let onTour = false;
+
+
+function preload(){
+    font = loadFont('/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
+}
+
+function setup() {
+    createCanvas(windowWidth * SCALE_W, windowHeight * SCALE_H, WEBGL);
+
+
+  let params = getURLParams();
+  onTour = params.source === 'tour';
+
+
+    scaleConstants();
+
+    textAlign(CENTER, CENTER);
+    textFont(font);
+}
+
+function draw() {
+    if (orbitControlToggle){
+        // orbitControl(); // lets me move around with the mouse
+        // disabled for this sketch... too much math needed
+    }
+
+
+    background(30, 30, 60);
+    // your draw code here
+        
+    textSize(fontSize);
+    textStyle(NORMAL);
+
+    fill(255, 255, 255);
+    noStroke();
+    if (onTour){
+        let alpha = constrain(650 - 4 * frameCount, 0, 200);
+        textSize(18);
+        fill(255, 255, 255, alpha);
+        let t = "Here's an interesting particle simulator:";
+        text(t, 0, -height / 2 + 100);
+    }
+    
+
+    strokeWeight(10);
+    stroke(0);
+
+    // rect(50, 50, 50, 50);
+    // box(thick * coil_speed, r, 100);
+
+    if (!stopRender){
+        drawCells();
+        if (!arrowTraversalMode) getNextCells();
+    }
+
+
+    if (frameCount % 100 === 0 ){
+        console.log("Max Force: " + maxForce);
+    }
+
+}
+
+
+
+// the meat of it
+function drawCells(){
+
+    // let's go 10 back...
+    // translate(cellsTopLeft.x, cellsTopLeft.y, -10);
+
+    translate(0, 0, -10);
+
+    for (let c of cells){
+        c.print();
+    }
+}
+
+
+
+
+
+
+
+
 // each cell 
 class Cell{
     constructor(x, y, config){
@@ -518,70 +605,6 @@ function mouseReleased(){
     console.log("Mouse released at " + mouseX + ", " + mouseY);
 }
 
-
-function preload(){
-    font = loadFont('../fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
-}
-
-function setup() {
-    createCanvas(windowWidth * SCALE_W, windowHeight * SCALE_H, WEBGL);
-
-
-    scaleConstants();
-
-    textAlign(CENTER, CENTER);
-    textFont(font);
-}
-
-function draw() {
-    if (orbitControlToggle){
-        // orbitControl(); // lets me move around with the mouse
-        // disabled for this sketch... too much math needed
-    }
-
-    background(30, 30, 60);
-    // your draw code here
-        
-    textSize(fontSize);
-    textStyle(NORMAL);
-
-    fill(255, 255, 255);
-    noStroke();
-    let t = 'emittors.';
-    // text(t, 0, 0);
-
-    strokeWeight(10);
-    stroke(0);
-
-    // rect(50, 50, 50, 50);
-    // box(thick * coil_speed, r, 100);
-
-    if (!stopRender){
-        drawCells();
-        if (!arrowTraversalMode) getNextCells();
-    }
-
-
-    if (frameCount % 100 === 0 ){
-        console.log("Max Force: " + maxForce);
-    }
-
-}
-
-
-
-// the meat of it
-function drawCells(){
-
-    // let's go 10 back...
-    // translate(cellsTopLeft.x, cellsTopLeft.y, -10);
-
-    translate(0, 0, -10);
-
-    for (let c of cells){
-        c.print();
-    }
-}
 
 
 

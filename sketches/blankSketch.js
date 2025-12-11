@@ -17,7 +17,7 @@ let stopRender = false;
 
 
 function preload(){
-    font = loadFont('../fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
+    font = loadFont('/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
 }
 
 function setup() {

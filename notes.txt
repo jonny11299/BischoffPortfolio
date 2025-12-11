@@ -1,0 +1,60 @@
+
+
+
+Need to build out:
+
+projectThumbnails.html 
+projectThumbnails.js 
+contact.html 
+contact.js 
+
+
+
+
+To do:
+
+soundLens: parameterize it (after other stuff, before conway)
+particle simulator: parameterize it (after other stuff, before conway)
+fish app: get a pic, make it zoomable
+stock app: animate it, describe it 
+conway's game of life: build it (this should be like, an easter egg, if we get the rest done)
+JoDoula: Link to it 
+
+ideas: describe your project ideas
+
+Capture a gif of each, put it on your website 
+
+
+
+eventually:
+draw app 
+
+
+
+
+
+
+
+
+
+
+Here's the projects I should showcase:
+
+soundLens
+particle simulator 
+fish app
+stock app 
+conway's game of life  
+JoDoula
+
+
+ideas 
+
+
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHNrOGNzaGVqY2F4bnRudng5bDhsaGVzdnF4a2IyZ3dvamRwampmcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/RkDSu8RODB7hT44m3K/giphy.gif
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHNrOGNzaGVqY2F4bnRudng5bDhsaGVzdnF4a2IyZ3dvamRwampmcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Va4S6GgB3aNf95H01F/giphy.gif
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHNrOGNzaGVqY2F4bnRudng5bDhsaGVzdnF4a2IyZ3dvamRwampmcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/7j3M2gywEp8kmHAX57/giphy.gif
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHNrOGNzaGVqY2F4bnRudng5bDhsaGVzdnF4a2IyZ3dvamRwampmcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/cmypcc7bsTGi3Ob56E/giphy.gif
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHNrOGNzaGVqY2F4bnRudng5bDhsaGVzdnF4a2IyZ3dvamRwampmcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VexBW9OatPSoanilVy/giphy.gif
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHNrOGNzaGVqY2F4bnRudng5bDhsaGVzdnF4a2IyZ3dvamRwampmcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/RZxbmVRP4Z9ENB983U/giphy.gif
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHNrOGNzaGVqY2F4bnRudng5bDhsaGVzdnF4a2IyZ3dvamRwampmcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/88Fu8MtnSXI6j3ywN8/giphy.gif
