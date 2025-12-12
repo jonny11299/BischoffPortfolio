@@ -80,3 +80,18 @@ button.nav-button {
 button.nav-button:focus {
     outline: none;                    /* Remove focus outline */
 }
+
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('/fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 700; /* Variable font */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('/fonts/Roboto_Mono/RobotoMono-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 700;
+  font-style: italic;
+}

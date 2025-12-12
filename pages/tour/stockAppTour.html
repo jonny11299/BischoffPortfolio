@@ -35,37 +35,111 @@
     </nav>-->
 
     <style>
-      .nav-button {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        padding: 10px 20px;
-        background-color: rgba(0, 0, 0, 0.7);
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        font-family: Arial, sans-serif;
-        z-index: 1000;
-      }
-      
-      .nav-button:hover {
-        background-color: rgba(0, 0, 0, 0.9);
-      }
-    </style>
+    body {
+      background: rgb(30, 60, 30);
+      margin: 0;
+      color: white;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 16px;
+      display: block;
+    }
 
-    <a href="/pages/tour/fishAppTour.html?source=tour&id=1" class="nav-button">
-        ← Prev Sketch
-    </a>
-    <a href="/pages/tour/joDoulaTour.html?source=tour&id=1" class = "nav-button" style="right: 20px; left: auto;">
-        Next Sketch →
-    </a>
+    .robotoTest {
+      padding: 20px;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
+    .nav-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      z-index: 1000;
+    }
+
+    .nav-button:hover {
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    p {
+        white-space: pre-wrap;
+        margin: 0;
+        display: block;
+    }
+  </style>
+
+  <a href="/pages/tour/fishAppTour.html?source=tour&id=1" class="nav-button">
+    ← Prev Sketch
+  </a>
+  <a href="/pages/tour/joDoulaTour.html?source=tour&id=1" class="nav-button" style="right: 20px; left: auto;">
+    Next Sketch →
+  </a>
+
+
+
+  <div class="robotoTest" style="padding: 40px; line-height: 1.5;">
+    <p style="margin: 0 0 20px 0;">
+        In-Progress.<br>
+        This app uses daytrade data downloaded (for free) from 'https://stooq.com/db/h/' to locate specific prices for specific stocks on specific days.<br>
+        It uses the Pandas library in Python.<br>
+        The original goal was to map out the growing and shrinking economic sectors of various publically-trading countries worldwide,<br>
+        (i.e. to answer the question, "what years was information technology experiencing its most explosive growth in America?"),<br>
+        then to map this information on a global map, style of Fish App.<br>
+        However, researching what economic sectors every single stock belongs to proves challenging and expensive.
+    </p>
     
+    <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">  
+    <div id="sketch-container"></div>
 
-    <div id="sketch-container">
-        <!-- <script type="module" src="main.js"></script> -->
-         <script src="/sketches/tour/stockAppTour.js"></script>
-    </div>
+    <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">
+    
+    <p style="margin: 0 0 20px 0;">
+        I then got an idea for a more exciting program, one that would take less time to develop.<br>
+        This app will take a single stock, and make a set of polynomial regressions from randomized points along the graph, then use that data to attempt to predict future values of stocks, and recommend buys, sells, etc.<br>
+        To slow it down, picture this:
+    </p>
+    
+    <p style="margin: 0 0 20px 0;">
+        1. Take 10 random points.<br>
+        2. Create a polynomial regression of the stock price using those 5 points.<br>
+        3. Do this for 100 random sets of points along this stock. (x axis is time, y axis is price)<br>
+        4. Take a future date<br>
+        5. Estimate the future price using the average of all 100 polynomial regressions.<br>
+        6. Future iterations could find percent earning instead of dollar amount, or compare a stock's growth to the overall DOW Jones to filter out the stock's performance from the market's performance.<br>
+        7. Future iterations could then create characters with different portfolios and behaviors, (like "Sammy Quick-Sales" and "Lexie Long-Term Investor") and see who performs best.<br>
+        8. You can really run this simulation using 1990 - 2010 data to train, then simulating growth along 2010 - 2020 data. All of the data is downloadable from the above link. I have downloaded it and created functions for reading it quickly.
+    </p>
+    
+    <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">
+    
+    <p style="margin: 0;">
+        Of course, stock market estimating is an enormous field, and if it was so easy, we would all be millionaires.<br>
+        However, I would like to create this program, and then use data science to tweak a model that demonstrates earnings over time.<br>
+        If I just keep running simulations with different stock price models, maybe I can find one that seems to earn money over time.<br>
+        What a mouthful. Enjoy the pretty stock animation above. <br>
 
-  </body>
+    </p>
+
+    <button id="download" class = "nav-button" style="left: 50%; top: 94%; transform: translateX(-50%);" onclick="downloadEquations()">
+        Download Stock Equations Here
+    </button>
+</div>
+
+        
+
+  <!--
+      src="/embed/polynomial_ensemble_edited.pdf"
+      width="100%"
+      height="800px"
+      style="border: none;">
+      --> 
+
+  <script src="/sketches/tour/stockAppTour.js"></script>
+</body>
 </html>

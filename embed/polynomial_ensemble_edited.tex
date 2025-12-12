@@ -1,0 +1,113 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+
+\geometry{margin=1in}
+\tcbuselibrary{skins,breakable}
+
+\definecolor{primaryblue}{RGB}{102, 126, 234}
+\definecolor{accentpurple}{RGB}{118, 75, 162}
+
+\title{\textbf{\Large Polynomial Ensemble for Stock Prediction}}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{tcolorbox}[colback=primaryblue!5,colframe=primaryblue!80!black,title=\textbf{Definition},fonttitle=\bfseries\large]
+$f(x)$ is a set of polynomials for a specific stock.
+\end{tcolorbox}
+
+\vspace{1em}
+
+\begin{tcolorbox}[colback=accentpurple!5,colframe=accentpurple!80!black,title=\textbf{Set Description},fonttitle=\bfseries\large,breakable]
+This set can be described as:
+\begin{equation*}
+\left\{ f(x) \mid f(x) = ax^5 + bx^4 + cx^3 + dx^2 + ex + f \right\}
+\end{equation*}
+
+\vspace{0.5em}
+
+where:
+\begin{itemize}[leftmargin=2em]
+    \item Each coefficient $(a, b, c, d, e, f)$ is unique to each polynomial, and determined through a polynomial regression of a random 5 points.
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{1em}
+
+\begin{tcolorbox}[colback=green!5,colframe=green!60!black,title=\textbf{Ensemble Bundle},fonttitle=\bfseries\large,breakable]
+Take many $f(x)$'s like this ($N$ of them) and create a bundle:
+
+\begin{equation*}
+\mathcal{F} = \left\{ f_1(x), f_2(x), f_3(x), \ldots, f_N(x) \right\}
+\end{equation*}
+
+where each $f_i(x) = a_i x^5 + b_i x^4 + c_i x^3 + d_i x^2 + e_i x + f_i$
+\end{tcolorbox}
+
+\vspace{1em}
+
+\begin{tcolorbox}[colback=orange!5,colframe=orange!70!black,title=\textbf{Ensemble Functions},fonttitle=\bfseries\large,breakable]
+
+The bundle $\mathcal{F}$ has the following functions:
+
+\vspace{0.5em}
+
+\textbf{1. rankBuyOrSell(buyDate, sellDate)}
+
+\vspace{0.3em}
+
+This function returns how many of the $f(x)$'s return positive change, and how many return negative change:
+
+\begin{align*}
+\text{positive} &= \left| \left\{ f_i \in \mathcal{F} \mid f_i(\text{sellDate}) - f_i(\text{buyDate}) > 0 \right\} \right| \\[0.5em]
+\text{negative} &= \left| \left\{ f_i \in \mathcal{F} \mid f_i(\text{sellDate}) - f_i(\text{buyDate}) < 0 \right\} \right|
+\end{align*}
+
+\textbf{Returns:} $(\text{positive}, \text{negative})$
+
+\vspace{1em}
+
+\textbf{2. average()}
+
+\vspace{0.3em}
+
+This function returns the average function:
+
+\begin{equation*}
+h(x) = \frac{1}{N} \sum_{i=1}^{N} f_i(x)
+\end{equation*}
+
+Expanded form:
+\begin{equation*}
+h(x) = \frac{f_1(x) + f_2(x) + f_3(x) + \cdots + f_N(x)}{N}
+\end{equation*}
+
+\textbf{Returns:} A polynomial function $h(x)$ of degree 5
+
+\end{tcolorbox}
+
+\vspace{1em}
+
+\begin{tcolorbox}[colback=blue!5,colframe=blue!60!black,title=\textbf{Example Usage},fonttitle=\bfseries\large]
+Given $N = 100$ polynomials for Stock XYZ:
+
+\begin{itemize}[leftmargin=2em]
+    \item $\mathcal{F} = \{f_1(x), f_2(x), f_3(x), f_4(x), f_5(x)\}$
+    \item \texttt{rankBuyOrSell(Jan 1 1999, Feb 12 2004)} might return: (positive: 70, negative: 30)
+    \item \texttt{average()} returns: $h(x) = \frac{1}{100}\sum_{i=1}^{100} f_i(x)$
+\end{itemize}
+
+Challenging for a human to do by-hand, but not so challenging for a computer.
+Nothing in this algorithm expands beyond O(n) complexity.
+
+\end{tcolorbox}
+
+\end{document}
