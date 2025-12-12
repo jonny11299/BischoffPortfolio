@@ -17,17 +17,45 @@ soundLens: parameterize it (after other stuff, before conway)
 particle simulator: parameterize it (after other stuff, before conway)
 fish app: get a pic, make it zoomable
 stock app: animate it, describe it 
-conway's game of life: build it (this should be like, an easter egg, if we get the rest done)
 JoDoula: Link to it 
+conway's game of life: build it (this should be like, an easter egg, if we get the rest done)
+
+
 
 ideas: describe your project ideas
 
 Capture a gif of each, put it on your website 
 
+Could have a bit of a writeup about each one...
+
 
 
 eventually:
 draw app 
+
+
+
+
+
+
+
+
+First page:
+
+These sketches demonstrate the following skillsets:
+- Website layout and design
+- Live rendering
+- Audio-visual processing 
+- Data parsing and processing (Python)
+- User-focused engagement.
+
+This website was built using HTML, JavaScript, and p5.js (a JavaScript rendering engine.)
+Some portfolio projects are built using Python in tandem with the Pandas library.
+
+
+Feel free to click the center button "How was I created?" to understand the technology behind each webpage.
+
+
 
 
 
