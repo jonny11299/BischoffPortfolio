@@ -16,6 +16,8 @@ let valueIncrease = 5;
 let arrayAlterationFlag = false;
 let lostValue = 40;
 
+let oldMaxValue = 0;
+
 
 function preload(){
     font = loadFont('/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
@@ -70,6 +72,12 @@ function draw() {
             maxvalue = value;
         }
     }
+    if (oldMaxValue === 0) oldMaxValue = maxvalue;
+
+    let maxHeight = oldMaxValue + (maxvalue - oldMaxValue) / 8;
+    oldMaxValue = maxvalue;
+    // shoot dude I need to make the height adjustment just like... rise slowly
+    // maybe approach maxValue
 
 
     // gotta have that extra queued up before we see it, huh?
@@ -79,7 +87,7 @@ function draw() {
         let w = innerBox.w/practicalLength;
         let x = i * w - leftScroll + innerBox.x;
         let y = innerBox.y + innerBox.h;
-        let h = map(values[i], 0, maxvalue, 0, -innerBox.h/2);
+        let h = map(values[i], 0, maxHeight, 0, -innerBox.h/2);
 
         if (x < innerBox.x){
             // time to stack a new one 
@@ -129,6 +137,7 @@ function draw() {
 
 function alterArray(){
     randomValue += valueIncrease;
+    randomSpread = 49 * randomValue / 50;
     values.push(randomValue + Math.random() * randomSpread);
     lostValue = values.shift();
     leftScroll = 0;
