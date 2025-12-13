@@ -307,7 +307,7 @@ function sell(){
 function getWalletText(){
     let profit = Number(wallet - STARTING_WALLET + portfolio).toFixed(2);
     let percent = Number(profit/STARTING_WALLET * 100).toFixed(2);
-    let percentString = Number(percent) < 0 ? `-%${Math.abs(percent)}` : `%${percent}`;
+    let percentString = Number(percent) < 0 ? `-${Math.abs(percent)}%` : `${percent}%`;
 
     let walletToString = Number(wallet).toFixed(2);
     let portfolioToString = Number(portfolio).toFixed(2);
