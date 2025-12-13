@@ -19,6 +19,7 @@
 
     <script src="/libraries/p5.min.js"></script>
     <script src="/libraries/p5.sound.min.js"></script>
+    <script src="/embed/engagement.js"></script>
   </head>
 
   <!-- Navbar is rendered with classic CSS Styling -->
@@ -35,6 +36,26 @@
     </nav>-->
 
     <style>
+      body {
+        background: rgb(30, 30, 60);
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        padding: 0 120px; /* Add equal padding on both sides */
+        color: white;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 16px;
+        display: block;
+      }
+
+      .robotoTest {
+        padding: 20px;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-color: #ffffff;
+      }
+
       .nav-button {
         position: fixed;
         top: 20px;
@@ -47,25 +68,59 @@
         font-family: Arial, sans-serif;
         z-index: 1000;
       }
-      
+
       .nav-button:hover {
         background-color: rgba(0, 0, 0, 0.9);
       }
+      p {
+          white-space: normal;
+          margin: 0;
+          display: block;
+      }
+      hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #ffffff;
+        border-color: #ffffff;
+        margin: 1em 0;
+        padding: 0;
+      }
+
+      a {
+        color: #ff6
+      }
     </style>
 
-    <a href="/pages/tour/fishAppTour.html?source=tour&id=1" class="nav-button">
+    <a href="/pages/tour/stockAppTour.html?source=tour&id=1" class="nav-button">
         ← Prev Sketch
     </a>
-    <a href="/pages/tour/conwaysGameOfLifeTour.html?source=tour&id=1" class = "nav-button" style="right: 20px; left: auto;">
+    <a href="/pages/tour/spotifyTidalTour.html?source=tour&id=1" class = "nav-button" style="right: 20px; left: auto;">
         Next Sketch →
     </a>
 
+    <div class="robotoTest" style="padding: 40px; line-height: 1.5;">
+      <a href="https://belovedcommunitydoula.com/index.html" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center;">
+        <img src="/images/jodoula.png" alt="Beloved Community Doula" style="width: 80%; margin: 0 auto; display: block;">
+      </a>
+
+      <p style="margin: 0 0 0 0;">
+        <br><br>
+        
+          <a href="https://belovedcommunitydoula.com/index.html" target="_blank" rel="noopener noreferrer">BelovedCommunityDoula:</a><br>
+          This is a website I built back in September for Jo's doula practice.<br>
+          It's statically hosted using HTML and CSS formatting. <br>
+          It costs me less than a dollar a month keep this website active. <br>
+          <br>
+          She wrote all of the text, picked the photos and theme (including the background), <br> and I implemeneted all of her ideas into code, and tweaked the formatting and fonts to be just right.
+
+
+      </p>
     
 
-    <div id="sketch-container">
-        <!-- <script type="module" src="main.js"></script> -->
-         <script src="/sketches/tour/joDoulaTour.js"></script>
-    </div>
+  </div>
+
+  
 
   </body>
 </html>

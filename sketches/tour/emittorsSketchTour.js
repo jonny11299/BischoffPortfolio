@@ -46,17 +46,31 @@ let emissionForce = 1;
 // how much of that total force to move from me to the next guy (not yet implemented);
 let forceTransfer = 1;
 function emittorChance(){
-    return Math.random() * 120 <= 1;
+    return Math.random() * 250 <= 1;
+}
+
+
+let mouseColor = [0, 255, 0];
+let mouseColorMovement = 1 / (10 * Math.PI);
+// 3 sin waves that scale up and down r, g, b
+function changeMouseColor(){
+    // cos + 2PI/3
+    let i = 2 * Math.PI / 3;
+    let r = 1.3 * 255 * cos(frameCount * mouseColorMovement);
+    let g = 1.3 * 255 * cos(frameCount * mouseColorMovement + i);
+    let b = 1.3 * 255 * cos(frameCount * mouseColorMovement + 2 * i);
+    mouseColor = [constrain(r, 0, 255), constrain(g, 0, 255), constrain(b, 0, 255)];
+
 }
 
 
 
 
-const WAVE_DECAY = 1.1; // at 1, no energy is lost. Tricky because emmitors are always giving energy.
+const WAVE_DECAY = 1.2; // at 1, no energy is lost. Tricky because emmitors are always giving energy.
 let wave_decay = WAVE_DECAY;
-const WAVE_SPREAD = 0.3; // range from 0 - 1, determines how much the momentup spreads diagonally.
+const WAVE_SPREAD = 0.8; // range from 0 - 1, determines how much the momentup spreads diagonally.
 let wave_spread = WAVE_SPREAD;
-const COLOR_DECAY = 4;
+const COLOR_DECAY = 5;
 let color_decay = COLOR_DECAY;
 
 // vector spreads out in direction, +/- 45 degrees.
@@ -96,8 +110,16 @@ function draw() {
     }
 
 
+
     background(30, 30, 60);
     // your draw code here
+
+    changeMouseColor();
+    fill(mouseColor);
+    // drawMouse();
+    // rect(-width/2 + 50, 0, 50, 50);
+
+    
         
     textSize(fontSize);
     textStyle(NORMAL);
@@ -143,8 +165,11 @@ function drawCells(){
 
     for (let c of cells){
         c.print();
+
+        // if ()
     }
 }
+
 
 
 
@@ -590,9 +615,9 @@ function mouseMoved(){
 
     // have to scale the x and y because of WEBGL mode (center is 0, 0)
     // but mouseX and mouseY are still related to the canvas.
-    let x = mouseX - width/2;
+    let x = mouseX- width/2;
     let y = mouseY - height/2;
-    // console.log("on cell " + getCellIndex(x, y));
+    console.log("on cell " + getCellIndex(x, y));
 
     // proves that getCellIndex works.
     let i = getCellIndexFromScreen(mousex(), mousey());

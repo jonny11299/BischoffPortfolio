@@ -58,6 +58,8 @@ function filledMapSuccess(){
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
     // your setup code here
+    fontSize = 11 * windowWidth/1000;
+
 
     // Add load event listener
     emptyMapIframe.elt.addEventListener('load', emptyMapSuccess);
@@ -81,9 +83,11 @@ function draw() {
     noStroke();
     let t = "This is a map showing all of the watersheds, waterbodies, and rivers of a particular quadrant in Western Washington.\n";
     t += "The data is open-source, downloaded from geo.wa.gov. The map is built using GeoPandas and Python in a Jupyter notebook.\n";
+    /*
     t += "The original goal was to map 6PPD-Quinone pollution patterns by combining this data with traffic data, and thus better address\n";
     t += "cleanup efforts to protect salmon populations. However, upon contacting the EPA, they sent me a map they had already created\n";
     t += "to address this problem. Realizing this data project was not needed, I moved on."
+    */
     text(t, 0, -height/2 + height/10);
 
     let hFromBottom = height/10;

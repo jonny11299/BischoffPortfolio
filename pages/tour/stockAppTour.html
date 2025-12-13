@@ -19,6 +19,7 @@
 
     <script src="/libraries/p5.min.js"></script>
     <script src="/libraries/p5.sound.min.js"></script>
+    <script src="/embed/engagement.js"></script>
   </head>
 
   <!-- Navbar is rendered with classic CSS Styling -->
@@ -37,6 +38,8 @@
     <style>
     body {
       background: rgb(30, 60, 30);
+      width: 100%;
+      text-align: center;
       margin: 0;
       color: white;
       font-family: 'Roboto Mono', monospace;
@@ -99,36 +102,37 @@
 
   <div class="robotoTest" style="padding: 40px; line-height: 1.5;">
     <p style="margin: 0 0 20px 0;">
-        In-Progress.<br>
+        Stock Prediction app (In-Progress):<br>
         This app uses daytrade data downloaded (for free) from <a href="https://stooq.com/db/h/">'https://stooq.com/db/h/'</a>to locate specific prices for specific stocks on specific days.<br>
-        It uses the Pandas library in Python.<br>
+        It uses the Pandas library in Python to sort through large packages of data.<br>
         The original goal was to map out the growing and shrinking economic sectors of various publically-trading countries worldwide,<br>
-        (i.e. to answer the question, "what years was biotech / consumer products / whatever industry experiencing its most explosive growth in America?"),<br>
-        then to map this information on a global map, style of Fish App.<br>
-        However, researching what economic sectors every single stock belongs to proves challenging and expensive.
+        (i.e. to answer the question, "what years was biotech / consumer products / whatever industry experiencing its most explosive growth in America, India, China, etc?")
+        Stock Industry labels are not free, though, so more research is required.<br>
+        Since parsing the database, I've gotten an idea for a more exciting program, one that would take less time to develop. <br>
+        <h3>Enjoy this daytrade simulator, or scroll past it to see my stock-prediction calculator idea.</h3><br>
     </p>
     
     <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">  
-    <div id="sketch-container"></div>
+  <div id="sketch-container" style="display: flex; justify-content: center; align-items: center;"></div>
 
     <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">
     
     <p style="margin: 0 0 20px 0;">
-        I then got an idea for a more exciting program, one that would take less time to develop.<br>
-        This app will take a single stock, and make a set of polynomial regressions from randomized points along the graph, then use that data to attempt to predict future values of stocks, and recommend buys, sells, etc.<br>
-        To slow it down, picture this:
-    </p>
-    
-    <p style="margin: 0 0 20px 0;">
-        1. Take 10 random points.<br>
-        2. Create a polynomial regression of the stock price using those 5 points.<br>
-        3. Do this for 100 random sets of points along this stock. (x axis is time, y axis is price)<br>
-        4. Take a future date<br>
-        5. Estimate the future price using the average of all 100 polynomial regressions.<br>
-        6. Future iterations could find percent earning instead of dollar amount, or compare a stock's growth to the overall DOW Jones to filter out the stock's performance from the market's performance.<br>
-        7. Future iterations could then create characters with different portfolios and behaviors, (like "Sammy Quick-Sales" and "Lexie Long-Term Investor") and see who performs best.<br>
-        8. You can really run this simulation using 1990 - 2010 data to train, then simulating growth along 2010 - 2020 data. All of the data is downloadable from the above link. I have downloaded it and created functions for reading it quickly.
-    </p>
+        The program I envision will calculate a future stock price using this model: <br>
+        Take a single stock, and make a set of polynomial regressions from randomized points along the graph, then use that data to attempt to predict future values of stocks, and recommend buys, sells, etc.<br>
+        To slow it down, picture this:<br></p>
+            
+    <ol style="text-align: left; width: 50%; display: inline-block; margin: 20 auto;">
+        <li>Take 10 random points.</li>
+        <li>Create a polynomial regression of the stock price using those 5 points.</li>
+        <li>Do this for 100 random sets of points along this stock. (x axis is time, y axis is price)</li>
+        <li>Take a future date</li>
+        <li>Estimate the future price using the average of all 100 polynomial regressions.</li>
+        <li>Future iterations could find percent earning instead of dollar amount, or compare a stock's growth to the overall DOW Jones to filter out the stock's performance from the market's performance.</li>
+        <li>Future iterations could then create characters with different portfolios and behaviors, (like "Sammy Quick-Sales" and "Lexie Long-Term Investor") and see who performs best.</li>
+        <li>You can really run this simulation using 1990 - 2010 data to train, then simulating growth along 2010 - 2020 data. All of the data is downloadable from <a href="https://stooq.com/db/h/">this link</a>. I have downloaded the database and created functions for reading it quickly.</li>
+        <li><h3><a href="/embed/polynomial_ensemble_edited.pdf" target="_blank" rel="noopener noreferrer">Open this pdf</a> to see the stock prediction functions described in greater detail.</h3></li>
+    </ol>
     
     <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">
     
@@ -136,7 +140,7 @@
         Of course, stock market estimating is an enormous field, and if it was so easy, we would all be millionaires.<br>
         However, I would like to create this program, and then use data science to tweak a model that demonstrates earnings over time.<br>
         If I just keep running simulations with different stock price models, maybe I can find one that seems to earn money over time.<br>
-        What a mouthful. Enjoy the pretty stock animation above. <br>
+        Play the stock simulation above if you haven't already. <br>
 
     </p>
 

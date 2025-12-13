@@ -14,7 +14,8 @@ let maxCircles = 50;
 let randomDistance = 10;
 
 let circleRadius = 10;
-let moveStrength = 10;
+let moveStrength = 0.01;
+const MOVE_STRENGTH_MULTIPLIER = 0.5;
 let minMoveStrength = 1;
 let moveConst = 0.4;
 let maxRadius = 100;
@@ -26,14 +27,21 @@ let latestMouseY = 0;
 let lastMouseX = -1;
 let lastMouseY = -1;
 
+let mouseHasMoved = false;
+
 
 function preload(){
     font = loadFont('/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
 }
 
 function setup() {
-    createCanvas(windowWidth, windowHeight, WEBGL);
+    let canvas = createCanvas(windowWidth, windowHeight, WEBGL);
     // your setup code here
+    canvas.elt.tabIndex = 1;  // Makes it focusable
+    canvas.elt.focus();        // Actually focuses it
+    canvas.elt.addEventListener('click', () => { // focuses on-click
+        canvas.elt.focus();
+    });
 
     recalcConsts();
 }
@@ -64,7 +72,7 @@ function draw() {
     text(t, - twidth / 2, 0);
 
     // rect(50, 50, 50, 50);
-    defineCircles();
+    if (mouseHasMoved) defineCircles();
 }
 
 
@@ -79,11 +87,12 @@ function mousey(){
 }
 
 function mouseMoved(){
+    mouseHasMoved = true;
     lastMouseX = latestMouseX;
     lastMouseY = latestMouseY;
     latestMouseX = mousex();
     latestMouseY = mousey();
-    moveStrength = sqrt(sq(lastMouseX - latestMouseX) + sq(lastMouseY - latestMouseY));
+    moveStrength = MOVE_STRENGTH_MULTIPLIER * sqrt(sq(lastMouseX - latestMouseX) + sq(lastMouseY - latestMouseY));
 }
 
 
@@ -102,7 +111,7 @@ function drawCircles(){
         // draw circles
         for (let c of circleArray){
             push();
-            strokeWeight(3);
+            strokeWeight(1);
             stroke(255, 255, 255, c.alpha);
             fill(c.color);
             translate(c.x, c.y, c.z);
@@ -152,9 +161,10 @@ function recalcConsts(){
     textSize(fontSize);
     textStyle(NORMAL);
 
-    t = "";
+    t = "Jonathan Bischoff Portfolio\n";
+    t += "Last updated 12/13/25\n\n";
 
-    t = "These sketches demonstrate the following skillsets:\n";
+    t += "These sketches demonstrate the following skillsets:\n";
     t += "- Website layout and design\n";
     t += "- Live rendering\n";
     t += "- Audio-visual processing \n";
@@ -165,10 +175,9 @@ function recalcConsts(){
     t += "Some portfolio projects are built using Python in tandem with the Pandas library.\n\n";
 
     t += "\n";
-    t += "This website is statically hosted. You are not being tracked.\n";
-    t += "Someday I may update this site to anonymously track user engagement patterns.\n\n";
+    t += "This website is statically hosted.\n";
 
-    t += "Feel free to click the center button \"How was I created?\" to understand the technology\n behind each webpage.\n";
+    t += "Some pages have downloadable supplementary information.";
 
     twidth = textWidth(t) * 1.1;
 

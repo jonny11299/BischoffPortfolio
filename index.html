@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -6,7 +5,7 @@
 
     <title>Sketch</title>
 
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -18,8 +17,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Share+Tech+Mono&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 
 
-    <script src="libraries/p5.min.js"></script>
-    <script src="libraries/p5.sound.min.js"></script>
+    <script src="/libraries/p5.min.js"></script>
+    <script src="/libraries/p5.sound.min.js"></script>
+    <script src="/embed/engagement.js"></script>
   </head>
 
   <!-- Navbar is rendered with classic CSS Styling -->
@@ -39,8 +39,7 @@
       .nav-button {
         position: fixed;
         top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
+        left: 20px;
         padding: 10px 20px;
         background-color: rgba(0, 0, 0, 0.7);
         color: white;
@@ -48,7 +47,6 @@
         border-radius: 5px;
         font-family: Arial, sans-serif;
         z-index: 1000;
-        text-align: center;  /* Add this */
       }
       
       .nav-button:hover {
@@ -57,44 +55,21 @@
     </style>
 
 <!--
-    <a href="/pages/tour/tour1.html" class="nav-button" style="top: 30%">
-      Let's take a tour.
+    <a href="/index.html" class="nav-button" >
+        ← Prev Page
+    </a>
+-->
+    
+    <a href="/pages/tour/pageSoundLensTour.html?source=tour&id=1" class = "nav-button" style="right: 20px; left: auto;">
+        Next Page →
     </a>
 
-
-    <a href="/pages/pageDna.html" class="nav-button" style="top: 40%">
-      I just need a quick summary<br>of your work.
-    </a>
-
-    <a href="/pages/pageDna.html" class="nav-button" style="top: 50%">
-      I would like to use a <br> free program you've made.
-    </a>
-
-    <a href="/pages/pageDna.html" class="nav-button" style="top: 60%">
-      I would like to contact you.
-    </a>
-
-    -->
-    <a href="/pages/tour/tourOverview.html?source=tour&id=1" class="nav-button" style="top: 30%">
-      Take a Tour <br> (recommended)
-    </a>
-
-    <a href="/pages/projectThumbnails.html" class="nav-button" style="top: 40%">
-      View Projects
-    </a>
-
-
-    <a href="/pages/contact.html" class="nav-button" style="top: 50%">
-      Contact
-    </a>
-
-
+    
 
     <div id="sketch-container">
         <!-- <script type="module" src="main.js"></script> -->
-        <script src="/sketches/landingSketchAnimated.js"></script>
+         <script src="/sketches/tour/tourOverview.js"></script>
     </div>
+
   </body>
 </html>
-
-

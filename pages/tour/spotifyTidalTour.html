@@ -1,0 +1,127 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sketch</title>
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+
+    <!-- gimme those cool fonts: -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Share+Tech+Mono&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+
+
+    <script src="/libraries/p5.min.js"></script>
+    <script src="/libraries/p5.sound.min.js"></script>
+    <script src="/embed/engagement.js"></script>
+  </head>
+
+  <!-- Navbar is rendered with classic CSS Styling -->
+  <!-- Eventually I might make this fully accessible from within the processing sketch -->
+  <!-- I will also have to create a fallback option for if processing fails to load -->
+  <body>
+    <!--<nav>
+      <a href="#entranceScreen">entrance screen</a>
+      <a href="#entrance2">entrance2</a>
+      <a href="#home">Home</a>
+      <a href="#sketch">Sketch</a>
+      <a href="#soundLens">SoundLens</a>
+      <a href="#template">Template</a>
+    </nav>-->
+
+    <style>
+      body {
+        background: rgb(30, 30, 60);
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        padding: 0; /* Add equal padding on both sides */
+        color: white;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 16px;
+        display: block;
+      }
+
+      .robotoTest {
+        padding: 20px;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-color: #ffffff;
+      }
+
+      .nav-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+      }
+
+      .nav-button:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+      p {
+          white-space: normal;
+          margin: 0;
+          display: block;
+      }
+      hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #ffffff;
+        border-color: #ffffff;
+        margin: 1em 0;
+        padding: 0;
+      }
+
+      a {
+        color: #ff6
+      }
+    </style>
+
+    <a href="/pages/tour/joDoulaTour.html" class="nav-button">
+        ← Prev Sketch
+    </a>
+    <a href="/pages/tour/tourConclusion.html" class = "nav-button" style="right: 20px; left: auto;">
+        Next Sketch →
+    </a>
+
+    <div class="robotoTest" style="padding: 40px; line-height: 1.5;">
+      <a href="https://belovedcommunitydoula.com/index.html" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center;">
+        <img src="/images/fukkspotify.jpg" alt="friendship ended with spotify" style="width: 30%; margin: 0 auto; display: block;">
+      </a>
+
+      <p style="margin: 0 0 20px 0;">
+        <br><br>
+
+          <a href="https://github.com/jonny11299/spotify-scrub">Spotify → Tidal Playlist Migration</a><br><br>
+          
+          This is an open-source command line tool I built to automatically migrate playlists <br>
+          from Spotify to Tidal.<br><br>
+          If you're curious why somebody would want to do that, google "Spotify AI Warfare Investments."<br>
+          It uses the official Spotify API and an unofficial Tidal API.<br><br>
+          No art for apartheid. No tech for apartheid. Hold the line.<br><br>
+          Users can keep all their memories and playlists this way, while giving $0 to Spotify.
+
+      </p>
+    
+
+  </div>
+
+  
+
+  </body>
+</html>
