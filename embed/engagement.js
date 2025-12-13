@@ -35,9 +35,9 @@ function trackPageView(pageName) {
         referrer: document.referrer
     })
     }).then(response => {
-        console.log('posted ', userId);
+        // console.log('posted ', userId);
     }).catch(err => {
-        console.log('failed to post  ', userId, err);
+        // console.log('failed to post  ', userId, err);
     });
 }
 
