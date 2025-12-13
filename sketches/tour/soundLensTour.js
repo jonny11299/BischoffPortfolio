@@ -182,7 +182,7 @@ function draw() {
         noStroke();
         text(t, width/2, height/2 - 80);
 
-        let t2 = "(or, you can use your microphone audio:)"
+        let t2 = "(or, you can use your microphone audio)"
 
         textSize(14);
         text(t2, width/2, 2*height/3);

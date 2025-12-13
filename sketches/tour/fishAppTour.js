@@ -79,8 +79,12 @@ function draw() {
 
     fill(255, 255, 255);
     noStroke();
-    let t = 'Fish app tour.';
-    // text(t, 0, 0);
+    let t = "This is a map showing all of the watersheds, waterbodies, and rivers of a particular quadrant in Western Washington.\n";
+    t += "The data is open-source, downloaded from geo.wa.gov. The map is built using GeoPandas and Python in a Jupyter notebook.\n";
+    t += "The original goal was to map 6PPD-Quinone pollution patterns by combining this data with traffic data, and thus better address\n";
+    t += "cleanup efforts to protect salmon populations. However, upon contacting the EPA, they sent me a map they had already created\n";
+    t += "to address this problem. Realizing this data project was not needed, I moved on."
+    text(t, 0, -height/2 + height/10);
 
     let hFromBottom = height/10;
 
@@ -128,7 +132,7 @@ function draw() {
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
-    fontSize = 14 * windowWidth/1000;
+    fontSize = 11 * windowWidth/1000;
 
     resizeMaps();
 }
@@ -153,6 +157,8 @@ async function downloadMap() {
 
 function resizeMaps(){
     // Get the iframe's actual dimensions
+    // Set max dimensions and let it scale naturally
+
     let iframeWidth = emptyMapIframe.elt.offsetWidth || 800;  // fallback to 800 if not loaded yet
     let iframeHeight = emptyMapIframe.elt.offsetHeight || 600; // fallback to 600
     console.log(`w, h: ${iframeWidth}, ${iframeHeight}`);
@@ -160,12 +166,12 @@ function resizeMaps(){
     let w = iframeWidth;
     let h = iframeHeight;
 
-    if (w > 2 * width / 3) w = 2 * width / 3;
-    if (h > 2 * height / 3) h = 2 * height / 3;
+    w = 2 * width / 3;
+    h = 2 * height / 3;
 
     // just need to position it correctly...
 
-    emptyMapIframe.position(width/2 - w/2, height/2 - h/2);
+    emptyMapIframe.position(width/2 - w/2, height/2 - h/2 + 20);
     emptyMapIframe.size(w, h);
 
     emptyMapIframe.style('border', '0px solid #ccc');
@@ -182,12 +188,12 @@ function resizeMaps(){
         let wf = filledWidth;
         let hf = filledHeight;
 
-        if (wf > 2 * width / 3) wf = 2 * width / 3;
-        if (hf > 2 * height / 3) hf = 2 * height / 3;
+        wf = 2 * width / 3;
+        hf = 2 * height / 3;
 
         // just need to position it correctly...
 
-        filledMapIframe.position(width/2 - wf/2, height/2 - hf/2);
+        filledMapIframe.position(width/2 - wf/2, height/2 - hf/2 + 20);
         filledMapIframe.size(wf, hf);
 
         filledMapIframe.style('border', '0px solid #ccc');

@@ -49,6 +49,7 @@
       color: white;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-color: #ffffff;
     }
 
     .nav-button {
@@ -72,6 +73,19 @@
         margin: 0;
         display: block;
     }
+    hr {
+      display: block;
+      height: 1px;
+      border: 0;
+      border-top: 1px solid #ffffff;
+      border-color: #ffffff;
+      margin: 1em 0;
+      padding: 0;
+    }
+
+    a {
+      color: #ff6
+    }
   </style>
 
   <a href="/pages/tour/fishAppTour.html?source=tour&id=1" class="nav-button">
@@ -86,10 +100,10 @@
   <div class="robotoTest" style="padding: 40px; line-height: 1.5;">
     <p style="margin: 0 0 20px 0;">
         In-Progress.<br>
-        This app uses daytrade data downloaded (for free) from 'https://stooq.com/db/h/' to locate specific prices for specific stocks on specific days.<br>
+        This app uses daytrade data downloaded (for free) from <a href="https://stooq.com/db/h/">'https://stooq.com/db/h/'</a>to locate specific prices for specific stocks on specific days.<br>
         It uses the Pandas library in Python.<br>
         The original goal was to map out the growing and shrinking economic sectors of various publically-trading countries worldwide,<br>
-        (i.e. to answer the question, "what years was information technology experiencing its most explosive growth in America?"),<br>
+        (i.e. to answer the question, "what years was biotech / consumer products / whatever industry experiencing its most explosive growth in America?"),<br>
         then to map this information on a global map, style of Fish App.<br>
         However, researching what economic sectors every single stock belongs to proves challenging and expensive.
     </p>
@@ -126,9 +140,6 @@
 
     </p>
 
-    <button id="download" class = "nav-button" style="left: 50%; top: 94%; transform: translateX(-50%);" onclick="downloadEquations()">
-        Download Stock Equations Here
-    </button>
 </div>
 
         

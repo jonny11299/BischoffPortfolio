@@ -1,0 +1,16 @@
+# macOS junk
+.DS_Store
+
+# Node / tooling (if you add them later)
+node_modules/
+dist/
+build/
+.cache/
+.out/
+
+# Static site generator outputs (common names)
+_site/
+public/
+
+# old stuff
+old garbage/

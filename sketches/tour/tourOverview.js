@@ -103,7 +103,7 @@ function drawCircles(){
         for (let c of circleArray){
             push();
             strokeWeight(3);
-            stroke(128, 128, 128, c.alpha);
+            stroke(255, 255, 255, c.alpha);
             fill(c.color);
             translate(c.x, c.y, c.z);
             sphere(c.r);
