@@ -126,7 +126,7 @@ function draw() {
 
     fill(255, 255, 255);
     noStroke();
-    if (onTour){
+    if (true){
         let alpha = constrain(650 - 4 * frameCount, 0, 200);
         textSize(18);
         fill(255, 255, 255, alpha);
