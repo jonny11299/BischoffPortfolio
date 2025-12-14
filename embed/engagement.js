@@ -1,5 +1,7 @@
 
 
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxaRhH-k77XTtohFidnLULpmDGSz3SysltKMr89Fsa_ns6XigIVlffLWV2whZUVRRMM/exec";
+
 // Get or create user ID
 function getUserId() {
   let userId = localStorage.getItem('portfolio_user_id');
@@ -21,9 +23,13 @@ function trackPageView(pageName) {
     console.log('Localhost - tracking skipped, ol\' ' + userId);
     return;
   }
+  if (userId === 'user_Everly Perez_1765667977859') {
+    console.log("It's just me, the creator. Skipping tracking.");
+    return;
+  }
   
   // Send to Google Sheets
-  fetch('https://script.google.com/macros/s/AKfycbxds8BcbqxUnu_OwHDHofr3mVo3JiGIr6BwuMsvmHZpBjbvZDUhgmROzo1hjSyJnna9/exec', {
+  fetch(LATEST_DEPLOYMENT, {
     method: 'POST',
     mode: 'no-cors',
     headers: {'Content-Type': 'application/json'},
@@ -40,6 +46,22 @@ function trackPageView(pageName) {
         // console.log('failed to post  ', userId, err);
     });
 }
+
+let pageLoadTime = Date.now();
+
+// Track when user leaves
+window.addEventListener('beforeunload', function() {
+  const timeSpent = Math.round((Date.now() - pageLoadTime) / 1000); // seconds
+  
+  navigator.sendBeacon(LATEST_DEPLOYMENT, JSON.stringify({
+    secret: 'ILLBETYOUDIDTHAT',
+    userId: getUserId(),
+    page: window.location.pathname,
+    timeSpent: timeSpent,
+    eventType: 'page_exit'
+  }));
+});
+
 
 // Call on each page load
 trackPageView(window.location.pathname);
