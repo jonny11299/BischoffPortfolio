@@ -8,6 +8,7 @@ let twidth;
 
 
 // construct a circle around the mouse, else middle
+const Y_ROTATION_SPEED = 1/(Math.PI * 2) * 0.03;
 const everyNFrames = 5;
 let circleArray = [];
 let maxCircles = 50;
@@ -102,9 +103,12 @@ function drawCircles(){
         // draw lines
         for (let i = 0 ; i < circleArray.length - 1 ; i++){
             for (let i2 = i + 1 ; i2 < circleArray.length && i2 < i + 4; i2++){
+                push();
+                // rotateY(frameCount * Y_ROTATION_SPEED)
                 strokeWeight(circleArray[i].r / weightDivider);
                 stroke(circleArray[i].color);
                 line(circleArray[i].x, circleArray[i].y, circleArray[i].z, circleArray[i2].x, circleArray[i2].y,  circleArray[i2].z);
+                pop();
             }
         }
         
@@ -115,6 +119,7 @@ function drawCircles(){
             stroke(255, 255, 255, c.alpha);
             fill(c.color);
             translate(c.x, c.y, c.z);
+            rotateY(frameCount * Y_ROTATION_SPEED);
             sphere(c.r);
             pop();
         }
