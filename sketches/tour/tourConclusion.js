@@ -17,6 +17,10 @@ let randomDistance = 10;
 let circleRadius = 10;
 let moveStrength = 0.01;
 const MOVE_STRENGTH_MULTIPLIER = 0.5;
+let vx = 0;
+let vy = 0;
+const V_MULTIPLIER = 0.08;
+const V_LIMIT = 5;
 let minMoveStrength = 1;
 let moveConst = 0.4;
 let maxRadius = 100;
@@ -106,12 +110,22 @@ function mouseMoved(){
     latestMouseX = mousex();
     latestMouseY = mousey();
     moveStrength = MOVE_STRENGTH_MULTIPLIER * sqrt(sq(lastMouseX - latestMouseX) + sq(lastMouseY - latestMouseY));
+    vx = V_MULTIPLIER * (latestMouseX - lastMouseX);
+    vy = V_MULTIPLIER * (latestMouseY - lastMouseY);
+    if (Math.abs(vx) > V_LIMIT) vx = 0;
+    if (Math.abs(vy) > V_LIMIT) vy = 0;
+    // console.log(`vx, vy: ${vx}, ${vy}`);
 }
 
 
 
 function drawCircles(){
     if (circleArray){
+        // update pos
+        for (let c of circleArray){
+            c.x += c.vx;
+            c.y += c.vy;
+        }
         // draw lines
         for (let i = 0 ; i < circleArray.length - 1 ; i++){
             for (let i2 = i + 1 ; i2 < circleArray.length && i2 < i + 4; i2++){
@@ -153,7 +167,9 @@ function defineCircles(){
             z: - Math.random() * 1000 + 100,
             r: constrain(minMoveStrength + moveConst * moveStrength * circleRadius, 10, maxRadius),
             color: [Math.random() * 255, Math.random() * 255, Math.random() * 255, alpha],
-            alpha: alpha
+            alpha: alpha,
+            vx: vx,
+            vy: vy
         })
     }
 
