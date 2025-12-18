@@ -129,12 +129,10 @@ function drawCircles(){
         // draw lines
         for (let i = 0 ; i < circleArray.length - 1 ; i++){
             for (let i2 = i + 1 ; i2 < circleArray.length && i2 < i + 4; i2++){
-                push();
                 // rotateY(frameCount * Y_ROTATION_SPEED)
                 strokeWeight(circleArray[i].r / weightDivider);
                 stroke(circleArray[i].color);
                 line(circleArray[i].x, circleArray[i].y, circleArray[i].z, circleArray[i2].x, circleArray[i2].y,  circleArray[i2].z);
-                pop();
             }
         }
         

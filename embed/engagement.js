@@ -1,9 +1,180 @@
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxaRhH-k77XTtohFidnLULpmDGSz3SysltKMr89Fsa_ns6XigIVlffLWV2whZUVRRMM/exec";
+// DEC 17 TODO REAL QUICK:
+// add DEFER to every instance of the script
+
+
+
+
+// Dec 16, 2025: 
+// I added opt-in, opt-out functionality.
+// I still need to:
+
+// 0. Get User Data Summary correctly (alter it on client side to match new logic in getDoNoTrackList or whatever, 
+    // alter server side to return that specific user, not everybody)
+
+// 1. Track if the user moves their mouse, clicks, does anything really. That'll help me sort out bots.
+// 2. Verify it actually doesn't make any posts if we are NO_TRACKING_STRING
+
+
+
+
+
+
+
+
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbz-RtlsPpV2lDqGfXvQIzaJAAAANwx_NAT980Ge20fII-knsdZEFTYBJlekNV8nEQJm/exec";
+
+const NO_TRACKING_STRING = 'not_tracked';
+
+const LOCAL_SECRET = "ILLBETYOUDIDTHAT"; // should eventually make this hidden
+
+// we also append the results of "getNoTrackingList()" to this.
+const HARDCODED_NO_TRACK_LIST = [];
+/*[
+  NO_TRACKING_STRING,
+  'user_Everly Perez_1765667977859', // me from my chrome browser
+  'user_1765666123470_tgd4si3s2'
+]*/
+
+
+
+let pageLoadTime = Date.now();
+
+// changed to "true" once we've gotten the "no tracking" list and verified we can do this.
+// how does this work if they have multiple tabs open?
+let trackable = false;
+let receivedNoTrackingList = false;
+
+// Empty until we get our response
+let effectiveNoTrackList = [];
+let trackingListPromise = null;
+
+// Provides a quick, non-async response if we have gotten our user ID so that we can quickly log upon exit of the page
+// we shouldn't really be calling this anywhere but beforeunload.
+let curUserId = NO_TRACKING_STRING;
+
+
+
+
+// used for GET requests to subvert CORS
+// You should only use this (jsonp) in scenarios where you control both the server and the client.
+function fetchViaJSONP(url) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'jsonp_' + Date.now();
+    const script = document.createElement('script');
+    
+    // Set up the callback function
+    window[callbackName] = (data) => {
+      delete window[callbackName];
+      document.head.removeChild(script);
+      resolve(data.optedOutUsers);
+    };
+    
+    // Handle errors
+    script.onerror = (err) => {
+      delete window[callbackName];
+      document.head.removeChild(script);
+      reject(new Error('JSONP request failed', err));
+    };
+    
+    // Add callback parameter to URL
+    script.src = url + `&callback=${callbackName}`;
+    document.head.appendChild(script);
+  });
+}
+
+
+
+
+
+async function getNoTrackingList() {
+
+  if (trackingListPromise){
+    return trackingListPromise;
+  }
+
+  if (receivedNoTrackingList){
+    // we already fetched it
+    return effectiveNoTrackList;
+
+  }
+
+  // we gotta fetch it within this promise:
+
+  trackingListPromise = fetchViaJSONP(`${LATEST_DEPLOYMENT}?eventType=get_opted_out_users`)
+    .then(response => {
+      if (response){
+        let optedOutUsers = response;
+
+        if (!optedOutUsers){
+          // Succeed post, but don't have the list somehow
+          console.log("GET succeeded, but list is empty.");
+          trackable = false;
+          receivedNoTrackingList = true;
+          effectiveNoTrackList = [];
+          return [];
+
+        }else{
+          // success
+          // console.log("Succeeded at GET of noTrackList.");
+          receivedNoTrackingList = true;
+          effectiveNoTrackList = optedOutUsers.concat(HARDCODED_NO_TRACK_LIST);
+
+          // Verifies that we can track this person:
+          if (!effectiveNoTrackList.includes(getHiddenUserId())){
+            trackable = true;
+          }
+
+          return effectiveNoTrackList;
+        }
+      }else{
+        console.log("Blank response.");
+        return [];
+      }
+
+    })
+    .catch(err => {
+        // console.log('failed to post  ', userId, err);
+        console.error('Error fetching opt-out list:', err);
+        trackable = false;
+        receivedNoTrackingList = false;
+        effectiveNoTrackList = [];
+
+        return []; // Return empty array on error
+    });
+
+  return trackingListPromise;
+
+  
+}
+
+
+// returns my user ID, whether we should be tracking or not
+function getHiddenUserId(){
+  let hiddenId = localStorage.getItem('portfolio_user_id');
+
+  if (!hiddenId) {
+    hiddenId = 'user_' + getRandomName() + "_" + Date.now();
+    localStorage.setItem('portfolio_user_id', hiddenId);
+  }
+
+  return hiddenId;
+}
+
+
 
 // Get or create user ID
-function getUserId() {
+// getNoTrackingList DEPENDS ON THIS 
+// RETURNS NO_TRACKING_STRING IF YOU ARE ON THE DO_NOT_TRACK_LIST
+async function getUserId() {
+  let noTrackList;
+  if (!receivedNoTrackingList){
+    noTrackList = await getNoTrackingList();
+  }else{
+    noTrackList = effectiveNoTrackList;
+  }
+
   let userId = localStorage.getItem('portfolio_user_id');
   // console.log("random name " + getRandomName());
   if (!userId) {
@@ -11,51 +182,92 @@ function getUserId() {
     localStorage.setItem('portfolio_user_id', userId);
   }
   // console.log("Noticing " + userId);
-  return userId;
+  if (noTrackList.includes(userId)){
+    trackable = false;
+    curUserId = NO_TRACKING_STRING;
+    return NO_TRACKING_STRING;
+  }else{
+    // We are trackable.
+    // console.log("Hello, " + userId); // need to do this in some "greeting"
+    curUserId = userId;
+    return userId;
+  }
 }
 
 // Track page view
-function trackPageView(pageName) {
-  const userId = getUserId();
-  const timestamp = new Date().toISOString();
-  // Skip tracking on localhost
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    console.log('Localhost - tracking skipped, ol\' ' + userId);
-    return;
-  }
-  if (userId === 'user_Everly Perez_1765667977859') {
-    console.log("It's just me, the creator. Skipping tracking.");
-    return;
-  }
-  
-  // Send to Google Sheets
-  fetch(LATEST_DEPLOYMENT, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-        secret: 'ILLBETYOUDIDTHAT', // Same secret
-        userId: userId,
-        page: pageName,
-        timestamp: timestamp,
-        referrer: document.referrer
-    })
-    }).then(response => {
-        // console.log('posted ', userId);
-    }).catch(err => {
-        // console.log('failed to post  ', userId, err);
-    });
+// could make this return true when loaded username, but whatever. Global variables still work for this.
+async function trackPageView(pageName) {
+
+  // Immediately return a promise, do all work async
+  Promise.resolve().then(async () => {
+      
+    const userId = await getUserId();
+    const timestamp = Date.now();
+
+    if (userId && userId !== NO_TRACKING_STRING){
+      // USER MAY BE TRACKED
+      console.log("Hello, " + userId);
+
+      let do_not_track_link = window.location.origin + "/pages/hidden/do_not_track_me.html"
+      console.log(
+        '%cThis site collects anonymous usage statistics.\nNo personal data is stored.\nOpt out of anonymous analytics:\n',
+        'color: #2c9318ff; cursor: pointer;',
+        do_not_track_link
+      );
+      // Skip tracking on localhost:
+      /*
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('Localhost - tracking skipped, accessed from localhost, ol\' ' + userId);
+        return;
+      }*/
+    
+    // Send to Google Sheets
+    fetch(LATEST_DEPLOYMENT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+          secret: LOCAL_SECRET, // Same secret
+          userId: userId,
+          page: pageName,
+          timestamp: timestamp,
+          referrer: document.referrer,
+          eventType: 'log_page_view'
+      })
+      }).then(response => {
+          // console.log('posted ', userId);
+      }).catch(err => {
+          // console.log('failed to post  ', userId, err);
+      });
+
+
+    }else{
+      // USER IS ON THE DO_NOT_TRACK LIST
+      console.log("Hello, hidden user. You're on the DO_NOT_TRACK_LIST.");
+
+      let trackMe = window.location.origin + "/pages/hidden/track_me.html"
+      console.log(
+        '%cYou are on the "DO_NOT_TRACK_LIST", so we won\'t track any of your usage.\nIf you\'ve changed your mind, you can opt-in to anonymous tracking here:',
+        'color: #2c9318ff; cursor: pointer;',
+        trackMe
+      );
+
+    }
+
+  });
+
+
 }
 
-let pageLoadTime = Date.now();
+
 
 // Track when user leaves
 window.addEventListener('beforeunload', function() {
-  const timeSpent = Math.round((Date.now() - pageLoadTime) / 1000); // seconds
+  const timeSpent = Math.round((Date.now() - pageLoadTime)); // milliseconds
   
   navigator.sendBeacon(LATEST_DEPLOYMENT, JSON.stringify({
-    secret: 'ILLBETYOUDIDTHAT',
-    userId: getUserId(),
+    secret: LOCAL_SECRET,
+    userId: curUserId,
     page: window.location.pathname,
     timeSpent: timeSpent,
     eventType: 'page_exit'
@@ -63,14 +275,129 @@ window.addEventListener('beforeunload', function() {
 });
 
 
-// Call on each page load
-trackPageView(window.location.pathname);
 
 
 
 
 
-function getRandomName(){
+
+// should return new username 
+async function optOutOfTracking(reason){
+  const userId = await getUserId();
+  if (!trackable){
+    console.log("You are already not being tracked.");
+    return NO_TRACKING_STRING;
+  }else{
+    // Do the post, don't track this user
+    let timestamp = Date.now();
+    trackable = false;
+    receivedNoTrackingList = false;
+
+    return fetch(LATEST_DEPLOYMENT, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        secret: LOCAL_SECRET, // Same secret
+        userId: userId,
+        timestamp: timestamp,
+        reason: reason,
+        eventType: 'do_not_track'
+    })
+    }).then(response => {
+        console.log("Posted. You opted out of tracking because ", reason);
+        return NO_TRACKING_STRING;
+    }).catch(err => {
+        console.log("Failed to post do_not_track", err);
+        throw err;
+    });
+
+  }
+
+}
+
+async function optIntoTracking(reason){
+  console.log("Opting into tracking");
+  const userId = getHiddenUserId();
+
+  if (!trackable){
+    
+    // Do the post, opt into tracking
+    let timestamp = Date.now();
+
+    fetch(LATEST_DEPLOYMENT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+          secret: LOCAL_SECRET, // Same secret
+          userId: userId,
+          timestamp: timestamp,
+          reason: reason,
+          eventType: 'do_track'
+    })
+    }).then(response => {
+        console.log("Posted. You opted into tracking because ", reason);
+    }).catch(err => {
+        console.log("Failed to post do_track", err);
+    });
+
+  }else{
+    // user is already opted in
+    console.log("You are already opted into anonymous tracking, " + userId);
+  }
+
+}
+
+
+async function getUserDataSummary(){
+  // guard because I'm not ready for this smoke:
+  if (true){
+    return "I don't have this built out yet.";
+  }
+
+  const userId = await getUserId();
+  let pageName = window.location.pathname;
+
+
+  if (!trackable){
+    console.log("Can't get your data summary -- you're not being tracked");
+
+  }else{
+    fetch(LATEST_DEPLOYMENT, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        secret: LOCAL_SECRET, // Same secret
+        userId: userId,
+        timestamp: Date.now(),
+        page: pageName,
+        referrer: "Get User Data Summary",
+        eventType: 'get_user_data_summary'
+    })
+    }).then(response => {
+        console.log("Posted user data summary: ", response);
+    }).catch(err => {
+        console.log("Failed to post get_user_data_summary", err);
+    });
+  }
+
+}
+
+
+
+
+// YOU NEED TO MAKE SURE THE SCRIPT HAS 'DEFER' IN ITS HTML DECLARATION
+// Call on each page load -- waits until the dom is fully loaded with setTimeout
+setTimeout(() => {
+  trackPageView(window.location.pathname);
+}, 0);
+
+
+
+
+function getRandomName(){ // ... .... ... (this works, don't worry.)
     let firstnamelist = [];
     let lastnamelist = [];
     firstnamelist.push("Vivian");

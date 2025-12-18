@@ -35,6 +35,9 @@ let lastMouseY = -1;
 let mouseHasMoved = false;
 
 
+let frameRates = [];
+
+
 function preload(){
     font = loadFont('/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
 }
@@ -78,6 +81,25 @@ function draw() {
 
     // rect(50, 50, 50, 50);
     if (mouseHasMoved) defineCircles();
+
+    let avgFrameRate = getAvgFrameRate();
+    if (frameCount % 60 === 0){
+        console.log("avg framerate: " + avgFrameRate);
+    }
+}
+
+
+function getAvgFrameRate(){
+    
+    frameRates.push(frameRate());
+    if (frameRates.length > 30){
+        frameRates.shift();
+    }
+    let avgFrameRate = 0;
+    for (rate of frameRates){
+        avgFrameRate += rate / frameRates.length;
+    }
+    return avgFrameRate;
 }
 
 
@@ -117,12 +139,10 @@ function drawCircles(){
         // draw lines
         for (let i = 0 ; i < circleArray.length - 1 ; i++){
             for (let i2 = i + 1 ; i2 < circleArray.length && i2 < i + 4; i2++){
-                push();
                 // rotateY(frameCount * Y_ROTATION_SPEED)
                 strokeWeight(circleArray[i].r / weightDivider);
                 stroke(circleArray[i].color);
                 line(circleArray[i].x, circleArray[i].y, circleArray[i].z, circleArray[i2].x, circleArray[i2].y,  circleArray[i2].z);
-                pop();
             }
         }
         

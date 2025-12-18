@@ -1,0 +1,253 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bischoff Portfolio (Hidden)</title>
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+
+    <!-- gimme those cool fonts: -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Share+Tech+Mono&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+
+
+    <!-- p5 js not required for this page 
+    <script src="/libraries/p5.min.js"></script>
+    <script src="/libraries/p5.sound.min.js"></script>-->
+    <script src="/embed/engagement.js" defer></script>
+  </head>
+
+  <!-- Navbar is rendered with classic CSS Styling -->
+  <!-- Eventually I might make this fully accessible from within the processing sketch -->
+  <!-- I will also have to create a fallback option for if processing fails to load -->
+  <body>
+    <!--<nav>
+      <a href="#entranceScreen">entrance screen</a>
+      <a href="#entrance2">entrance2</a>
+      <a href="#home">Home</a>
+      <a href="#sketch">Sketch</a>
+      <a href="#soundLens">SoundLens</a>
+      <a href="#template">Template</a>
+    </nav>-->
+
+    <style>
+      body {
+        background: rgb(0, 0, 0);
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        padding: 0; /* Add equal padding on both sides */
+        color: white;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 16px;
+        display: block;
+      }
+
+      .robotoTest {
+        padding: 20px;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-color: #ffffff;
+      }
+
+      .nav-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+      }
+
+      .nav-button:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+      p {
+          white-space: normal;
+          margin: 0;
+          display: block;
+      }
+      hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #ffffff;
+        border-color: #ffffff;
+        margin: 1em 0;
+        padding: 0;
+      }
+
+      a {
+        color: #ff6
+      }
+    </style>
+
+    <div class="robotoTest" style="padding: 40px; line-height: 1.5;">
+        
+        <img src="/images/matrixGlasses.gif" alt="matrix gif" style="width: 30%; margin: 0 auto; display: block;">
+        
+      <p style="margin: 0 0 20px 0;">
+        <br><br>
+
+          <!-- <a href="https://github.com/jonny11299/spotify-scrub" target="_blank">Spotify → Tidal Playlist Migration</a><br><br> -->
+
+          Why, hello. <br>
+          You're a savvy internet user, aren't you?<br><br>
+
+          If you would not like to be tracked, please provide a reason in this form, and click submit. <br>
+
+          <h1 style="color:rgb(21, 255, 0)">Do Not Track Form:</h1>
+          <form id="tracking-form" onsubmit="return handleSubmit(event)" >
+            <textarea 
+                id="reason" 
+                name="reason" 
+                rows="4" 
+                cols="50" 
+                placeholder="Enter your reason here..."
+                style="padding: 15px; "
+                required
+            ></textarea>
+            <br><br>
+            <button id="submitButton" type="submit" style="background-color: rgba(8, 39, 211, 0.7);
+                font-size: 18;
+                padding-left: 15px;
+                padding-right: 15px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-family: Arial, sans-serif;
+                z-index: 1000;">
+                
+                Submit
+            </button>
+        </form>
+        <script>
+
+          function loadMyNameOnPage(){
+            // console.log("Calling loadMyNameOnPage() ");
+            document.getElementById('userIDname').textContent = "Loading your name..."; // getUserId();
+            getUserId().then(response => {
+              // console.log("text content visibility: ", document.getElementById('userIDname').textContent);
+              document.getElementById('userIDname').textContent = response;
+              // console.log("What is my response? ", response);
+              // console.log("Got response, but probably scoping issues here ");
+            }).catch(err => {
+              document.getElementById('userIDname').textContent = `Failed to get name because of ${err}`;
+              // console.log("Got error, but probably scoping issues here ");
+            });
+
+          }
+
+          async function handleSubmit(event) {
+              event.preventDefault(); // Prevents page reload
+              
+              const reason = document.getElementById('reason').value.trim();
+              
+              if (reason === '') {
+                  alert('Please provide a reason before submitting.');
+                  return false;
+              }
+              
+              // Do something with the reason
+              console.log('Submitted reason:', reason);
+              document.getElementById('tracking-form').reset();
+              let submitButton = document.getElementById("reason")
+              submitButton.placeholder = `Response submitted:\n${reason}`;
+              // alert('Your response has been submitted.\nYou will not be tracked.');
+              
+              // call the function
+              // console.log("Calling the opt out function");
+              document.getElementById('userIDname').textContent = "Loading your name..."; // getUserId();
+              let newName = await optOutOfTracking(reason).then(response => {
+                // console.log("Response successful: ", response);
+                document.getElementById('userIDname').textContent = response; // getUserId();
+              }).catch(err => {
+                console.log("Opt out failure ", err);
+                document.getElementById('userIDname').textContent = `Failed to opt out of tracking because of ${err}`;
+              });
+
+              // console.log("New name: ", newName);
+              
+              return newName;
+          }
+        </script>
+        
+        <br><br>
+          I will remind you that all tracking is anonymous. I don't know who you are, <br>
+          or where you are. I will never sell your data, ever.<br>
+          As far as I'm concerned, your name is: <br>
+          <h1><span id='userIDname' style="color:rgb(21, 255, 0)"></span></h1><br>
+          <script>
+            // loadMyNameOnPage();
+            // In your body or inline script
+
+            // waits for defer, so once we load that script up top, it'll resolve.
+            document.addEventListener('DOMContentLoaded', () => {
+              loadMyNameOnPage(); // getUserID() is now defined
+            });
+          </script>
+          I'm just gathering engagement patterns so I can understand <br>
+          how people navigate my portfolio<br><br> <!--. For example, I can tell that: <br><br>
+          <script>
+            function displayUserData(){
+                return "Gotta build this logic out...";
+            }
+            // return displayUserData();
+          </script>-->
+
+          However, to opt-out of tracking, fill out the above form.<br><br>
+
+          If you want to stop people from tracking you across all websites, <br>
+          a lot of people recommend using Firefox with the Privacy Badger extention. <br><br>
+          This project is also helping me understand how easy it is for websites to track us, <br>
+          and what that looks like in-practice. For example, if I had <br>
+          a single form asking for your real name, I could immediately connect that with all <br>
+          of your engagement patterns on my website, then get in contact <br>
+          with marketing agencies and tell them that I know how you move your mouse, <br>
+          what you spend your time looking at, and what you ignore.<br>
+          That's sellable data. It's piss-easy to track what you're doing, and<br>
+          if I simply ask for your name, I can immediately link all of these<br>
+          engagement patterns with your personal identity.<br><br>
+
+          All of this code is invisible to the user.<br><br>
+
+        <img src="/images/chriswow.gif" alt="matrix gif" style="width: 30%; margin: 0 auto; display: block;"><br>
+
+          
+          I won't do this because I have a conscience.<br><br>
+
+          
+          Interestingly, the internet prior to 2006 was very keen on privacy. <br>
+          There's some history there to review: How and when did we start to <br>
+          forfeit our privacy to coorporations? <br>
+          It's really significant to how we've enterred the current survaillance-state<br>
+          capitalist hellscape. If you have any book recommendations on that, feel free<br>
+          to recommend them to me.<br><br><br>
+
+
+        <br><br>
+          If you would ever like to opt into tracking again, <br>
+          proceed to the below page:<br><br>
+          <h2><a href="track_me.html" style="color:rgb(0, 217, 255)">Opt Into Anonymous Tracking</a></h2>
+      </p>
+    
+
+  </div>
+
+  
+
+  </body>
+</html>
