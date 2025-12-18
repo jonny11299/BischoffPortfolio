@@ -45,7 +45,7 @@
 
 // TODO: Move to serverless backend when scaling up.
 // These are currently visible.
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbynNsqkBTO3De6U8wet-ShbloQ5CJOx1wGC3PwxXj4CNllThhWuyW6V-5bCIhDTP_iO/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxRDFhFpEzliE1mOSBJxqx_gcuBWBCa1JlpJ9NHD_bC3aPX3dsNaa_IDPSyCQFisou5/exec";
 const LOCAL_SECRET = "ILLBETYOUDIDTHAT"; // should eventually make this hidden
 
 
@@ -418,6 +418,247 @@ async function getUserDataSummary(){
 setTimeout(() => {
   trackPageView(window.location.pathname);
 }, 0);
+
+
+
+
+
+
+
+
+
+/*
+  TRACKING ACTUAL ENGAGEMENT PATTERNS:
+
+  Here's where it gets interesting. These below functions actually listen for user behavior, and if allowed to post it, will post it to the site.
+
+
+  Todo:
+    1. Differentiate between desktop, mobile, and bot (use the cheat codes below)
+*/
+
+
+// High-level engagement
+/* // these are actually defined below, after the rest of the tracking:
+document.addEventListener('mousemove', trackActivity);
+document.addEventListener('keydown', trackActivity);
+document.addEventListener('scroll', trackActivity);
+document.addEventListener('click', trackActivity);
+document.addEventListener('touchstart', trackActivity); // Mobile
+
+// Tab visibility (crucial!)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    // User switched tabs - pause tracking
+  } else {
+    // User returned - resume tracking
+  }
+});
+*/
+
+
+// **** HIGHLIGHT: If trackActivity is slow, it blocks the main thread: ****
+// KEEP THIS SHIT O(1) AT BEST, O(n) IF ABSOLUTELY NECESSARY, AND NEVER HIGHER.
+
+/*
+// Store activity data
+let activityLog = [];
+let isTracking = true;
+
+function trackActivity(event) {
+  if (!isTracking) return;
+  
+  const timestamp = Date.now();
+  const activityData = {
+    type: event.type,
+    timestamp: timestamp,
+    data: {}
+  };
+  
+  // Extract relevant data based on event type
+  switch(event.type) {
+    case 'mousemove':
+      activityData.data = {
+        x: event.clientX,        // X position relative to viewport
+        y: event.clientY,        // Y position relative to viewport
+        pageX: event.pageX,      // X position relative to page
+        pageY: event.pageY,      // Y position relative to page
+        screenX: event.screenX,  // X position relative to screen
+        screenY: event.screenY   // Y position relative to screen
+      };
+      break;
+      
+    case 'click':
+      activityData.data = {
+        x: event.clientX,
+        y: event.clientY,
+        button: event.button,    // 0=left, 1=middle, 2=right
+        target: event.target.tagName,
+        targetId: event.target.id || null,
+        targetClass: event.target.className || null
+      };
+      break;
+      
+    case 'keydown':
+      activityData.data = {
+        key: event.key,          // 'a', 'Enter', 'Shift', etc.
+        code: event.code,        // 'KeyA', 'Enter', 'ShiftLeft', etc.
+        ctrlKey: event.ctrlKey,
+        shiftKey: event.shiftKey,
+        altKey: event.altKey,
+        metaKey: event.metaKey   // Command/Windows key
+      };
+      break;
+      
+    case 'scroll':
+      activityData.data = {
+        scrollX: window.scrollX || window.pageXOffset,
+        scrollY: window.scrollY || window.pageYOffset,
+        scrollHeight: document.documentElement.scrollHeight,
+        clientHeight: document.documentElement.clientHeight,
+        // Calculate scroll percentage
+        scrollPercent: Math.round(
+          (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
+        )
+      };
+      break;
+      
+    case 'touchstart':
+      const touch = event.touches[0];
+      activityData.data = {
+        x: touch.clientX,
+        y: touch.clientY,
+        touchCount: event.touches.length,  // Multi-touch
+        target: event.target.tagName
+      };
+      break;
+      
+    default:
+      activityData.data = { raw: 'unhandled event type' };
+  }
+  
+  activityLog.push(activityData);
+  
+  // Optional: Log to console for debugging
+  console.log(`[${event.type}]`, activityData.data);
+  
+  // Optional: Limit log size to prevent memory issues
+  if (activityLog.length > 1000) {
+    activityLog.shift(); // Remove oldest entry
+  }
+}
+
+// Tab visibility handling
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    isTracking = false;
+    console.log('Tracking paused - tab hidden');
+  } else {
+    isTracking = true;
+    console.log('Tracking resumed - tab visible');
+  }
+});
+
+// Attach listeners
+document.addEventListener('mousemove', trackActivity);
+document.addEventListener('keydown', trackActivity);
+document.addEventListener('scroll', trackActivity);
+document.addEventListener('click', trackActivity);
+document.addEventListener('touchstart', trackActivity);
+*/
+
+
+/*
+
+The cheat codes:
+
+https://claude.ai/chat/a7b9b2f2-4d29-4ea6-9364-0c9679c5a95d
+
+
+
+All Listenable Events
+Here's a comprehensive list:
+Mouse Events
+javascript'click'          // Mouse click
+'dblclick'       // Double click
+'mousedown'      // Mouse button pressed
+'mouseup'        // Mouse button released
+'mousemove'      // Mouse moved
+'mouseenter'     // Mouse enters element (no bubbling)
+'mouseleave'     // Mouse leaves element (no bubbling)
+'mouseover'      // Mouse over element (bubbles)
+'mouseout'       // Mouse out of element (bubbles)
+'contextmenu'    // Right-click menu
+'wheel'          // Mouse wheel scrolled
+Keyboard Events
+javascript'keydown'        // Key pressed (repeats if held)
+'keyup'          // Key released
+'keypress'       // Key pressed (deprecated, use keydown)
+Touch Events (mobile)
+javascript'touchstart'     // Touch begins
+'touchmove'      // Touch moves
+'touchend'       // Touch ends
+'touchcancel'    // Touch interrupted
+Pointer Events (unified mouse/touch/pen)
+javascript'pointerdown'
+'pointerup'
+'pointermove'
+'pointerenter'
+'pointerleave'
+'pointerover'
+'pointerout'
+'pointercancel'
+Scroll & Resize
+javascript'scroll'         // Page/element scrolled
+'resize'         // Window resized
+Focus Events
+javascript'focus'          // Element gains focus
+'blur'           // Element loses focus
+'focusin'        // Focus (bubbles)
+'focusout'       // Blur (bubbles)
+Form Events
+javascript'input'          // Input value changed
+'change'         // Input value committed
+'submit'         // Form submitted
+'reset'          // Form reset
+Drag Events
+javascript'drag'
+'dragstart'
+'dragend'
+'dragenter'
+'dragleave'
+'dragover'
+'drop'
+Page Lifecycle
+javascript'load'           // Page fully loaded
+'DOMContentLoaded' // HTML parsed (before images)
+'beforeunload'   // Before page unload
+'unload'         // Page unloading
+'visibilitychange' // Tab visibility changed
+Clipboard
+javascript'copy'
+'cut'
+'paste'
+Media Events (video/audio)
+javascript'play'
+'pause'
+'ended'
+'volumechange'
+'timeupdate'
+// ... many more
+
+*/
+
+
+
+
+
+
+
+
+
+
+
 
 
 
