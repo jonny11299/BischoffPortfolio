@@ -1,7 +1,8 @@
 // TO DO:
 /*
   In no particular order:
-  - Move the deployment and secret to a hidden place, so that random people can't just find my deployment id and secret and abuse my server.
+  - Move the deployment and secret to a hidden place. (bigger security project outside the scope of a static html site.)
+    - Currently protected with a few layers that can be described upon request.
   - Track mouse movements, scrolls, etc.
     - Use the above to help me sort out bots.
   - Get user data summary correctly (alter it on client side to match new logic in getDoNoTrackList or whatever, 
@@ -18,16 +19,9 @@
 */
 
 
-
-
-
 /*
 
-  Problems with this tracking endpoint:
-
-  1. My google sheet can be spoofed by a human being who sees the deployment and decides to give it a go.
-
-  Solutions:
+  Future security solutions:
 
   1. Set up a "serverless function", claude recommends Netlify/Vercel.
     - That'll give me a way to pass around "secret" variables, so the website works, and the database works, 
@@ -41,7 +35,7 @@
     - A better fix will require users to use OAuth, which I don't want. Too much logging in everywhere already...
 
   Proper Fix (When you have time):
-Set up Netlify/Vercel with serverless functions - it's free and takes ~30 minutes to learn, but gives you real security.
+  Set up Netlify/Vercel with serverless functions - it's free and takes ~30 minutes to learn, but gives you real security.
 
 */
 
