@@ -10,28 +10,53 @@
 */
 
 
+/*
 
+  For user patterns tracking, scroll up in here:
+  https://claude.ai/chat/a7b9b2f2-4d29-4ea6-9364-0c9679c5a95d
 
-// Dec 16, 2025: 
-// I added opt-in, opt-out functionality.
-// I still need to:
-
-// 0. Get User Data Summary correctly 
-
-// 1. Track if the user moves their mouse, clicks, does anything really. That'll help me sort out bots.
+*/
 
 
 
 
 
+/*
+
+  Problems with this tracking endpoint:
+
+  1. My google sheet can be spoofed by a human being who sees the deployment and decides to give it a go.
+
+  Solutions:
+
+  1. Set up a "serverless function", claude recommends Netlify/Vercel.
+    - That'll give me a way to pass around "secret" variables, so the website works, and the database works, 
+    - and all users can still access it, but nobody can see how I'm communicating with my backend.
+
+  The truth:
+
+  1. This is a deeper dive into security. It's not actually necessary right now, and will take a lot of learning + overhead.
+  2. Why? 
+    - All data is anonymously stored. Nothing connects to an actual human being's private data. So there's nothing of value to steal.
+    - A better fix will require users to use OAuth, which I don't want. Too much logging in everywhere already...
+
+  Proper Fix (When you have time):
+Set up Netlify/Vercel with serverless functions - it's free and takes ~30 minutes to learn, but gives you real security.
+
+*/
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbyRXFIyD5sdSiMleJjUgiADLa_nmvaKoMabwbq8yHATUTZYY9iefYtkesFabt326sn-/exec";
+
+
+// TODO: Move to serverless backend when scaling up.
+// These are currently visible.
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbynNsqkBTO3De6U8wet-ShbloQ5CJOx1wGC3PwxXj4CNllThhWuyW6V-5bCIhDTP_iO/exec";
+const LOCAL_SECRET = "ILLBETYOUDIDTHAT"; // should eventually make this hidden
+
 
 const NO_TRACKING_STRING = 'not_tracked';
 
-const LOCAL_SECRET = "ILLBETYOUDIDTHAT"; // should eventually make this hidden
 
 // we also append the results of "getNoTrackingList()" to this.
 const HARDCODED_NO_TRACK_LIST = [];

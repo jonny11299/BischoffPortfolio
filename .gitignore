@@ -14,3 +14,7 @@ public/
 
 # old stuff
 old garbage/
+
+# environment variables
+.env 
+.env.local 
