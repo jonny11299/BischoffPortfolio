@@ -1,7 +1,13 @@
+// TO DO:
+/*
+  In no particular order:
+  - Move the deployment and secret to a hidden place, so that random people can't just find my deployment id and secret and abuse my server.
+  - Track mouse movements, scrolls, etc.
+    - Use the above to help me sort out bots.
+  - Get user data summary correctly (alter it on client side to match new logic in getDoNoTrackList or whatever, 
+    - alter server side to return that specific user, not everybody)
 
-
-// DEC 17 TODO REAL QUICK:
-// add DEFER to every instance of the script
+*/
 
 
 
@@ -10,11 +16,9 @@
 // I added opt-in, opt-out functionality.
 // I still need to:
 
-// 0. Get User Data Summary correctly (alter it on client side to match new logic in getDoNoTrackList or whatever, 
-    // alter server side to return that specific user, not everybody)
+// 0. Get User Data Summary correctly 
 
 // 1. Track if the user moves their mouse, clicks, does anything really. That'll help me sort out bots.
-// 2. Verify it actually doesn't make any posts if we are NO_TRACKING_STRING
 
 
 
@@ -23,7 +27,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbz-RtlsPpV2lDqGfXvQIzaJAAAANwx_NAT980Ge20fII-knsdZEFTYBJlekNV8nEQJm/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbyRXFIyD5sdSiMleJjUgiADLa_nmvaKoMabwbq8yHATUTZYY9iefYtkesFabt326sn-/exec";
 
 const NO_TRACKING_STRING = 'not_tracked';
 
@@ -263,13 +267,15 @@ async function trackPageView(pageName) {
 
 // Track when user leaves
 window.addEventListener('beforeunload', function() {
-  const timeSpent = Math.round((Date.now() - pageLoadTime)); // milliseconds
+  const timestamp = Date.now();
+  const timeSpent = Math.round((timestamp - pageLoadTime)); // milliseconds
   
   navigator.sendBeacon(LATEST_DEPLOYMENT, JSON.stringify({
     secret: LOCAL_SECRET,
     userId: curUserId,
     page: window.location.pathname,
     timeSpent: timeSpent,
+    timestamp: timestamp,
     eventType: 'page_exit'
   }));
 });

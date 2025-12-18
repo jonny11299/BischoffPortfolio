@@ -43,7 +43,7 @@ let webglContexts = [];
             webglContexts.push({
                 canvas: this,
                 context: context,
-                created: new Date().toISOString()
+                created: new Date()
             });
             return context;
         }
