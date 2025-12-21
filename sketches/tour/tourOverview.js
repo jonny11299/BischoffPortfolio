@@ -8,7 +8,7 @@ let twidth;
 
 
 // construct a circle around the mouse, else middle
-const Y_ROTATION_SPEED = 1/(Math.PI * 2) * 0.03;
+const Y_ROTATION_SPEED = 1 / (Math.PI * 2) * 0.03;
 const everyNFrames = 5;
 let circleArray = [];
 let maxCircles = 50;
@@ -38,7 +38,7 @@ let mouseHasMoved = false;
 let frameRates = [];
 
 
-function preload(){
+function preload() {
     font = loadFont('/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
 }
 
@@ -72,8 +72,8 @@ function draw() {
     textStyle(NORMAL);
     let h = textSize() * t.split('\n').length * 1.4;
     // if (frameCount % 10 === 0) console.log(t.split('\n').length);
-    rect(-twidth/2 - padding, 0 - h/2, twidth, h)
-        
+    rect(-twidth / 2 - padding, 0 - h / 2, twidth, h)
+
 
     fill(255, 255, 255);
     noStroke();
@@ -83,20 +83,20 @@ function draw() {
     if (mouseHasMoved) defineCircles();
 
     let avgFrameRate = getAvgFrameRate();
-    if (frameCount % 60 === 0){
-        console.log("avg framerate: " + avgFrameRate);
+    if (frameCount % 60 === 0) {
+        // console.log("avg framerate: " + avgFrameRate);
     }
 }
 
 
-function getAvgFrameRate(){
-    
+function getAvgFrameRate() {
+
     frameRates.push(frameRate());
-    if (frameRates.length > 30){
+    if (frameRates.length > 30) {
         frameRates.shift();
     }
     let avgFrameRate = 0;
-    for (rate of frameRates){
+    for (rate of frameRates) {
         avgFrameRate += rate / frameRates.length;
     }
     return avgFrameRate;
@@ -106,14 +106,14 @@ function getAvgFrameRate(){
 // ---------------------------- MOUSE STUFF ----------------------------
 
 // returns webgl coordinates
-function mousex(){
+function mousex() {
     return mouseX - width / 2;
 }
-function mousey(){
+function mousey() {
     return mouseY - height / 2;
 }
 
-function mouseMoved(){
+function mouseMoved() {
     mouseHasMoved = true;
     lastMouseX = latestMouseX;
     lastMouseY = latestMouseY;
@@ -129,25 +129,25 @@ function mouseMoved(){
 
 
 
-function drawCircles(){
-    if (circleArray){
+function drawCircles() {
+    if (circleArray) {
         // update pos
-        for (let c of circleArray){
+        for (let c of circleArray) {
             c.x += c.vx;
             c.y += c.vy;
         }
         // draw lines
-        for (let i = 0 ; i < circleArray.length - 1 ; i++){
-            for (let i2 = i + 1 ; i2 < circleArray.length && i2 < i + 4; i2++){
+        for (let i = 0; i < circleArray.length - 1; i++) {
+            for (let i2 = i + 1; i2 < circleArray.length && i2 < i + 4; i2++) {
                 // rotateY(frameCount * Y_ROTATION_SPEED)
                 strokeWeight(circleArray[i].r / weightDivider);
                 stroke(circleArray[i].color);
-                line(circleArray[i].x, circleArray[i].y, circleArray[i].z, circleArray[i2].x, circleArray[i2].y,  circleArray[i2].z);
+                line(circleArray[i].x, circleArray[i].y, circleArray[i].z, circleArray[i2].x, circleArray[i2].y, circleArray[i2].z);
             }
         }
-        
+
         // draw circles
-        for (let c of circleArray){
+        for (let c of circleArray) {
             push();
             strokeWeight(1);
             stroke(255, 255, 255, c.alpha);
@@ -164,10 +164,10 @@ function drawCircles(){
 
 
 
-function defineCircles(){
+function defineCircles() {
     let mx = latestMouseX;
     let my = latestMouseY;
-    if (frameCount % everyNFrames === 0){
+    if (frameCount % everyNFrames === 0) {
         let alpha = 100;
 
         circleArray.push({
@@ -185,15 +185,15 @@ function defineCircles(){
     if (circleArray.length > maxCircles) resetCircles();
 }
 
-function resetCircles(){
+function resetCircles() {
     circleArray = [];
 }
 
 
 
-function recalcConsts(){
+function recalcConsts() {
     document.querySelector('canvas').focus();
-    fontSize = 14 * windowWidth/1000;
+    fontSize = 14 * windowWidth / 1000;
 
     textAlign(LEFT, CENTER);
     // loadFont('Courier New');
@@ -227,13 +227,13 @@ function recalcConsts(){
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
-    fontSize = 14 * windowWidth/1000;
+    fontSize = 14 * windowWidth / 1000;
 
     recalcConsts();
 }
 
-function keyReleased(){
-    if (key === 'l'){
+function keyReleased() {
+    if (key === 'l') {
         console.log("windowWidth, windowHeight: " + windowWidth + ", " + windowHeight);
         console.log("p width and height: " + width + ", " + height);
     }
