@@ -1,32 +1,37 @@
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Bischoff Portfolio</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" type="text/css" href="/style.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-    <link rel="manifest" href="/images/site.webmanifest">
+  <title>Bischoff Portfolio</title>
 
-    <!-- gimme those cool fonts: -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Share+Tech+Mono&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/style.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/images/site.webmanifest">
+
+  <!-- gimme those cool fonts: -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Share+Tech+Mono&family=Rajdhani:wght@400;600&display=swap"
+    rel="stylesheet">
 
 
-    <script src="/libraries/p5.min.js"></script>
-    <script src="/libraries/p5.sound.min.js"></script>
-    <script src="/embed/engagement.js" defer></script>
-  </head>
+  <script src="/libraries/p5.min.js"></script>
+  <script src="/libraries/p5.sound.min.js"></script>
+  <script src="/embed/engagement.js" defer></script>
+</head>
 
-  <!-- Navbar is rendered with classic CSS Styling -->
-  <!-- Eventually I might make this fully accessible from within the processing sketch -->
-  <!-- I will also have to create a fallback option for if processing fails to load -->
-  <body>
-    <!--<nav>
+<!-- Navbar is rendered with classic CSS Styling -->
+<!-- Eventually I might make this fully accessible from within the processing sketch -->
+<!-- I will also have to create a fallback option for if processing fails to load -->
+
+<body>
+  <!--<nav>
       <a href="#entranceScreen">entrance screen</a>
       <a href="#entrance2">entrance2</a>
       <a href="#home">Home</a>
@@ -35,7 +40,7 @@
       <a href="#template">Template</a>
     </nav>-->
 
-    <style>
+  <style>
     body {
       background: rgb(30, 60, 30);
       width: 100%;
@@ -51,7 +56,7 @@
       padding: 20px;
       color: white;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       border-color: #ffffff;
     }
 
@@ -71,11 +76,13 @@
     .nav-button:hover {
       background-color: rgba(0, 0, 0, 0.9);
     }
+
     p {
-        white-space: pre-wrap;
-        margin: 0;
-        display: block;
+      white-space: pre-wrap;
+      margin: 0;
+      display: block;
     }
+
     hr {
       display: block;
       height: 1px;
@@ -102,59 +109,75 @@
 
   <div class="robotoTest" style="padding: 40px; line-height: 1.5;">
     <p style="margin: 0 0 20px 0;">
-        Stock Prediction app (In-Progress):<br>
-        This app uses daytrade data downloaded (for free) from <a href="https://stooq.com/db/h/">'https://stooq.com/db/h/'</a>to locate specific prices for specific stocks on specific days.<br>
-        It uses the Pandas library in Python to sort through large packages of data.<br>
-        The original goal was to map out the growing and shrinking economic sectors of various publically-trading countries worldwide,<br>
-        (i.e. to answer the question, "what years was biotech / consumer products / whatever industry experiencing its most explosive growth in America, India, China, etc?")
-        Stock Industry labels are not free, though, so more research is required.<br>
-        Since parsing the database, I've gotten an idea for a more exciting program, one that would take less time to develop. <br>
-        <h3>Enjoy this daytrade simulator, or scroll past it to see my stock-prediction calculator idea.</h3><br>
+      Stock Prediction app (In-Progress):<br>
+      This app uses daytrade data downloaded (for free) from <a
+        href="https://stooq.com/db/h/">'https://stooq.com/db/h/'</a>to locate specific prices for specific stocks on
+      specific days.<br>
+      It uses the Pandas library in Python to sort through large packages of data.<br>
+      The original goal was to map out the growing and shrinking economic sectors of various publically-trading
+      countries worldwide,<br>
+      (i.e. to answer the question, "what years was biotech / consumer products / whatever industry experiencing its
+      most explosive growth in America, India, China, etc?")
+      Stock Industry labels are not free, though, so more research is required.<br>
+      Since parsing the database, I've gotten an idea for a more exciting program, one that would take less time to
+      develop. <br>
+    <h3>Enjoy this daytrade simulator, or scroll past it to see my stock-prediction calculator idea.</h3><br>
     </p>
-    
-    <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">  
-  <div id="sketch-container" style="display: flex; justify-content: center; align-items: center;"></div>
 
     <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">
-    
+    <div id="sketch-container" style="display: flex; justify-content: center; align-items: center;"></div>
+
+    <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">
+
     <p style="margin: 0 0 20px 0;">
-        The program I envision will calculate a future stock price using this model: <br>
-        Take a single stock, and make a set of polynomial regressions from randomized points along the graph, then use that data to attempt to predict future values of stocks, and recommend buys, sells, etc.<br>
-        To slow it down, picture this:<br></p>
-            
+      The program I envision will calculate a future stock price using this model: <br>
+      Take a single stock, and make a set of polynomial regressions from randomized points along the graph, then use
+      that data to attempt to predict future values of stocks, and recommend buys, sells, etc.<br>
+      To slow it down, picture this:<br></p>
+
     <ol style="text-align: left; width: 50%; display: inline-block; margin: 20 auto;">
-        <li>Take 10 random points.</li>
-        <li>Create a polynomial regression of the stock price using those 5 points.</li>
-        <li>Do this for 100 random sets of points along this stock. (x axis is time, y axis is price)</li>
-        <li>Take a future date</li>
-        <li>Estimate the future price using the average of all 100 polynomial regressions.</li>
-        <li>Future iterations could find percent earning instead of dollar amount, or compare a stock's growth to the overall DOW Jones to filter out the stock's performance from the market's performance.</li>
-        <li>Future iterations could then create characters with different portfolios and behaviors, (like "Sammy Quick-Sales" and "Lexie Long-Term Investor") and see who performs best.</li>
-        <li>You can really run this simulation using 1990 - 2010 data to train, then simulating growth along 2010 - 2020 data. All of the data is downloadable from <a href="https://stooq.com/db/h/">this link</a>. I have downloaded the database and created functions for reading it quickly.</li>
-        <li><h3><a href="/embed/polynomial_ensemble_edited.pdf" target="_blank" rel="noopener noreferrer">Open this pdf</a> to see the stock prediction functions described in greater detail.</h3></li>
+      <li>Take 10 random points.</li>
+      <li>Create a polynomial regression of the stock price using those 5 points.</li>
+      <li>Do this for 100 random sets of points along this stock. (x axis is time, y axis is price)</li>
+      <li>Take a future date</li>
+      <li>Estimate the future price using the average of all 100 polynomial regressions.</li>
+      <li>Future iterations could find percent earning instead of dollar amount, or compare a stock's growth to the
+        overall DOW Jones to filter out the stock's performance from the market's performance.</li>
+      <li>Future iterations could then create characters with different portfolios and behaviors, (like "Sammy
+        Quick-Sales" and "Lexie Long-Term Investor") and see who performs best.</li>
+      <li>You can really run this simulation using 1990 - 2010 data to train, then simulating growth along 2010 - 2020
+        data. All of the data is downloadable from <a href="https://stooq.com/db/h/">this link</a>. I have downloaded
+        the database and created functions for reading it quickly.</li>
+      <li>
+        <h3><a href="/embed/polynomial_ensemble_edited.pdf" target="_blank" rel="noopener noreferrer">Open this pdf</a>
+          to see the stock prediction functions described in greater detail.</h3>
+      </li>
     </ol>
-    
+
     <hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">
-    
+
     <p style="margin: 0;">
-        Of course, stock market estimating is an enormous field, and if it was so easy, we would all be millionaires.<br>
-        However, I would like to create this program, and then use data science to tweak a model that demonstrates earnings over time.<br>
-        If I just keep running simulations with different stock price models, maybe I can find one that seems to earn money over time.<br>
-        Play the stock simulation above if you haven't already. <br>
+      Of course, stock market estimating is an enormous field, and if it was so easy, we would all be millionaires.<br>
+      However, I would like to create this program, and then use data science to tweak a model that demonstrates
+      earnings over time.<br>
+      If I just keep running simulations with different stock price models, maybe I can find one that seems to earn
+      money over time.<br>
+      Play the stock simulation above if you haven't already. <br>
 
     </p>
 
-</div>
+  </div>
 
-        
+
 
   <!--
       src="/embed/polynomial_ensemble_edited.pdf"
       width="100%"
       height="800px"
       style="border: none;">
-      --> 
+      -->
 
   <script src="/sketches/tour/stockAppTour.js"></script>
 </body>
+
 </html>

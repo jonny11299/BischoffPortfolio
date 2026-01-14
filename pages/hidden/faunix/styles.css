@@ -1,0 +1,313 @@
+/* ---------------------------- GLOBAL RESET & TYPOGRAPHY ---------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+html {
+    background-color: #000000;
+    position: relative;
+    /* for pseudo-element stacking */
+}
+
+html::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(83, 31, 255, 0);
+    /* translucent sage overlay */
+    pointer-events: none;
+    z-index: 0;
+    /* behind content, above bg */
+}
+
+
+/* Make p5 canvas fill viewport and sit behind everything */
+canvas {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    /* Behind everything */
+    width: 100vw !important;
+    height: 100vh !important;
+}
+
+body {
+
+    position: relative;
+    z-index: 1;
+    /* ensure content is above html::after */
+    font-family: consolas, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #222;
+    padding: 2rem 1rem;
+    margin: 0;
+}
+
+
+/* ✅ Overlay always covers the viewport */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    /* background: rgba(165, 190, 156, 0.75); /* semi-transparent sage overlay. This one was doubled, soooo... moved it to html::after*/
+    z-index: -1;
+}
+
+
+/* Shared frame styling for nav, content, footer */
+nav.site-nav,
+.page-wrapper,
+footer.site-footer {
+    width: 100%;
+    max-width: 80vw;
+    margin: 0 auto 1.5rem auto;
+    /* center horizontally with space below */
+    padding: 2rem 3rem;
+    background-color: rgba(97, 53, 255, 0.2);
+    /* soft off-white */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+/* ---------------------------- CONTENT WRAPPER ---------------------------- */
+
+
+@media (orientation: portrait) {
+
+    /* prevent accidental side scroll from the scaled page */
+    html {
+        overflow-x: hidden;
+    }
+
+    /* scale the entire page */
+    body[data-page] {
+        transform: scale(0.8);
+        transform-origin: top center;
+    }
+
+    /* optional: tighten vertical rhythm a bit on phones */
+    .site-footer {
+        margin-top: 0.75rem;
+        padding-top: 0.5rem;
+    }
+
+    .page-wrapper>*:last-child {
+        margin-bottom: 0.75rem;
+    }
+
+    nav.site-nav,
+    .page-wrapper,
+    footer.site-footer {
+        padding: 1.5rem 0.5rem;
+    }
+}
+
+
+
+
+/* ---------------------------- TYPOGRAPHY ---------------------------- */
+
+h1 {
+    font-size: 2.5rem;
+    color: #ffffff;
+}
+
+h2 {
+    font-size: 1.75rem;
+    color: #ffffff;
+}
+
+h3 {
+    color: #ffffff;
+
+}
+
+h4 {
+    color: #ffffff;
+
+}
+
+h5 {
+    color: #ffffff;
+
+}
+
+p {
+    color: #ffffff;
+    margin-bottom: 1em;
+}
+
+a {
+    color: #6cd8ff;
+}
+
+ul {
+    display: block;
+    /* or flex with flex-direction: column */
+    list-style: none;
+    /* removes bullets */
+}
+
+ul.vertical {
+    display: block;
+    /* or flex with flex-direction: column */
+    list-style: none;
+    /* removes bullets */
+}
+
+
+ul.horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    /* spacing between items */
+    justify-content: center;
+}
+
+ul.horizontal li {
+    margin: 0;
+    /* remove vertical margin */
+}
+
+ul.songSelect {
+    display: block;
+    /* or flex with flex-direction: column */
+    list-style: none;
+    /* removes bullets */
+    /* border: 4px solid #ff0000;*/
+    padding-top: 0px;
+    padding-bottom: 0px;
+    width: 20vw;
+    margin: 0 auto;
+}
+
+/* Border around each list item */
+ul.songSelect li {
+    /* border: 1px solid #dd0000;*/
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding: 1px 1px;
+    margin: 0;
+    /* ← Remove default margin */
+}
+
+
+ul.songSelectVertical {
+    display: block;
+    /* or flex with flex-direction: column */
+    list-style: none;
+    /* removes bullets */
+    /* border: 4px solid #ff0000;*/
+    padding-top: 0px;
+    padding-bottom: 0px;
+    width: 80vw;
+    margin: 0 auto;
+}
+
+/* Border around each list item */
+ul.songSelectVertical li {
+    /* border: 1px solid #dd0000;*/
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding: 4px 4px;
+    margin: 0;
+    /* ← Remove default margin */
+}
+
+input {
+    font-size: 16px;
+    width: 30%;
+    min-width: 200px;
+    text-align: center;
+}
+
+select {
+    font-size: 16px;
+    width: 20%;
+    min-width: 200px;
+    text-align: center;
+}
+
+
+
+
+button.songSelect {
+    padding: 2px 2px;
+    background-color: rgba(47, 68, 255, 0.7);
+    color: white;
+    text-decoration: none;
+    border-radius: 1px;
+    z-index: 1000;
+    cursor: pointer;
+    font-size: 17px;
+
+    display: block;
+    /* ← Makes button fill the li */
+    width: 100%;
+    /* ← Optional: full width */
+}
+
+
+select.versionSelect {
+    padding: 2px 2px;
+    background-color: rgba(207, 180, 246, 0.7);
+    color: white;
+    text-decoration: none;
+    border-radius: 1px;
+    z-index: 1000;
+    cursor: pointer;
+    font-size: 17px;
+
+    display: block;
+    /* ← Makes button fill the li */
+    width: 100%;
+    /* ← Optional: full width */
+
+}
+
+
+li {
+    display: block;
+    /* ensures vertical stacking */
+    margin: 20px 0;
+    /* vertical margin only */
+    font-size: 20px;
+    color: #eeee00;
+}
+
+
+
+
+button {
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    z-index: 1000;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+
+
+
+#dropZone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#dropZone.drag-over {
+    border-color: #000;
+    background-color: rgb(83, 31, 255);
+}

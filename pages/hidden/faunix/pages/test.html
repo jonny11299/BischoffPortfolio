@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faunix Album 2</title>
+  <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+
+  <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+  <script src="/pages/hidden/faunix/js/postman.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <!-- <script src="/pages/hidden/faunix/js/bg.js"></script>-->
+</head>
+
+<body data-page="home">
+  <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+  <!-- Main centered content -->
+  <div class="page-wrapper">
+    <div class="scaled-content">
+
+      <main class="container">
+        <section class="section">
+
+          <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+          <header>
+            <p></p>
+            <h1>Test page</h1>
+          </header>
+
+          <!-- Add some -- "I don't recognize this user. Who are you?"-->
+
+          <!-- button interaction with script-->
+          <script>
+            function logFaunixName() {
+              let name = getFaunixName();
+              console.log('Faunix name: ' + name);
+            }
+
+            function getUserListFromServer() {
+              get('user_list');
+            }
+          </script>
+
+
+
+
+          <ul>
+            <li>
+              <button id="b1" onclick="logFaunixName()">log random Faunixian name</button>
+            </li>
+            <li>
+              <button id="b2" onclick="deleteLocalName()">Delete my locally-stored name</button>
+            </li>
+            <li>
+              <button id="b3" onclick="delete_faunix_user_id()">Reassign my user id</button>
+            </li>
+            <li>
+              <button id="getFromServer" onclick="getUserListFromServer()">Get user list from server
+                (console.log-style)</button>
+            </li>
+            <li>
+              <a href="./whoareyou.html">Who are you?</a>
+            </li>
+
+          </ul>
+          <br>
+          <br>
+          <br>
+
+          <h2 style="color: green">Add New Song Version:</h2>
+          <ul>
+            <li>
+              <select id="songSelect"></select>
+            </li>
+            <li>
+              <input type="string" id="version_name" placeholder="Version Name">
+            </li>
+            <li>
+              <select id="quickLinkSelect"></select>
+            </li>
+            <li>
+              <input type="string" id="embed_link" placeholder="Embed Link">
+            </li>
+            <li>
+              <button id="submitButton" onclick="submitNewSongVersionTest()">Submit</button>
+            </li>
+            <li>
+              <h4 id="addSongFeedback" style="color: red;"></h4>
+            </li>
+          </ul>
+          <br>
+          <br>
+          <br>
+
+
+          <!-- Basic form outline below -->
+          <form id="tracking-form" onsubmit="return handleSubmit(event)">
+            <textarea id="reason" name="reason" rows="4" cols="50" placeholder="Enter your reason here..."
+              style="padding: 15px; " required></textarea>
+            <br><br>
+            <button id="submitButton" type="submit" style="background-color: rgba(8, 39, 211, 0.7);">
+              Submit
+            </button>
+          </form>
+
+
+          <script>
+
+
+
+
+
+
+            function setQuickLinks() {
+              const list = document.getElementById('link_list');
+              list.innerHTML = ''; // clear existing
+
+              let links = getLinksFromLocalStorage();
+
+
+              for (let link of links) {
+                const a = document.createElement('a');
+                a.href = link.href;
+                a.textContent = link.text;
+                a.target = "_blank";
+
+                const li = document.createElement('li');
+                li.appendChild(a);
+                list.appendChild(li);
+              }
+
+
+              console.log("Here's your link list from getLinkList: ");
+              console.log(links);
+              console.log("Here's your list from getLinkList: ");
+              console.log(list);
+            }
+
+
+
+
+            function setHtmlElements() {
+              document.getElementById('version_name').value = '';
+              document.getElementById('embed_link').value = '';
+
+              const songSelect = document.getElementById('songSelect');
+              songSelect.innerHTML = ''; // clear existing
+
+              // Add a default/placeholder option
+              const defaultOption1 = document.createElement('option');
+              defaultOption1.value = '';
+              defaultOption1.textContent = '-- Select a song --';
+              defaultOption1.disabled = true;
+              defaultOption1.selected = true;
+              songSelect.appendChild(defaultOption1);
+
+
+              let songs = getSongNames();
+              // console.log("Songs:");
+              // console.log(songs);
+
+              for (let song of songs) {
+                const option = document.createElement('option');
+                option.value = song;
+                option.textContent = song;
+
+                songSelect.appendChild(option);
+              }
+
+
+              // Set quick links:
+              const quickLinkSelect = document.getElementById('quickLinkSelect');
+              quickLinkSelect.innerHTML = '';
+
+              // Add a default/placeholder option
+              const defaultOption2 = document.createElement('option');
+              defaultOption2.value = '';
+              defaultOption2.textContent = '-- Select a Source --';
+              defaultOption2.disabled = true;
+              defaultOption2.selected = true;
+              quickLinkSelect.appendChild(defaultOption2);
+
+              let quickLinks = getLinksFromLocalStorage();
+              for (let link of quickLinks) {
+                const option = document.createElement('option');
+                option.value = link.text;
+                option.textContent = link.text;
+
+                quickLinkSelect.appendChild(option);
+              }
+
+
+              const versionsList = getVersionsFromLocalStorage();
+
+
+
+            }
+
+
+            function addSongToLocalStorage(version) {
+
+              let songs = getVersionsFromLocalStorage();
+
+              songs.push({
+                timestamp: version.timestamp,
+                song_name: version.song_name,
+                version_name: version.version_name,
+                uploader: version.uploader,
+                uploader_id: version.uploader_id,
+                drive_name: version.drive_name,
+                s3_url: version.s3_url
+              })
+
+              localStorage.setItem('faunix_song_versions', JSON.stringify(songs));
+
+              console.log("Here's your song versions: ");
+              console.log(songs);
+            }
+
+
+
+
+
+            function submitNewSongVersionTest() {
+
+              const songName = document.getElementById('songSelect').value;
+              const versionName = document.getElementById('version_name').value;
+              const quickLinkName = document.getElementById('quickLinkSelect').value;
+              const embed_link = document.getElementById('embed_link').value;
+              const timestamp = new Date(Date.now()).toISOString();
+              const username = getName();
+              const userID = getUserID();
+
+
+              let fail = "";
+              if (songName == "") {
+                fail = "Blank song name ";
+              }
+              if (versionName == "") {
+                fail += "Blank version name ";
+              }
+              if (quickLinkName == "") {
+                fail += "Blank quickLink name ";
+              }
+              if (embed_link == "") {
+                fail += "Blank embed link ";
+              }
+              console.log(fail);
+
+              let feedback = document.getElementById("addSongFeedback");
+              if (!(fail === "")) {
+                fail += "; Submission rejected."
+                feedback.textContent = fail;
+                feedback.style = "color: red;";
+                console.log("Failing because " + fail);
+                return false;
+              }
+
+              feedback.textContent = "Submission Successful.";
+              feedback.style = "color: green";
+
+
+              const submission = {
+                timestamp: timestamp,
+                song_name: songName,
+                version_name: versionName,
+                uploader: username,
+                uploader_id: userID,
+                drive_name: quickLinkName,
+                s3_url: embed_link
+              }
+
+              console.log("Submitting new song to local storage:");
+              console.log(submission);
+
+              addSongToLocalStorage(submission);
+
+
+              setHtmlElements();
+            }
+
+
+            setHtmlElements();
+
+
+          </script>
+
+
+
+          <br><br><br>
+          <input type="file" id="fileInput" accept="audio/*">
+          <script>
+            // Paste the uploadAudioFile function here
+
+
+
+
+
+
+
+            document.getElementById('fileInput').addEventListener('change', async (e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const url = await uploadAudioFile(file);
+                if (url) {
+                  alert('Uploaded! URL: ' + url);
+                  console.log('Uploaded! URL: ' + url);
+                }
+              }
+            });
+          </script>
+
+
+
+
+
+
+
+
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer sits at the bottom -->
+  <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+  <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,272 @@
+
+
+/pages/hidden/faunix/
+
+
+
+1. Build out the page to build album orders 
+  - pending "sendItOff()"
+
+2. Build out the "embed link" --> listening functionality 
+  - build out "how to create embed link"
+3. incorporate the server 
+4. add a "Recover from deleted" option (use the backend server to keep deleted instances)
+
+0. Add a lil cute ghost icon
+1. Add a background
+  - Check out that shit you been doin with the p5 sketch
+
+
+2. Ensure every page has:
+  - whoareyou
+  - postman 
+  - standardFunctions 
+
+
+
+
+// 1/13/26 okay bro, here's where I'm at:
+  // modify upload to use the s3 bucket
+  // modify listen to work
+  // make it work good on localstorage 
+  // build a database 
+
+
+
+
+
+1. Create forms on the webpages that allow me to submit the required data 
+2. Build out a relational database that sends and retrieves (postman)
+3. Fill in the embed links
+4. Design all the functionality for selecting and listening 
+5. Design the functionality for leaving notes (form that reads timestamp)
+
+
+
+
+cleanup:
+1. Check that postman is included in each HTML page 
+2. Check that we know who created what. 
+
+
+
+
+
+Functional:
+
+Submit pattern:
+    Submit a new entry for various entries across my pages:
+        - quickLinks
+        - upload 
+        - order 
+        - listen 
+
+Retrieve pattern: 
+    Retrieve entries from the database 
+
+
+
+Aesthetic:
+Add a cute lil ghost icon for the tab
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+From Claude:
+
+That's a smart approach! Building with local storage first lets you develop the entire data flow without worrying about backend infrastructure, then you can swap in real API calls later.
+Here's a clean pattern you could use:
+javascript// config.js - toggle between local and remote
+const USE_LOCAL_STORAGE = true; // flip to false when you're ready for real backend
+
+// dataService.js
+const postData = USE_LOCAL_STORAGE ? postDataLocal : postDataRemote;
+const getData = USE_LOCAL_STORAGE ? getDataLocal : getDataRemote;
+
+// Local versions
+function postDataLocal(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+  return Promise.resolve({success: true, data}); // mimic async API response
+}
+
+function getDataLocal(key) {
+  const data = localStorage.getItem(key);
+  return Promise.resolve(data ? JSON.parse(data) : null);
+}
+
+// Remote versions (for later)
+async function postDataRemote(endpoint, data) {
+  const response = await fetch(`/api/${endpoint}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+  return response.json();
+}
+
+async function getDataRemote(endpoint) {
+  const response = await fetch(`/api/${endpoint}`);
+  return response.json();
+}
+For your song submission forms, you might structure it like:
+javascript// When user submits a song
+async function submitSong(songData) {
+  const songId = `song_${Date.now()}`;
+  await postData(songId, {
+    title: songData.title,
+    artist: songData.artist,
+    audioFile: songData.audioFile, // just filename for now
+    timestamp: new Date().toISOString()
+  });
+  
+  // Update song list
+  const songs = await getData('allSongs') || [];
+  songs.push(songId);
+  await postData('allSongs', songs);
+}
+
+// Retrieve all songs
+async function getAllSongs() {
+  const songIds = await getData('allSongs') || [];
+  const songs = await Promise.all(
+    songIds.map(id => getData(id))
+  );
+  return songs;
+}
+The Promise.resolve() wrapper in the local versions makes them async like real API calls, so your code won't break when you switch.
+Once you land and have internet, just flip USE_LOCAL_STORAGE to false and adjust the endpoint names. The logic stays the same!
+Are you building this for Faunix stuff or is this a portfolio piece?What is the difference between response.json() and JSON.stringify(response)Dec 29Great question - they're actually opposites:
+response.json()
+Converts FROM JSON string TO JavaScript object
+javascript// response.json() - PARSING (string → object)
+const response = await fetch('/api/songs');
+const data = await response.json(); // "{"title":"Song"}" → {title: "Song"}
+console.log(data.title); // "Song"
+It's a method on the fetch Response object that:
+
+Reads the response body (which is a JSON string)
+Parses it into a JavaScript object
+Returns a Promise
+
+
+JSON.stringify()
+Converts FROM JavaScript object TO JSON string
+javascript// JSON.stringify() - STRINGIFYING (object → string)
+const songData = {title: "My Song", artist: "Faunix"};
+const jsonString = JSON.stringify(songData); 
+// {title: "My Song", artist: "Faunix"} → '{"title":"My Song","artist":"Faunix"}'
+
+// Use when SENDING data
+fetch('/api/songs', {
+  method: 'POST',
+  body: JSON.stringify(songData) // must be a string!
+});
+
+Why JSON.stringify(response) doesn't make sense:
+response is a Response object (not data), so stringifying it just gives you "[object Response]" - not useful!
+The pair:
+
+Sending data → JSON.stringify(object) → string goes to server
+Receiving data → response.json() → string becomes object
+
+For your local storage versions, you're doing the same thing:
+javascriptlocalStorage.setItem(key, JSON.stringify(data)); // object → string (storing)
+const data = JSON.parse(localStorage.getItem(key)); // string → object (retrieving)
+Does that click?Can you give me a quick template to:Use html <input> tags to set several details
+Click a <button> to submit those details as a single json object using localstorage
+Click a different <button> to retrieve the json object12:32 AMHere's a clean template:
+html<!DOCTYPE html>
+<html>
+<head>
+  <title>Form Storage Test</title>
+</head>
+<body>
+  <h2>Submit Song Data</h2>
+  
+  <!-- Input Form -->
+  <div>
+    <label>Song Title:</label>
+    <input type="text" id="title" placeholder="Enter title">
+  </div>
+  
+  <div>
+    <label>Artist:</label>
+    <input type="text" id="artist" placeholder="Enter artist">
+  </div>
+  
+  <div>
+    <label>Genre:</label>
+    <input type="text" id="genre" placeholder="Enter genre">
+  </div>
+  
+  <div>
+    <label>Duration (seconds):</label>
+    <input type="number" id="duration" placeholder="180">
+  </div>
+  
+  <button onclick="submitData()">Submit Data</button>
+  <button onclick="retrieveData()">Retrieve Data</button>
+  
+  <!-- Display Area -->
+  <div id="output"></div>
+
+  <script>
+    function submitData() {
+      // Gather input values
+      const songData = {
+        title: document.getElementById('title').value,
+        artist: document.getElementById('artist').value,
+        genre: document.getElementById('genre').value,
+        duration: document.getElementById('duration').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Store as JSON string
+      localStorage.setItem('songData', JSON.stringify(songData));
+      
+      console.log('Data submitted:', songData);
+      document.getElementById('output').innerHTML = '<p>✓ Data saved!</p>';
+    }
+    
+    function retrieveData() {
+      // Get and parse JSON string
+      const stored = localStorage.getItem('songData');
+      
+      if (stored) {
+        const songData = JSON.parse(stored);
+        console.log('Retrieved data:', songData);
+        
+        // Display it
+        document.getElementById('output').innerHTML = `
+          <h3>Retrieved Data:</h3>
+          <pre>${JSON.stringify(songData, null, 2)}</pre>
+        `;
+      } else {
+        document.getElementById('output').innerHTML = '<p>No data found!</p>';
+      }
+    }
+  </script>
+</body>
+</html>
+What happens:
+
+Fill in the inputs
+Click "Submit Data" → creates object → stores as JSON string
+Click "Retrieve Data" → fetches string → parses back to object → displays it
+
+Check the browser console to see the logged objects too!
+You can add more inputs just by following the same pattern. Want me to show you how to store/retrieve multiple songs as an array?

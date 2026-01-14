@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faunix Album 2</title>
+  <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+</head>
+
+<body data-page="home">
+  <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+  <!-- Main centered content -->
+  <div class="page-wrapper">
+    <div class="scaled-content">
+
+      <main class="container">
+        <section class="section">
+
+          <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+          <header>
+            <p></p>
+            <h1>Test2</h1><br>
+          </header>
+
+          <!-- Add some -- "I don't recognize this user. Who are you?"-->
+
+          <!-- button interaction with script-->
+          <script>
+            function logFaunixName() {
+              let name = getFaunixName();
+              console.log('Faunix name: ' + name);
+            }
+
+            function getUserListFromServer() {
+              get('user_list');
+            }
+          </script>
+
+
+
+
+          <h2 style="color: green">Add New Song Version:</h2>
+          <ul>
+            <li>
+              <select id="songSelect"></select>
+            </li>
+            <li>
+              <input type="string" id="version_name" placeholder="Version Name">
+            </li>
+            <li>
+              <select id="quickLinkSelect"></select>
+            </li>
+            <li>
+              <input type="string" id="embed_link" placeholder="Embed Link">
+            </li>
+            <li>
+              <button id="submitButton" onclick="submitNewSongVersion()">Submit</button>
+            </li>
+            <li>
+              <h4 id="addSongFeedback" style="color: red;"></h4>
+            </li>
+          </ul>
+          <br>
+          <br>
+          <br>
+
+          <script>
+
+            // Calculates the fastest path to bowl to this score
+            function bowlTo(target, history = []) {
+              if (target > 300) {
+                return "Not possible.";
+              }
+
+              // const lastScore = history == [] ? 0 : history[-1];
+              let lastScore = 0;
+              if (history != []) {
+                for (let n of history) {
+                  lastScore += n;
+                }
+              }
+
+              console.log(lastScore);
+
+              if (target - lastScore < 11) {
+                history.push(target - lastScore);
+                return history;
+              } else {
+                history.push(10);
+                return bowlTo(target, history);
+              }
+            }
+
+            function calculate() {
+              const input = document.getElementById('numberInput').value;
+              const number = parseFloat(input);
+
+              const result = bowlTo(input);
+              let numFrames = result.length;
+              if (typeof result == Array) {
+              }
+
+              document.getElementById('result').textContent = `Number of rounds: ${numFrames}\nFrames: ${result}`;
+            }
+          </script>
+
+
+          <!-- Basic form outline below -->
+          <form id="tracking-form" onsubmit="return getForm(event)">
+            <textarea id="reason" name="reason" rows="4" cols="50" placeholder="Enter your reason here..."
+              style="padding: 15px; " required></textarea>
+            <br><br>
+            <button id="submitButton" type="submit" style="background-color: rgba(8, 39, 211, 0.7);">
+              Submit
+            </button>
+          </form>
+
+          <br>
+          <br>
+          <br>
+
+
+
+
+
+          <ul>
+            <li>
+              <input type="number" id="n" placeholder="number">
+            </li>
+            <li>
+              <button onclick="nclicky()">nclicky</button>
+            </li>
+            <li>
+              <h3 id="h3h3">nothing</h3>
+            </li>
+          </ul>
+
+
+          <script>
+
+            function func() {
+              let a = [[1, 2, 3], [4, 5], [6], [7, 8, 9, 10]];
+
+              return a.reduce((comb, list) => {
+                return comb.concat(list);
+              }, [])
+            }
+
+            function nclicky() {
+              const h3 = document.getElementById("h3h3");
+              h3.textContent = JSON.stringify(func());
+            }
+          </script>
+
+
+
+
+
+
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer sits at the bottom -->
+  <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+  <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

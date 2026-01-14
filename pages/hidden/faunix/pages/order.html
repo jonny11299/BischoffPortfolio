@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>Create a New Album Order:</h1>
+                        <br>
+
+                        <h3>---------------------------------------------------------------------------------------</h3>
+                        <br>
+
+                    </header>
+
+                    <!-- Add "Submit new links:"-->
+
+                    <!-- 
+                    
+                        Going to need the following flow:
+                        1. Present song list as buttons
+                        2. Click on them, and create a list of our songs in-order
+                        3. Take me to a different page where I select the versions of each (default to most recent)
+                        4. Given a list of versions, submit to ALBUM_ORDERS
+                        5. Later, I will get a particular ALBUM_ORDER and play it.
+                    
+                    
+                    -->
+
+                    <ul id='masterList' class="horizontal">
+                        <li>
+                            <ul id="songNameList" class="songSelect">
+                                <!-- A list of buttons whose value is the songname, text content is (select order) plus song name -->
+                                <li>blank song name list</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <ul id="selectedSongsList" class="songSelect">
+                                <!-- A list of buttons whose value is the songname, text content is (select order) plus song name -->
+                                <li>selectedSongsList</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <ul id="selectedVersionsList" class="songSelect">
+                                <!-- A list of buttons whose value is the songname, text content is (select order) plus song name -->
+                                <li>selectedVersionsList</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+                    <h3>---------------------------------------------------------------------------------------</h3>
+                    <br>
+                    <br>
+                    <br>
+                    <h2>Ready to submit?</h2>
+                    <br>
+                    <ul>
+                        <li>
+                            <h3>First, name this Album Order:</h3>
+                        </li>
+                        <li>
+                            <input type="string" id="album_order_name" placeholder="Album Order Name">
+                        </li>
+                        <li>
+                            <h3>Then, submit!</h3>
+                        </li>
+                        <li>
+                            <button id="sendItOff" onclick="submitAlbumOrder()">Submit</button>
+                        </li>
+
+                        <li>
+                            <h4 id="submitFeedback" style="color: red;"></h4>
+                        </li>
+                    </ul>
+
+                    <br>
+                    <br>
+                    <br>
+                    <h3>---------------------------------------------------------------------------------------</h3>
+                    <br>
+                    <ul>
+                        <li>
+                            <p><a href="/pages/hidden/faunix/pages/deleteAlbumOrder.html">Delete Album Order (only use
+                                    for
+                                    errors)</a></p>
+                        </li>
+                    </ul>
+                    <br>
+
+
+
+
+
+                    <script>
+                        window.addEventListener('resize', setHtmlElements);
+
+
+                        function setHtmlElements() {
+
+                            // console.log(`width: ${innerWidth}`);
+                            // console.log(`height: ${innerHeight}`);
+                            // set iphone functionality
+                            let vertical = false;
+                            if (innerHeight > innerWidth) {
+                                vertical = true;
+
+                                const mlist = document.getElementById('masterList');
+                                mlist.className = 'vertical';
+                            } else {
+                                const mlist = document.getElementById('masterList');
+                                mlist.className = 'horizontal';
+                            }
+
+
+
+
+                            // build a list of buttons of songname
+                            let songNames = getSongNames();
+                            let songFreq = getSongFrequency();
+
+                            // console.log("Songnamelist:");
+                            // console.log(songNames);
+
+                            const songNameList = document.getElementById('songNameList');
+                            songNameList.innerHTML = ''; // clear existing
+                            songNameList.className = vertical ? 'songSelectVertical' : 'songSelect';
+                            // Add the header "click to add songs:" :
+                            const headerLI = document.createElement('li');
+                            const headerText = document.createElement('h3');
+                            headerText.textContent = "Click to add songs:";
+                            headerLI.appendChild(headerText);
+                            songNameList.appendChild(headerLI);
+
+                            // will need to set color based on if I've selected it or not.
+                            // green for "have selected", yellow for "have duplicates"
+
+                            for (let song of songNames) {
+                                const li = document.createElement('li');
+
+                                const button = document.createElement('button');
+                                button.value = JSON.stringify({
+                                    songName: song,
+                                    version: 'blank',
+                                    order: -1
+                                });
+                                button.textContent = song;
+                                if (songFreq[song]) {
+                                    button.textContent = song + ` (${songFreq[song]})`;
+
+                                    // cheeky math to animate color based on frequency
+                                    let n = songFreq[song];
+                                    let r = n > 1 ? 255 : 40;
+                                    let g = 255 - ((255 - 68) / (n + 1));
+                                    button.style = `background-color: rgba(${r}, ${g}, 128, 0.7)`;
+
+                                }
+
+
+                                button.className = 'songSelect';
+                                // if (vertical) button.className = 'songSelectVertical';
+
+                                // could also add event listener, but this feels more simple/elegant
+                                button.onclick = () => appendToAlbumOrder(song);
+
+                                li.appendChild(button);
+                                songNameList.appendChild(li);
+                            }
+
+
+                            // build the list of select songs:
+                            const selectedSongsList = document.getElementById('selectedSongsList');
+
+                            selectedSongsList.innerHTML = '';
+                            selectedSongsList.className = vertical ? 'songSelectVertical' : 'songSelect';
+                            const headerLI2 = document.createElement('li');
+                            const headerText2 = document.createElement('h3');
+                            headerText2.textContent = "Selected Album Order:";
+                            headerLI2.appendChild(headerText2);
+                            selectedSongsList.appendChild(headerLI2);
+
+                            // here:
+                            for (let song of selectedSongs) {
+                                const li = document.createElement('li');
+
+                                const button = document.createElement('button');
+                                button.value = JSON.stringify({
+                                    order: song.order,
+                                    songName: song.name,
+                                    version: song.version
+                                });
+                                button.textContent = `(${song.order}) ${song.name}`;
+                                button.className = 'songSelect';
+                                button.style = "background-color: rgba(100, 100, 100, 0.7);"
+                                // if (vertical) button.className = 'songSelectVertical';
+
+                                // could also add event listener, but this feels more simple/elegant
+                                button.onclick = () => removeFromAlbumOrder(song);
+
+                                li.appendChild(button);
+                                selectedSongsList.appendChild(li);
+                            }
+
+
+
+                            const vlist = document.getElementById('selectedVersionsList');
+                            vlist.innerHTML = '';
+                            vlist.className = vertical ? 'songSelectVertical' : 'songSelect';
+                            const headerLI3 = document.createElement('li');
+                            const headerText3 = document.createElement('h3');
+                            headerText3.textContent = "Selected Version:";
+                            headerLI3.appendChild(headerText3);
+                            vlist.appendChild(headerLI3);
+
+
+                            const versions = getVersionsMappedToName();
+
+
+                            // okay so... upon selecting something, i have to update selectedSongs[song]
+                            // then, upon constructing this list, i have to use the default option iff selectedSongs[song] not available.
+
+                            let i = -1;
+                            for (let song of selectedSongs) {
+                                i++; // yeah yeah i'm updating at the start instead of the end... get over it. Still iterates [0, length)
+
+                                const li = document.createElement('li');
+                                const select = document.createElement('select');
+                                select.className = 'versionSelect';
+                                select.id = `select_${i}`;
+
+                                // updating selectedSongs here
+                                // have to bind the index at the correct place
+                                // Otherwise we get a js closure issue.
+                                const capturedIndex = i;
+                                select.onchange = () => {
+                                    selectedSongs[capturedIndex].version = select.value;
+                                    // console.log(selectedSongs);
+                                }
+
+
+
+                                // add a default option:
+                                const doption = document.createElement('option');
+                                if (selectedSongs[i].version === 'blank') {
+                                    doption.value = '';
+                                    doption.textContent = `-- ${song.name} default --`;
+                                    doption.disabled = true;
+                                } else {
+                                    // default to the already-selected value (i.e. remember state when re-building the list)
+                                    doption.value = selectedSongs[i].version;
+                                    doption.textContent = selectedSongs[i].version;
+                                }
+                                doption.selected = true;
+
+
+                                // add all the versions:
+                                if (versions[song.name]) {
+                                    for (const v of versions[song.name]) {
+                                        if (v !== doption.value) { // skip re-adding the currently-added option
+                                            const option = document.createElement('option');
+                                            option.value = v;
+                                            option.textContent = v;
+
+                                            select.appendChild(option);
+                                            li.appendChild(select);
+                                            vlist.appendChild(li);
+                                        }
+                                    }
+                                } else {
+                                    doption.textContent = `!! ${song.name} empty !!`;
+                                }
+
+
+
+                                select.appendChild(doption);
+                                li.appendChild(select);
+                                vlist.appendChild(li);
+
+                            }
+
+                        }
+
+
+                        /*
+                            {
+                                order: 
+                                name:
+                                version: 
+                            }
+                        */
+                        function removeFromAlbumOrder(song) {
+                            let newList = [];
+                            let curOrder = 1;
+
+                            for (let s of selectedSongs) {
+                                if (s.order === song.order) {
+                                    // console.log("Removed " + s.name);
+                                } else {
+                                    s.order = curOrder;
+                                    newList.push(s);
+                                    curOrder++;
+                                }
+                            }
+
+                            selectedSongs = newList;
+
+                            setHtmlElements();
+                        }
+
+                        function appendToAlbumOrder(songName) {
+                            let newIndex = selectedSongs.length + 1;
+                            // here I need to select the actual default option:
+                            let versionName = getDefaultSongVersion(songName).version_name;
+                            selectedSongs.push({
+                                order: newIndex,
+                                name: songName,
+                                version: versionName
+                            });
+
+                            // console.log(selectedSongs);
+
+                            setHtmlElements();
+                        }
+
+                        // returns a list mapping:
+                        // songname --> num of times appearing in selectedSongs
+                        // iterate through the list. If it's not in the object, add it with count "1". If it is in the list, increase its count.
+                        function getSongFrequency() {
+                            let freqObject = {};
+
+                            for (let song of selectedSongs) {
+                                if (!freqObject[song.name]) {
+                                    freqObject[song.name] = 1;
+                                } else {
+                                    freqObject[song.name] += 1;
+                                }
+                            }
+
+                            return freqObject;
+                            // console.log(freqObject);
+                        }
+
+                        // obviously need to build this out
+                        function submitAlbumOrder() {
+                            console.log(selectedSongs);
+
+                            const nameForm = document.getElementById("album_order_name");
+                            let name = nameForm.value;
+                            const feedbackForm = document.getElementById('submitFeedback');
+
+                            if (!name) {
+                                feedbackForm.textContent = "Please provide an Album Order Name in the form above.";
+                                feedbackForm.style = 'color: red;'; // red
+                                return false;
+                            }
+
+                            // Check if it matches any existing album order names
+                            let albumOrders = getFaunixAlbumOrders();
+
+                            // getting rando variables, useful for rename
+                            const timestamp = new Date(Date.now()).toLocaleString();
+                            let hadToRename = false;
+
+                            // give myself a unique name
+                            // use a faunixian name, then if that still doesn't create a new name, add a timestamp.
+                            if (albumOrders.some(a => a.album_order_name === name)) {
+                                hadToRename = true;
+                                name = `${name}_${getFaunixName()}`; // add a faunixian name
+
+                                // rare case it's still not unique, so add a timestamp.
+                                if (albumOrders.some(a => a.album_order_name === name)) {
+                                    name += "_" + timestamp;
+                                }
+                            }
+
+                            // assemble together the variables....
+                            const package = {
+                                timestamp: timestamp,
+                                album_order_name: name,
+                                songs: selectedSongs,
+                                uploader: getName(),
+                                uploader_id: getUserID()
+                            };
+
+                            console.log("Package:");
+                            console.log(package);
+
+                            albumOrders.push(package);
+                            localStorage.setItem('faunix_album_orders', JSON.stringify(albumOrders));
+
+                            // create feedback
+                            feedbackForm.textContent = 'Successfully submitted!\n';
+                            if (hadToRename) feedbackForm.textContent += 'Your inputted name already exists, so we submitted it as\n';
+                            feedbackForm.textContent += `"${name}"`;
+
+                            feedbackForm.style = 'color: #11ee11'; // green
+                            feedbackForm.innerHTML = feedbackForm.textContent.replace(/\n/g, '<br>');
+
+
+                            /* 
+                            // ALBUM_ORDERS:
+                                timestamp
+                                album_order_name
+                                songs: [{
+                                    name
+                                    version
+                                }]
+                                uploader
+                                uploader_id: userID
+                            */
+
+
+                        }
+
+
+                        let states = [
+                            'songSelect',
+                            'versionSelect',
+                            'done'
+                        ];
+                        let state = states[0];
+
+                        /*
+                            {
+                                order: 
+                                name:
+                                version: 
+                            }
+                        */
+                        let selectedSongs = [];
+
+
+                        setHtmlElements();
+                    </script>
+
+
+
+
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

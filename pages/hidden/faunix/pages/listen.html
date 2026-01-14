@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>Listen:</h1>
+                    </header>
+
+                    <!-- Add "Submit new links:"-->
+
+
+                    <ul>
+                        <li>
+                            <h3>
+                                Select a version:
+                            </h3>
+                        </li>
+                        <li>
+                            <select id="listen_individual_select">
+                                <option value="o1">option 1</option>
+                                <option value="o2">option 2</option>
+                                <option value="o3">option 3</option>
+                            </select>
+                        </li>
+                        <li>
+                            <button id="listen_individual_button" onclick="listenIndividual()">Listen to
+                                Version</button>
+                        </li>
+                        <li><br><br><br></li>
+                        <li>
+                            <button id='listen_test' onclick="listenTest()">test listen</button>
+                        </li>
+                    </ul>
+
+
+                    <!-- Build out a player, get the individual song playing -->
+                    <!--
+                        Album Order name
+                        Song name
+                        Version name
+                        [song]
+                        autoplay (default on)
+                        <- last .(play/pause). -> next
+                        ------
+                        notes
+                    
+                    
+                    
+                    
+                     -->
+
+
+                    <ul id='playerList'>
+                        <li id='albumordername'></li>
+                        <li id='songname'></li>
+                        <li id='versionname'></li>
+                        <li id='player'></li>
+                        <li id="autoplay"></li>
+                        <li id="navlistcontainer">
+                            <ul id='navlist' class="horizontal">
+                                <li id='prev'></li>
+                                <li id='playpause'></li>
+                                <li id='next'></li>
+                            </ul>
+                        </li>
+                        <li id="spacing"><br></li>
+                        <li id="notes"></li>
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+
+
+
+
+                    <script>
+
+
+                        /*
+
+                        let settings = {
+                            status: 'not_playing',
+                            album_order_name: 'none',
+                            song_name: 'none',
+                            version_name: 'none',
+                            autoplay: true,
+                            playing: false
+                        }
+
+                        */
+
+                        // trying to pass in a function to mod the child before appending, with default behavior...
+                        let giveChild = (e, childType, textContent, modChild = (c) => { }) => {
+                            e.innerHTML = ''
+                            const c = document.createElement(childType);
+                            c.textContent = textContent;
+                            modChild(c);
+                            e.appendChild(c);
+                        }
+
+                        // actually completely insert a different, pre-made child into this element
+                        let replaceChild = (e, newChild) => {
+                            e.innerHTML = '';
+                            e.appendChild(newChild);
+                        }
+
+
+                        // sets up the player html to run a particular version
+                        function syncPlayerWithSettings() {
+                            const albumordername = document.getElementById('albumordername');
+                            const songname = document.getElementById('songname');
+                            const versionname = document.getElementById('versionname');
+                            // const player = document.getElementById('player');
+                            const autoplay = document.getElementById('autoplay');
+                            // const navlistcontainer = document.getElementById('navlistcontainer');
+                            // const navlist = document.getElementById('navlist');
+                            const prev = document.getElementById('prev');
+                            const playpause = document.getElementById('playpause');
+                            const next = document.getElementById('next');
+                            // const spacing = document.getElementById('spacing');
+                            const notes = document.getElementById('notes');
+
+
+                            /*
+                            let giveChild = (e, childType, textContent, style = 'default') => {
+                                e.innerHTML = '';
+                                const c = document.createElement(childType);
+                                c.textContent = textContent;
+                                if (c.style !== 'default') c.style = style;
+                                e.appendChild(c);
+                            };
+                            */
+
+
+                            // Okay, I'm getting cool ideas here.
+                            // These should use my button element from before, and clicking on each should do something.
+                            // Clicking on album version should take me to a list of the song order, details about it, etc.
+                            // Clicking on songname should show me all the other versions for it.
+                            // clicking on version name should bring me to its location in the google drive.
+                            // 
+                            giveChild(albumordername, 'h2', settings.album_order_name, (c) => {
+                                c.style = 'color: white';
+                            });
+                            giveChild(songname, 'h2', settings.version.song_name);
+                            giveChild(versionname, 'h2', settings.version.version_name);
+
+                            giveChild(prev, 'h4', '<--');
+                            giveChild(playpause, 'h4', 'play/pause');
+                            giveChild(next, 'h4', '-->');
+
+                            giveChild(notes, 'h4', 'notes section');
+
+                        }
+
+
+                        function listenToVersion(version, embedLink = 'blank') {
+                            // let embedLink = version.s3_url;
+                            // embedLink = 'https://docs.google.com/uc?export=preview&id=1OcIcQCBj6gXdczyHXmaFzPqz1L-YuFbv';
+                            console.log(`launching ${version.version_name} from ${embedLink}`);
+
+                            settings.album_order_name = 'single version play';
+                            settings.status = 'playing';
+                            settings.song_name = version.song_name;
+                            settings.version_name = version.version_name;
+
+                            syncPlayerWithSettings();
+
+                            // build out the audio component and append it to the html:
+                            const player = document.getElementById('player');
+
+                            let audioComponent;
+                            try {
+                                // build out a functional audio component
+                                const iframe = document.createElement('iframe');
+                                iframe.src = embedLink;
+                                iframe.width = '400';
+                                iframe.height = '200';
+                                iframe.allow = 'autoplay';
+
+                                audioComponent = iframe;
+                                settings.audioComponent = audioComponent;
+
+                                /* audioComponent.addEventListener('loadedmetadata', () => {
+                                    console.log(`loaded song ${version.song_name}: ${version.version_name}\nfrom ${embedLink}`);
+                                    console.log('Duration:', audioComponent.duration);
+                                });*/
+
+                                // audioComponent.play();
+                                settings.playing = true;
+                            } catch (error) {
+                                // replace with a standard red feedback text
+                                audioComponent = document.createElement('h2');
+                                audioComponent.style = "color: red";
+                                audioComponent.textContent = `Failed to get embed link because ${error.message}`;
+                                settings.playing = false;
+                                settings.status = 'failed to play';
+                            }
+
+                            // append child
+                            replaceChild(player, audioComponent);
+                        }
+
+                        function listenIndividual() {
+                            const indivSelect = document.getElementById('listen_individual_select');
+                            let version = JSON.parse(indivSelect.value);
+                            // console.log(version);
+                        }
+
+
+                        let playedSongsIndex = -1;
+                        function listenTest() {
+                            let songurls = [
+                                'https://faunix-objects.s3.us-west-2.amazonaws.com/uploads/user_Casting+Deity_1766295218453/1768016523139_aaaafaunix1.mp3',
+                                'https://faunix-objects.s3.us-west-2.amazonaws.com/uploads/user_Casting+Deity_1766295218453/1768331579777_aaabfaunix2.mp3',
+                                'https://faunix-objects.s3.us-west-2.amazonaws.com/uploads/user_Shimmering-Moog_1768331920729/1768332059846_aaaafaunix1.mp3'
+                            ];
+
+                            // get this to cycle thru the elements of the array with each button click
+                            playedSongsIndex++;
+                            if (playedSongsIndex == songurls.length) playedSongsIndex = 0;
+
+                            let url = songurls[playedSongsIndex];
+                            console.log(`boutta play from ${url}`);
+
+
+                            const indivSelect = document.getElementById('listen_individual_select');
+                            const version = JSON.parse(indivSelect.value);
+                            // console.log(version);
+                            if (version.value == '') { // default version
+                                let versionsList = getVersionsFromLocalStorage();
+                                version.value = versionsList[0];
+                            }
+
+                            listenToVersion(version, url);
+                        }
+
+
+                        /*
+                        // ALBUM_ORDERS:
+                            timestamp
+                            album_order_name
+                            songs: [{
+                                name
+                                version
+                            }]
+                            uploader
+                            uploader_id: userID
+                            
+                        */
+
+
+
+                        // okay, we need to be able to take the above, and get:
+                        // 1. Listen to it
+                        // 2. Leave notes on it
+                        // 3. Go to the location of the file (via drive name --> url)
+
+                        function setHtmlElements() {
+
+                            // Set delete dropdown:
+                            const indivSelect = document.getElementById('listen_individual_select');
+                            indivSelect.innerHTML = '';
+
+                            // Add a default/placeholder option
+                            const defaultOption3 = document.createElement('option');
+                            defaultOption3.value = '';
+                            defaultOption3.textContent = '-- Select a Version to Listen To --';
+                            defaultOption3.disabled = true;
+                            defaultOption3.selected = true;
+                            indivSelect.appendChild(defaultOption3);
+
+                            let versionsList = getVersionsFromLocalStorage();
+                            console.log(versionsList);
+
+                            for (let v of versionsList) {
+                                const option = document.createElement('option');
+                                option.value = JSON.stringify(v); // Keeping the whole object here
+                                option.textContent = v.song_name + ": " + v.version_name;
+
+                                indivSelect.appendChild(option);
+                            }
+
+
+                        }
+
+
+
+                        /*
+                        // SONG_VERSIONS
+                            timestamp
+                            song_name: 
+                            version_name: 
+                            uploader: name
+                            uploader_id: userID
+                            drive name:
+                            drive embed:
+                        */
+
+
+
+                        // <!-- Run on launch: -->
+                        // remember state, can be modified to include more/less details
+                        let settings = {
+                            status: 'not_playing',
+                            album_order_name: 'none',
+                            version: getBlankSongVersion(),
+                            autoplay: true,
+                            playing: false,
+                            audioComponent: null // will be replaced by a reference to the actual component
+                        }
+
+                        setHtmlElements();
+                    </script>
+
+
+
+
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

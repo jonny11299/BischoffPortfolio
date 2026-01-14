@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>Delete an Album Order:</h1>
+                    </header>
+
+
+
+
+                    <!--
+                        // SONG_VERSIONS
+                        timestamp
+                        song_name: 
+                        version_name: 
+                        uploader: name
+                        uploader_id: userID
+                        drive link:
+                        drive embed:
+                    -->
+
+
+                    <!--
+                    
+                        <select> of our songs
+                        <input> of version name
+                        <select> of quick link
+                        <input> of embed link
+
+                        read name from google drive link
+                    
+                    
+                    -->
+
+
+                    <ul id="song_list">
+                        <!-- 
+                        <li><a target="_blank"
+                                href="https://drive.google.com/drive/folders/1Kw1kFYGfQDCKzo8wHE0iFxZtNeyDPEI4">
+                                Nick Mixes</a></li>
+                        <li><a target="_blank"
+                                href="https://soundcloud.com/wearefaunix/sets/album-2-mixes/s-xdCbxz3fRoi?si=0aa49764602e43f79d431c8d0d18c88c&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
+                                SoundCloud</a>
+                        </li>
+                        -->
+
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+
+
+                    <h2 style="color: red">Delete an Album Order:</h2>
+                    <ul>
+                        <li>
+                            <select id="deleteSelect">
+                                <option value="o1">option 1</option>
+                                <option value="o2">option 2</option>
+                                <option value="o3">option 3</option>
+                            </select>
+                        </li>
+                        <li>
+                            <button id="deleteSelectedLink" onclick="deleteSelectedLink()">Delete Selected
+                                Album Order</button>
+                        </li>
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <ul>
+                        <li>
+                            <a href="/pages/hidden/faunix/pages/order.html">Create New Album Order</a>
+                        </li>
+                    </ul>
+
+                    <!--
+                    <ul>
+                        <li>
+                            <button id="deleteLocalStorage" onclick="deleteLocalStorage()">delete local storage</button>
+                        </li>
+                    </ul>
+                    -->
+
+
+                    <ul id="debugSongPrinter">
+                        <li>
+
+                        </li>
+                    </ul>
+
+
+
+
+
+                    <script>
+
+
+                        function deleteSelectedLink() {
+                            const select = document.getElementById('deleteSelect');
+                            const value = select.value;
+                            console.log(value);
+
+                            const versions = getFaunixAlbumOrders();
+
+                            let newAlbumOrders = [];
+
+                            // Create a new list, skipping the value if it matches
+                            for (let v of versions) {
+                                if (v.timestamp === value) { // timestamp is unique key here.
+                                    console.log("Deleting: " + v.version_name);
+                                } else {
+                                    newAlbumOrders.push(v);
+                                }
+                            }
+
+                            // Reset the local list without it:
+                            localStorage.setItem('faunix_album_orders', JSON.stringify(newAlbumOrders));
+
+                            // Reset the local html elements:
+                            setHtmlElements();
+                        }
+
+
+                        /*
+                        // ALBUM_ORDERS:
+                            timestamp
+                            album_order_name
+                            songs: [{
+                                name
+                                version
+                            }]
+                            uploader
+                            uploader_id: userID
+                            
+                        */
+
+
+
+                        function setHtmlElements() {
+
+                            // Set delete dropdown:
+                            const deleteSelect = document.getElementById('deleteSelect');
+                            deleteSelect.innerHTML = '';
+
+                            // Add a default/placeholder option
+                            const defaultOption3 = document.createElement('option');
+                            defaultOption3.value = '';
+                            defaultOption3.textContent = '-- Select an Album Order to Delete --';
+                            defaultOption3.disabled = true;
+                            defaultOption3.selected = true;
+                            deleteSelect.appendChild(defaultOption3);
+
+                            let versionsList = getFaunixAlbumOrders();
+
+                            for (let v of versionsList) {
+                                const option = document.createElement('option');
+                                option.value = v.timestamp; // using timestamp as key here
+                                option.textContent = v.album_order_name;
+
+                                deleteSelect.appendChild(option);
+                            }
+
+
+                        }
+
+
+
+
+
+
+                        // <!-- Run on launch: -->
+                        // setLinkList();
+                        // setDeleteList();
+
+                        setHtmlElements();
+                    </script>
+
+
+
+
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

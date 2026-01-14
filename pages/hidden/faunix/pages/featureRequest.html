@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>Feature Request:</h1>
+                    </header>
+
+                    <!-- Add "Submit new links:"-->
+
+
+                    <ul id="link_list">
+                        <!-- 
+                        <li><a target="_blank"
+                                href="https://drive.google.com/drive/folders/1Kw1kFYGfQDCKzo8wHE0iFxZtNeyDPEI4">
+                                Nick Mixes</a></li>
+                        <li><a target="_blank"
+                                href="https://soundcloud.com/wearefaunix/sets/album-2-mixes/s-xdCbxz3fRoi?si=0aa49764602e43f79d431c8d0d18c88c&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
+                                SoundCloud</a>
+                        </li>
+                        -->
+
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+
+
+                    <h2 style="color: green">Add new link:</h2>
+                    <ul>
+                        <li>
+                            <input type="string" id="link_href" placeholder="URL">
+                        </li>
+                        <li>
+                            <input type="string" id="link_name" placeholder="Link Name">
+                        </li>
+                        <li>
+                            <button id="submitNewLink" onclick="submitNewLink()">Submit</button>
+                        </li>
+                        <li>
+                            <h4 id="addLinkFeedback" style="color: red;"></h4>
+                        </li>
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+
+
+                    <h2 style="color: red">Delete a link:</h2>
+                    <ul>
+                        <li>
+                            <select id="deleteSelect">
+                                <option value="o1">option 1</option>
+                                <option value="o2">option 2</option>
+                                <option value="o3">option 3</option>
+                            </select>
+                        </li>
+                        <li>
+                            <button id="deleteSelectedLink" onclick="deleteSelectedLink()">Delete Selected Link</button>
+                        </li>
+                    </ul>
+                    <br>
+                    <br>
+                    <!--
+                    <ul>
+                        <li>
+                            <button id="deleteLocalStorage" onclick="deleteLocalStorage()">delete local storage</button>
+                        </li>
+                    </ul>
+                    -->
+
+
+
+
+
+                    <script>
+
+                        function deleteSelectedLink() {
+                            const select = document.getElementById('deleteSelect');
+                            const value = select.value;
+                            console.log(value);
+
+                            const links = getLinksFromLocalStorage();
+
+                            let newLinks = [];
+
+                            // Create a new list, skipping the value if it matches
+                            for (let link of links) {
+                                if (link.text === value) {
+                                    console.log("Deleting: " + link.href);
+                                } else {
+                                    newLinks.push(link);
+                                }
+                            }
+
+                            // Reset the local list without it:
+                            localStorage.setItem('faunix_quicklinks_list', JSON.stringify(newLinks));
+
+                            // Reset the local html elements:
+                            setLinkList();
+                            setDeleteList();
+                        }
+
+
+
+                        function deleteLocalStorage() {
+                            localStorage.removeItem('faunix_quicklinks_list');
+                        }
+
+
+
+
+                        function addLinkToLocalStorage(href, name) {
+                            if (!href.startsWith('http://' && !href.startsWith("https://"))) {
+                                href = "https://" + href;
+                            }
+
+                            let links = getLinksFromLocalStorage();
+                            links.push({
+                                href: href,
+                                text: name
+                            });
+
+                            localStorage.setItem('faunix_quicklinks_list', JSON.stringify(links));
+
+                            console.log("Here's your links from addLinkToLocalStorage: ");
+                            console.log(links);
+                        }
+
+
+
+                        function setLinkList() {
+                            const list = document.getElementById('link_list');
+                            list.innerHTML = ''; // clear existing
+
+                            let links = getLinksFromLocalStorage();
+
+
+                            for (let link of links) {
+                                const a = document.createElement('a');
+                                a.href = link.href;
+                                a.textContent = link.text;
+                                a.target = "_blank";
+
+                                const li = document.createElement('li');
+                                li.appendChild(a);
+                                list.appendChild(li);
+                            }
+
+
+                            console.log("Here's your link list from getLinkList: ");
+                            console.log(links);
+                            console.log("Here's your list from getLinkList: ");
+                            console.log(list);
+                        }
+
+                        function setDeleteList() {
+                            const select = document.getElementById('deleteSelect');
+                            select.innerHTML = ''; // clear existing
+
+                            // Add a default/placeholder option
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = '-- Select a link --';
+                            defaultOption.disabled = true;
+                            defaultOption.selected = true;
+                            select.appendChild(defaultOption);
+
+
+                            let links = getLinksFromLocalStorage();
+
+                            for (let link of links) {
+                                const option = document.createElement('option');
+                                option.value = link.text;
+                                option.textContent = link.text;
+
+                                select.appendChild(option);
+                            }
+
+                        }
+
+
+
+                        function submitNewLink() {
+                            const href = document.getElementById('link_href').value;
+                            const name = document.getElementById('link_name').value;
+                            const feedback = document.getElementById('addLinkFeedback');
+                            feedback.textContent = '';
+                            feedback.style = "color: green;";
+
+                            console.log("Submitting new link.");
+                            console.log(`href: ${href}`);
+                            console.log(`name: ${name})`);
+
+                            if (href == "" || name == "") {
+                                console.log(`href: ${href}, name: ${name}`);
+                                feedback.textContent = "Blank URL or Name, submission rejected.";
+                                feedback.style = "color: red;";
+                                return false;
+                            }
+
+                            addLinkToLocalStorage(href, name);
+                            feedback.textContent = "Link added successfully.";
+                            console.log("Link added successfully.");
+
+                            setLinkList();
+                            setDeleteList();
+
+
+                            return true;
+                        }
+
+
+
+                        // <!-- Run on launch: -->
+                        setLinkList();
+                        setDeleteList();
+                    </script>
+
+
+                    <script>
+                        /*
+                        // Create the element
+                            const link = document.createElement('a');
+
+                            // Set attributes
+                            link.href = 'https://example.com';
+                            link.textContent = 'Click me!';
+                            link.target = '_blank'; // optional: open in new tab
+
+                            // Add to the page
+                            document.body.appendChild(link);
+                            // or append to a specific element:
+                            document.getElementById('myDiv').appendChild(link);
+                        */
+
+
+                        /*
+                            function displaySongs(songs) {
+                            const container = document.getElementById('songList');
+                            container.innerHTML = ''; // clear existing
+                            
+                            songs.forEach(song => {
+                                // Create link
+                                const link = document.createElement('a');
+                                link.href = song.audioFile;
+                                link.textContent = `${song.title} - ${song.artist}`;
+                                link.onclick = (e) => {
+                                e.preventDefault(); // don't navigate
+                                playSong(song);
+                                };
+                                
+                                // Wrap in a div
+                                const songDiv = document.createElement('div');
+                                songDiv.appendChild(link);
+                                
+                                container.appendChild(songDiv);
+                            });
+                            }
+                        */
+                    </script>
+
+
+
+
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

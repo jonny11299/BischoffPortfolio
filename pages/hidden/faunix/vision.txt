@@ -1,0 +1,107 @@
+
+
+
+<script src="fetch.js"></script>
+(all later scripts may call fetch.js to communicate with server)
+
+
+
+
+
+
+Quick outline:
+1. Interaction with Google Sheet
+2. Form to submit all the info 
+
+----- ^^ Done the above, 12/22/25 -----
+
+Next:
+1. Create forms to submit data to each of the pages 
+2. Find a way to GET that data, then display it in differently-ordered lists on each of the pages 
+
+
+
+
+3. Organize the lists so they can be re-ordered
+
+
+
+
+
+
+
+
+Album listening page:
+
+"How do you want to listen to the album?"
+SoundCloud order
+Random order
+Pick another order 
+---
+Make a new order
+
+
+
+
+Album order scoping page:
+
+(show them in a random order)
+(Let them click on a series of them)
+(pick the latest version for each, let them switch with specific versions)
+
+
+
+
+
+
+Listening:
+Pass in a sequence of songs
+Have a playback thing, and let somebody leave notes to the side
+once they hit "okay" it submits
+
+
+
+
+"Check out" page -- let me check out a mix, then we see if it's pending return:
+1. Song 
+2. Things to change
+3. Requirements (need these files from people)
+4. Return (when?)
+
+
+
+
+
+Quick links:
+1. SoundCloud
+2. Nick's mixes 
+3. Jonny's mixes 
+4. Shayne's mixes 
+5. Mountain Room set
+
+----
+1. Other uploads (stems, etc)
+
+
+
+
+Listen
+Create New Album Order 
+Upload New Song Version
+Access Quick Links
+
+
+
+
+Listen Through, Leave Notes
+Try New Album Order 
+
+
+
+
+Random useful way to look through every property of a given object:
+for (let key in metrics) {
+  console.log(`${key}: ${metrics[key]}`);
+  // Can't do metrics.key here - it would look for a property literally named "key"
+}
+

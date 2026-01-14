@@ -1,10 +1,13 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 
   display: flex;
-  justify-content: space-between; /* left/right */
-  align-items: flex-start;        /* top */
+  justify-content: space-between;
+  /* left/right */
+  align-items: flex-start;
+  /* top */
 
   background-color: #333333;
 }
@@ -16,18 +19,22 @@ canvas {
 
 
 .container {
-  max-width: 800px; /* or whatever you prefer */
+  max-width: 800px;
+  /* or whatever you prefer */
   margin: 0 auto;
   padding: 0 1rem;
   text-align: center;
 }
 
 #sketch-container {
-  position: relative;   /* or fixed if you want it to stay on screen while scrolling */
+  position: relative;
+  /* or fixed if you want it to stay on screen while scrolling */
   top: 0;
   left: 0;
-  width: 100%;         /* or 100% for full width */
-  height: 100%;        /* or 100% for full height */
+  width: 100%;
+  /* or 100% for full width */
+  height: 100%;
+  /* or 100% for full height */
   /* border: 1px solid #ccc; */
 }
 
@@ -50,11 +57,13 @@ body {
 
 nav {
   width: 0%;
-  min-width: 100px; /* Prevents it from getting too narrow */
+  min-width: 100px;
+  /* Prevents it from getting too narrow */
   background-color: #222;
   padding: 20px;
   box-sizing: border-box;
-  overflow-y: auto; /* In case you add lots of links */
+  overflow-y: auto;
+  /* In case you add lots of links */
 }
 
 nav a {
@@ -71,21 +80,27 @@ nav a:hover {
 
 
 button.nav-button {
-    font-family: Arial, sans-serif;  /* Match the font */
-    border: none;                     /* Remove button border */
-    cursor: pointer;                  /* Show pointer on hover */
-    outline: none;                    /* Remove focus outline */
+  font-family: Arial, sans-serif;
+  /* Match the font */
+  border: none;
+  /* Remove button border */
+  cursor: pointer;
+  /* Show pointer on hover */
+  outline: none;
+  /* Remove focus outline */
 }
 
 button.nav-button:focus {
-    outline: none;                    /* Remove focus outline */
+  outline: none;
+  /* Remove focus outline */
 }
 
 
 @font-face {
   font-family: 'Roboto Mono';
   src: url('/fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf') format('truetype');
-  font-weight: 100 700; /* Variable font */
+  font-weight: 100 700;
+  /* Variable font */
   font-style: normal;
 }
 

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>Upload a new song:</h1>
+                        <br>
+                        <p>Please <a href="/pages/hidden/faunix/pages/howToCreateEmbed.html" target="_blank">read this
+                                quick instructional</a> if this is your first time adding a new song.</p>
+                    </header>
+
+
+
+
+                    <!--
+                        // SONG_VERSIONS
+                        timestamp
+                        song_name: 
+                        version_name: 
+                        uploader: name
+                        uploader_id: userID
+                        drive link:
+                        drive embed:
+                    -->
+
+
+                    <!--
+                    
+                        <select> of our songs
+                        <input> of version name
+                        <select> of quick link
+                        <input> of embed link
+
+                        read name from google drive link
+                    
+                    
+                    -->
+                    <h2 style="color: green">Add New Song Version:</h2>
+                    <ul>
+                        <li>
+                            <div id="dropZone">
+                                Drag and drop audio file here
+                                <br>or<br><br>
+                                <!-- Ugly default file selector workaround -->
+                                <div style="text-align: center;">
+                                    <label for="fileInput" style="
+                                        display: inline-block;
+                                        padding: 10px 20px;
+                                        background-color: #007bff;
+                                        color: white;
+                                        border-radius: 5px;
+                                        cursor: pointer;
+                                        font-family: Arial, sans-serif;
+                                    ">
+                                        Choose File
+                                    </label>
+                                    <input type="file" id="fileInput" accept="audio/*" style="display: none;">
+                                    <div id="fileName" style="
+                                        margin-top: 10px;
+                                        color: #ffffff;
+                                        font-family: Arial, sans-serif;
+                                    ">
+                                        <p id='chosenfiletext'> No file chosen</p>
+                                    </div>
+                                </div>
+                                <br>
+                                <p id="files_added"></p>
+                            </div>
+
+                        </li>
+                        <li>
+                            <select id="songSelect"></select>
+                        </li>
+                        <li>
+                            <input type="string" id="version_name" placeholder="Version Name">
+                        </li>
+                        <li>
+                            <select id="quickLinkSelect"></select>
+                        </li>
+                        <li>
+                            <button id="submitButton" onclick="submitNewSongVersion()">Submit</button>
+                        </li>
+                        <li>
+                            <h4 id="upload_warning" style="color: yellow"></h4>
+                        </li>
+                        <li>
+                            <h4 id="addSongFeedback" style="color: red;"></h4>
+                        </li>
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+
+
+
+                    <ul id="song_list">
+                        <!-- 
+                        <li><a target="_blank"
+                                href="https://drive.google.com/drive/folders/1Kw1kFYGfQDCKzo8wHE0iFxZtNeyDPEI4">
+                                Nick Mixes</a></li>
+                        <li><a target="_blank"
+                                href="https://soundcloud.com/wearefaunix/sets/album-2-mixes/s-xdCbxz3fRoi?si=0aa49764602e43f79d431c8d0d18c88c&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">
+                                SoundCloud</a>
+                        </li>
+                        -->
+
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+
+
+                    <h2 style="color: red">Delete a version: (only use if submitted by error)</h2>
+                    <ul>
+                        <li>
+                            <select id="deleteSelect">
+                                <option value="o1">option 1</option>
+                                <option value="o2">option 2</option>
+                                <option value="o3">option 3</option>
+                            </select>
+                        </li>
+                        <li>
+                            <button id="deleteSelectedLink" onclick="deleteSelectedLink()">Delete Selected
+                                Version</button>
+                        </li>
+                    </ul>
+                    <br>
+                    <br>
+
+                    <!--
+                    <ul>
+                        <li>
+                            <button id="deleteLocalStorage" onclick="deleteLocalStorage()">delete local storage</button>
+                        </li>
+                    </ul>
+                    -->
+
+
+                    <ul id="debugSongPrinter">
+                        <li>
+
+                        </li>
+                    </ul>
+
+                    <script>
+                        // custom file handler
+                        document.getElementById('fileInput').addEventListener('change', function (e) {
+                            const fileName = e.target.files[0]?.name || 'No file chosen';
+                            document.getElementById('fileName').textContent = fileName;
+                        });
+
+
+                        // All that biz for handling the drop zone:
+
+                        const dropZone = document.getElementById('dropZone');
+                        // const fileInput = document.getElementById('fileInput');
+
+                        // Prevent default drag behaviors
+                        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                            dropZone.addEventListener(eventName, preventDefaults, false);
+                            document.body.addEventListener(eventName, preventDefaults, false);
+                        });
+
+                        function preventDefaults(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+
+                        // Highlight drop zone when dragging over it
+                        ['dragenter', 'dragover'].forEach(eventName => {
+                            dropZone.addEventListener(eventName, () => {
+                                dropZone.classList.add('drag-over');
+                            });
+                        });
+
+                        ['dragleave', 'drop'].forEach(eventName => {
+                            dropZone.addEventListener(eventName, () => {
+                                dropZone.classList.remove('drag-over');
+                            });
+                        });
+
+                        // Handle dropped files
+                        dropZone.addEventListener('drop', (e) => {
+                            const files = e.dataTransfer.files;
+                            filesAdded(files);
+                        });
+
+                        // Also handle regular file input
+                        fileInput.addEventListener('change', (e) => {
+                            filesAdded(e.target.files);
+                        });
+
+
+                        let defaultSong;
+                        let defaultVersionName;
+                        let filesFromDropZone = [];
+                        function filesAdded(files) {
+                            filesFromDropZone = files;
+                            // console.log(files.length);
+                            try {
+                                document.getElementById('chosenfiletext').textContent = '';
+                            } catch (error) {
+                                console.log("Chose file through input form, caught error:");
+                                console.log(error);
+                            }
+                            const fa = document.getElementById('files_added');
+
+                            fa.textContent = "Selected " + files[0].name;
+                            fa.style = "color: rgb(255, 255, 0)";
+                            if (files.length > 0) {
+                                const file = files[0];
+                                console.log('File selected:', file.name);
+                                // Do something with the file
+                                // determine defaultSong by checking the filename for keywords and matching to existing songs
+                                // just learned about regex and the /pattern/ type... going to use a regex string (regular expression)
+                                // split all your songnames by regex string
+                                // look for highest match score
+                                // assign that as the song you pick
+                                // display all the remaining words in the "version name"
+                                const filename = file.name;
+                                const songNames = getSongNames();
+                                const regex = /[ .,]/;
+                                const filesplit = (filename.toLowerCase()).split(regex);
+                                // console.log(filesplit);
+
+                                // 'b' is each successive one through the rotation
+                                const songGuess = songNames.reduce((a, b) => {
+
+
+                                    const alist = a.toLowerCase().split(regex);
+                                    const blist = b.toLowerCase().split(regex);
+                                    // console.log(`alist: ${alist}`);
+                                    // console.log(`blist: ${blist}`);
+
+                                    // the 'score' returns something curious:
+                                    //      basically, if two words match between the wordLists, then we increase score
+                                    //      by the number of letters in the word.
+                                    //      so score is like... the number of letters in matching words between the lists.
+                                    let score = (list) => {
+                                        return list.reduce((score, word) => {
+                                            if (filesplit.some(w => w === word)) {
+                                                return score + word.length;
+                                            } else {
+                                                return score;
+                                            }
+                                        }, 0);
+                                    }
+
+                                    let ascore = score(alist);
+                                    let bscore = score(blist);
+
+                                    // console.log(`score for ${a} is ${ascore}`);
+                                    // console.log(`score for ${b} is ${bscore}`);
+
+                                    return ascore > bscore ? a : b;
+                                });
+                                console.log("Return from song guess:");
+                                console.log(songGuess);
+                                defaultSong = songGuess;
+
+                                // Now, version name needs to be all the words of filename that aren't in songGuess
+                                const filesplitcap = filename.split(regex);
+                                const ignorelist = ['wav', 'mp3', 'flac', 'm4a'];
+                                const delimeter = '_';
+                                let vname = filesplitcap.reduce((words, word) => {
+                                    if (ignorelist.includes(word) || defaultSong.includes(word)) {
+                                        // ignore
+                                        // console.log(`skipping ${word}`);
+                                    } else {
+                                        words.push(word);
+                                    }
+                                    return words;
+                                }, []);
+                                // console.log(`vname`);
+                                // console.log(vname);
+
+                                vname = vname.reduce((name, e) => {
+                                    name += delimeter + e;
+                                    // if (e !== vname[vname.length - 1]) name += delimeter;
+                                    return name;
+                                }, getName());
+                                // console.log(`vname = ${vname}`);
+
+                                defaultVersionName = vname;
+
+                                setHtmlElements();
+                            }
+                        }
+
+                    </script>
+
+
+
+
+
+                    <script>
+
+
+                        function deleteSelectedLink() {
+                            const select = document.getElementById('deleteSelect');
+                            const value = select.value;
+                            console.log(value);
+
+                            const versions = getVersionsFromLocalStorage();
+
+                            let newSongVersions = [];
+
+                            // Create a new list, skipping the value if it matches
+                            for (let v of versions) {
+                                if (v.timestamp === value) { // timestamp is unique key here.
+                                    console.log("Deleting: " + v.version_name);
+                                    markAsDeletedInSheets(v); // going to just keep a running list of songs to remove from the s3 bucket manually
+                                } else {
+                                    newSongVersions.push(v);
+                                }
+                            }
+
+                            // Reset the local list without it:
+                            localStorage.setItem('faunix_song_versions', JSON.stringify(newSongVersions));
+
+                            // Reset the local html elements:
+                            setHtmlElements();
+                        }
+
+
+
+                        function deleteLocalStorage() {
+                            localStorage.removeItem('faunix_song_versions');
+                        }
+
+
+
+
+                        function setQuickLinks() {
+                            const list = document.getElementById('link_list');
+                            list.innerHTML = ''; // clear existing
+
+                            let links = getLinksFromLocalStorage();
+
+
+                            for (let link of links) {
+                                const a = document.createElement('a');
+                                a.href = link.href;
+                                a.textContent = link.text;
+                                a.target = "_blank";
+
+                                const li = document.createElement('li');
+                                li.appendChild(a);
+                                list.appendChild(li);
+                            }
+
+
+                            console.log("Here's your link list from getLinkList: ");
+                            console.log(links);
+                            console.log("Here's your list from getLinkList: ");
+                            console.log(list);
+                        }
+
+
+                        // autofill these two when dropping into the dropzone (defined above)
+                        // let defaultSong;
+                        // let defaultVersionName;
+                        function setHtmlElements() {
+                            document.getElementById('version_name').value = '';
+                            // document.getElementById('embed_link').value = '';
+
+                            const songSelect = document.getElementById('songSelect');
+                            songSelect.innerHTML = ''; // clear existing
+
+                            // Add a default/placeholder option
+                            const defaultOption1 = document.createElement('option');
+                            defaultOption1.value = '';
+                            defaultOption1.textContent = '-- Select a song --';
+                            defaultOption1.disabled = true;
+                            defaultOption1.selected = true;
+                            songSelect.appendChild(defaultOption1);
+
+
+                            let songs = getSongNames();
+                            // console.log("Songs:");
+                            // console.log(songs);
+
+                            // should really be songName but whatever...
+                            for (let song of songs) {
+                                const option = document.createElement('option');
+                                option.value = song;
+                                option.textContent = song;
+
+                                if (song === defaultSong) {
+                                    option.selected = true;
+                                }
+
+                                songSelect.appendChild(option);
+                            }
+
+
+                            // Set quick links:
+                            const quickLinkSelect = document.getElementById('quickLinkSelect');
+                            quickLinkSelect.innerHTML = '';
+
+                            // Add a default/placeholder option
+                            const defaultOption2 = document.createElement('option');
+                            defaultOption2.value = '';
+                            defaultOption2.textContent = '-- Select a Source Location --';
+                            defaultOption2.disabled = true;
+                            defaultOption2.selected = true;
+                            quickLinkSelect.appendChild(defaultOption2);
+
+                            let quickLinks = getLinksFromLocalStorage();
+                            for (let link of quickLinks) {
+                                const option = document.createElement('option');
+                                option.value = link.text;
+                                option.textContent = link.text;
+
+                                quickLinkSelect.appendChild(option);
+                            }
+
+
+                            const versionsList = getVersionsFromLocalStorage();
+
+                            // Set delete dropdown:
+                            const deleteSelect = document.getElementById('deleteSelect');
+                            deleteSelect.innerHTML = '';
+
+                            // Add a default/placeholder option
+                            const defaultOption3 = document.createElement('option');
+                            defaultOption3.value = '';
+                            defaultOption3.textContent = '-- Select a Version to Delete --';
+                            defaultOption3.disabled = true;
+                            defaultOption3.selected = true;
+                            deleteSelect.appendChild(defaultOption3);
+
+                            for (let v of versionsList) {
+                                const option = document.createElement('option');
+                                option.value = v.timestamp; // using timestamp as key here
+                                option.textContent = v.song_name + ": " + v.version_name;
+
+                                deleteSelect.appendChild(option);
+                            }
+
+
+                            // autofill version name
+                            // <input type="string" id="version_name" placeholder="Version Name">
+                            if (defaultVersionName) {
+                                const vnameinput = document.getElementById('version_name');
+                                vnameinput.textContent = defaultVersionName;
+                                vnameinput.value = defaultVersionName;
+                            }
+
+
+                            // Set debug list at the bottom:
+                            /*
+                            const debug = document.getElementById('debugSongPrinter');
+                            debug.innerHTML = '';
+                            for (let song of versionsList) {
+                                let p = document.createElement('p');
+                                p.value = JSON.stringify(song);
+                                p.textContent = JSON.stringify(song);
+
+                                const li = document.createElement('li');
+                                li.appendChild(p);
+                                debug.appendChild(li);
+                            }
+                                */
+
+
+
+                            /*
+                            const list = document.getElementById('link_list');
+                            list.innerHTML = ''; // clear existing
+
+                            let links = getLinksFromLocalStorage();
+
+
+                            for (let link of links) {
+                                const a = document.createElement('a');
+                                a.href = link.href;
+                                a.textContent = link.text;
+                                a.target = "_blank";
+
+                                const li = document.createElement('li');
+                                li.appendChild(a);
+                                list.appendChild(li);
+                            }
+                            */
+                        }
+
+
+                        /*
+                        <ul>
+                            <li>
+                                <select id="songSelect"></select>
+                            </li>
+                            <li>
+                                <input type="string" id="version_name" placeholder="Version Name">
+                            </li>
+                            <li>
+                                <select id="quickLinkSelect"></select>
+                            </li>
+                            <li>
+                                <input type="string" id="embed_link" placeholder="Embed Link">
+                            </li>
+                            <li>
+                                <button id="submitButton" onclick="submitNewSongVersion()">Submit</button>
+                            </li>
+                            <li>
+                                <h4 id="addSongFeedback" style="color: red;"></h4>
+                            </li>
+                        </ul>
+
+                            // SONG_VERSIONS
+                            timestamp
+                            song_name: 
+                            version_name: 
+                            uploader: name
+                            uploader_id: userID
+                            drive link:
+                            drive embed:
+                        */
+
+
+
+                        function submitNewSongVersion() {
+
+                            const songName = document.getElementById('songSelect').value;
+                            const versionName = document.getElementById('version_name').value;
+                            const quickLinkName = document.getElementById('quickLinkSelect').value;
+                            // const embed_link = document.getElementById('embed_link').value;
+                            const timestamp = new Date(Date.now()).toISOString();
+                            const username = getName();
+                            const userID = getUserID();
+                            // let fileInput = document.getElementById('fileInput');
+
+
+                            let fail = "";
+                            if (songName == "") {
+                                fail = "Blank song name ";
+                            }
+                            if (versionName == "") {
+                                fail += "Blank version name ";
+                            }
+                            if (quickLinkName == "") {
+                                fail += "Blank quickLink name ";
+                            }
+
+
+                            if (filesFromDropZone.length < 1) {
+                                // err, no file selected
+                                fail += "No file selected ";
+                            } else if (filesFromDropZone.length > 1) {
+                                // err, only allowed to select one file per song upload.
+                                console.log("Selected more than one file, defaulting to " + filesFromDropZone[0].name);
+                            }
+                            if (fail !== "") console.log(fail);
+
+                            let feedback = document.getElementById("addSongFeedback");
+                            if (!(fail === "")) {
+                                fail += "; Submission rejected."
+                                feedback.textContent = fail;
+                                feedback.style = "color: red;";
+                                console.log("Failing because " + fail);
+                                return false;
+                            }
+
+                            // feedback.textContent = "Submission Successful.";
+                            feedback.textContent = '';
+                            feedback.style = "color: green";
+
+
+
+                            // Successful submission. One file is selected, forms are properly inputted. Proceeding.
+
+                            const submission = {
+                                timestamp: timestamp,
+                                song_name: songName,
+                                version_name: versionName,
+                                uploader: username,
+                                uploader_id: userID,
+                                drive_name: quickLinkName,
+                                s3_url: 'blank'
+                            }
+
+                            console.log("Submitting new song to local storage:");
+                            console.log(submission);
+
+                            // error case for 'no file selected' is defined above (in the 'let fail = ...' section).
+                            let file = filesFromDropZone[0];
+                            addSongToLocalStorage(submission, file);
+
+
+                            setHtmlElements();
+                        }
+
+
+
+
+                        // <!-- Run on launch: -->
+                        // setLinkList();
+                        // setDeleteList();
+
+                        setHtmlElements();
+                    </script>
+
+
+
+
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

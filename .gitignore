@@ -18,3 +18,7 @@ old garbage/
 # environment variables
 .env 
 .env.local 
+
+
+# Ignore faunix stuff:
+pages/hidden/faunix/keys/

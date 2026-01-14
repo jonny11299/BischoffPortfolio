@@ -1,4 +1,55 @@
 // TO DO:
+
+
+
+
+/*
+
+  BRO BRO BRO
+  This is spaghetti code. We cannot fix it. We should not make it better. We should not modify it.
+  I've been down this rabbit hole too many times to know that... it's it, dude. This is the version for this file.
+
+  If I want better tracking, I need to rebuild from scratch.
+
+  
+  Currently, we fail to track a user who clicks through quickly. We can only track if the first fetch resolves while they're still on the page.
+  which sucks. It makes bots invisible, it makes a lot of behavior invisible. 
+  On redesign, sketch out the flow high-level first, then implement.
+  We have learned a lot.
+
+
+
+  On redesign:
+
+  1. Synchronous functions go first
+    - anonymously track that somebody is on the page
+    - pull whatever you're able to, while still being ethical.
+  2. Once permission to log the userID is authorized
+    - acknowledge WHO is on the page
+
+  3. Continue consolidating data summaries (that whole section will still be copy-pastable)
+
+
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
   In no particular order:
   - Move the deployment and secret to a hidden place. (bigger security project outside the scope of a static html site.)
@@ -45,9 +96,8 @@
 
 // TODO: Move to serverless backend when scaling up.
 // These are currently visible.
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxRDFhFpEzliE1mOSBJxqx_gcuBWBCa1JlpJ9NHD_bC3aPX3dsNaa_IDPSyCQFisou5/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbzDOIAH5-w6GdV8b_Q05hMEmLWJABSK9MlfJT7cB-EWpTH4Nux3dxR5shfk-TFezdk4/exec";
 const LOCAL_SECRET = "ILLBETYOUDIDTHAT"; // should eventually make this hidden
-
 
 const NO_TRACKING_STRING = 'not_tracked';
 
@@ -67,6 +117,8 @@ let pageLoadTime = Date.now();
 // changed to "true" once we've gotten the "no tracking" list and verified we can do this.
 // how does this work if they have multiple tabs open?
 let trackable = false;
+let untrackableReason = "unestablished";
+let trackableReason = "unestablished";
 let receivedNoTrackingList = false;
 
 // Empty until we get our response
@@ -91,6 +143,9 @@ function fetchViaJSONP(url) {
     window[callbackName] = (data) => {
       delete window[callbackName];
       document.head.removeChild(script);
+      // dude this next line is nuts, it makes fetchViaJSONP ONLY work if the returned object contains property "optedOutUsers."
+      // Obviously, it was rush-developed for my specific use case and needs to be modified for more general purposes, as its name would suggest it accomodates.
+      // 'postman.js' in the Faunix subfolder is going to be a much better pattern for... basically all of this.
       resolve(data.optedOutUsers);
     };
 
@@ -128,25 +183,35 @@ async function getNoTrackingList() {
   trackingListPromise = fetchViaJSONP(`${LATEST_DEPLOYMENT}?eventType=get_opted_out_users`)
     .then(response => {
       if (response) {
+        // console.log(response);
         let optedOutUsers = response;
+        // console.log("opted out users:");
+        // console.log(optedOutUsers);
+        // console.log(typeof optedOutUsers);
 
-        if (!optedOutUsers) {
+        // if (!optedOutUsers || optedOutUsers == []) { // can't say this shit because [] is truthy. Insane.
+        if (!Array.isArray(optedOutUsers) || optedOutUsers.length === 0) {
           // Succeed post, but don't have the list somehow
           console.log("GET succeeded, but list is empty.");
           trackable = false;
+          untrackableReason = "GET succeeded, but list is empty. (optedOutUsers returned empty)"
           receivedNoTrackingList = true;
           effectiveNoTrackList = [];
+          curUserId = NO_TRACKING_STRING;
           return [];
 
         } else {
           // success
-          // console.log("Succeeded at GET of noTrackList.");
+          console.log("Succeeded at GET of noTrackList.");
           receivedNoTrackingList = true;
           effectiveNoTrackList = optedOutUsers.concat(HARDCODED_NO_TRACK_LIST);
 
           // Verifies that we can track this person:
           if (!effectiveNoTrackList.includes(getHiddenUserId())) {
             trackable = true;
+            postDataSummary();
+            trackableReason = "noTrackList doesn't include my userId";
+            console.log("Trackable because " + trackableReason);
           }
 
           return effectiveNoTrackList;
@@ -161,6 +226,7 @@ async function getNoTrackingList() {
       // console.log('failed to post  ', userId, err);
       console.error('Error fetching opt-out list:', err);
       trackable = false;
+      untrackableReason = "Couldn't fetch opt-out list";
       receivedNoTrackingList = false;
       effectiveNoTrackList = [];
 
@@ -207,6 +273,7 @@ async function getUserId() {
   // console.log("Noticing " + userId);
   if (noTrackList.includes(userId)) {
     trackable = false;
+    untrackableReason = "userId is on the noTrackList (locally, could mean it's hardcoded or retrieved from server)";
     curUserId = NO_TRACKING_STRING;
     return NO_TRACKING_STRING;
   } else {
@@ -258,9 +325,9 @@ async function trackPageView(pageName) {
           eventType: 'log_page_view'
         })
       }).then(response => {
-        // console.log('posted ', userId);
+        console.log('posted log_page_view ', userId);
       }).catch(err => {
-        // console.log('failed to post  ', userId, err);
+        console.log('failed to post log_page_view ', userId, err);
       });
 
 
@@ -290,13 +357,14 @@ async function trackPageView(pageName) {
 // should return new username 
 async function optOutOfTracking(reason) {
   const userId = await getUserId();
-  if (!trackable) {
+  if (false /*!trackable*/) {
     console.log("You are already not being tracked.");
     return NO_TRACKING_STRING;
   } else {
     // Do the post, don't track this user
     let timestamp = Date.now();
     trackable = false;
+    untrackableReason = "just opted out of tracking";
     receivedNoTrackingList = false;
 
     return fetch(LATEST_DEPLOYMENT, {
@@ -516,10 +584,17 @@ const isBot = /bot|crawler|spider|headless|phantomjs/i.test(userAgent);
 */
 
 // Post data upon entry:
+// actually moving this to occur after determining "trackable = true",
+// because the "trackable" flag always defaults to "false" until we've successfully
+// retrieved the no_track_list from the server.
+// (need to make sure the user is actually trackable before posting data about them...)
+// presently, consolidateEngagement() includes an if/else tree that guarantees trackability before posting.
+
 setTimeout(() => {
   timeStart = Date.now();
-  postDataSummary(); // runs this upon entry (after 10ms), then posts again upon exit.
+  // postDataSummary(); // runs this upon entry (after 10ms), then posts again upon exit.
 }, 10);
+
 
 
 
@@ -542,21 +617,36 @@ window.addEventListener('beforeunload', function () {
 
 function postDataSummary() {
 
-  console.log("Posting data summary: ");
-  console.log(consolidateEngagement());
+  if (trackable) {
+    console.log("Posting data summary: ");
+    console.log(consolidateEngagement());
 
 
-  const timestamp = Date.now();
-  const timeSpent = Math.round((timestamp - pageLoadTime)); // milliseconds
+    const timestamp = Date.now();
+    const timeSpent = Math.round((timestamp - pageLoadTime)); // milliseconds
 
-  navigator.sendBeacon(LATEST_DEPLOYMENT, JSON.stringify({
-    secret: LOCAL_SECRET,
-    eventType: "deep_data",
-    userId: curUserId,
-    page: window.location.pathname,
-    timestamp: timestamp,
-    data: JSON.stringify(consolidateEngagement())
-  }));
+    /*
+
+    */
+
+    navigator.sendBeacon(LATEST_DEPLOYMENT, JSON.stringify({
+      secret: LOCAL_SECRET,
+      eventType: "deep_data",
+      userId: curUserId,
+      page: window.location.pathname,
+      timestamp: timestamp,
+      data: JSON.stringify(consolidateEngagement())
+    }));
+    /*.then(response => {
+      console.log("Posted deep_dive summary: ", response);
+    }).catch(err => {
+      console.log("Failed to post deep_dive because", err);
+    });*/
+  } else {
+    console.log("Not trackable, not posting engagement.");
+    console.log("Untrackable because " + untrackableReason);
+  }
+
 
 }
 
@@ -784,7 +874,7 @@ function trackKeyDown(e) {
   // console.log("keydown: " + e.key);
   // console.log("Keycode: " + e.code);
   if (e.key === 'l') {
-    consolidateEngagement();
+    // consolidateEngagement();
   }
 
   totalKeyPresses++;
