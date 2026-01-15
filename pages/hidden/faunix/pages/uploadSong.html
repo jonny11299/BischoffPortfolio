@@ -105,10 +105,14 @@
                             <select id="songSelect"></select>
                         </li>
                         <li>
-                            <input type="string" id="version_name" placeholder="Version Name">
+                            <input type="text" id="version_name" placeholder="Version Name">
                         </li>
                         <li>
                             <select id="quickLinkSelect"></select>
+                        </li>
+                        <li>
+                            <p style="color: white">Name Preview: </p>
+                            <p id="songnamepreview" style="color: rgb(149, 255, 244)"></p>
                         </li>
                         <li>
                             <button id="submitButton" onclick="submitNewSongVersion()">Submit</button>
@@ -123,6 +127,21 @@
                     <br>
                     <br>
                     <br>
+
+                    <script>
+                        function updateSongNamePreview(inputtedText, songName = document.getElementById('songSelect').value) {
+                            const displayText = songName + ": " + inputtedText;
+                            const preview = document.getElementById('songnamepreview');
+                            preview.textContent = displayText;
+                        }
+                        document.getElementById("version_name").addEventListener('input', (e) => {
+                            // console.log('changed songname');
+                            // console.log(e);
+                            // console.log(e.target.value);
+                            updateSongNamePreview(e.target.value);
+                        })
+
+                    </script>
 
 
 
@@ -315,6 +334,7 @@
                                 // console.log(`vname = ${vname}`);
 
                                 defaultVersionName = vname;
+                                updateSongNamePreview(vname, songGuess);
 
                                 setHtmlElements();
                             }

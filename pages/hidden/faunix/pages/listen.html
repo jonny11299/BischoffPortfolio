@@ -240,19 +240,26 @@
                         }
 
 
+                        // okay bro... listenTest() plays a random url from my locally-stored versions, and i don't know
+                        // the version that is passed in for 'version'
+                        // maybe i can just make the url equal to the one possessed by version... maybe we are safe enough!
                         let playedSongsIndex = -1;
                         function listenTest() {
-                            let songurls = [
-                                'https://faunix-objects.s3.us-west-2.amazonaws.com/uploads/user_Casting+Deity_1766295218453/1768016523139_aaaafaunix1.mp3',
-                                'https://faunix-objects.s3.us-west-2.amazonaws.com/uploads/user_Casting+Deity_1766295218453/1768331579777_aaabfaunix2.mp3',
-                                'https://faunix-objects.s3.us-west-2.amazonaws.com/uploads/user_Shimmering-Moog_1768331920729/1768332059846_aaaafaunix1.mp3'
-                            ];
+                            const vs = getVersionsFromLocalStorage();
+                            let songItems = vs.reduce((list, v) => {
+                                list.push({
+                                    name: v.song_name + ": " + v.version_name,
+                                    url: v.s3_url
+                                });
+                                return list;
+                            }, []);
+
 
                             // get this to cycle thru the elements of the array with each button click
                             playedSongsIndex++;
-                            if (playedSongsIndex == songurls.length) playedSongsIndex = 0;
+                            if (playedSongsIndex == songItems.length) playedSongsIndex = 0;
 
-                            let url = songurls[playedSongsIndex];
+                            let url = songItems[playedSongsIndex].url;
                             console.log(`boutta play from ${url}`);
 
 
@@ -264,7 +271,7 @@
                                 version.value = versionsList[0];
                             }
 
-                            listenToVersion(version, url);
+                            listenToVersion(vs[0], url);
                         }
 
 

@@ -148,7 +148,7 @@
 
 
                             // build a list of buttons of songname
-                            let songNames = getSongNames();
+                            let songNames = getSongNamesFormattedForS3();
                             let songFreq = getSongFrequency();
 
                             // console.log("Songnamelist:");
@@ -167,6 +167,9 @@
                             // will need to set color based on if I've selected it or not.
                             // green for "have selected", yellow for "have duplicates"
 
+                            const vsfromlocalstorage = getVersionsFromLocalStorage();
+                            // console.log(vsfromlocalstorage);
+
                             for (let song of songNames) {
                                 const li = document.createElement('li');
 
@@ -176,16 +179,25 @@
                                     version: 'blank',
                                     order: -1
                                 });
-                                button.textContent = song;
+                                button.textContent = song.replaceAll('_', ' ');
+
+
+                                if (!vsfromlocalstorage.some(v => {
+                                    // console.log('testing song');
+                                    return v.song_name === song;
+                                })) {
+                                    // console.log('there is no ' + song);
+                                    button.style = `background-color: rgba(200, 100, 100, 0.7)`;
+                                }
+
                                 if (songFreq[song]) {
-                                    button.textContent = song + ` (${songFreq[song]})`;
+                                    button.textContent = (song + ` (${songFreq[song]})`).replaceAll('_', ' ');
 
                                     // cheeky math to animate color based on frequency
                                     let n = songFreq[song];
                                     let r = n > 1 ? 255 : 40;
                                     let g = 255 - ((255 - 68) / (n + 1));
                                     button.style = `background-color: rgba(${r}, ${g}, 128, 0.7)`;
-
                                 }
 
 
@@ -221,7 +233,7 @@
                                     songName: song.name,
                                     version: song.version
                                 });
-                                button.textContent = `(${song.order}) ${song.name}`;
+                                button.textContent = `(${song.order}) ${song.name.replaceAll('_', ' ')}`;
                                 button.className = 'songSelect';
                                 button.style = "background-color: rgba(100, 100, 100, 0.7);"
                                 // if (vertical) button.className = 'songSelectVertical';
@@ -280,18 +292,19 @@
                                 } else {
                                     // default to the already-selected value (i.e. remember state when re-building the list)
                                     doption.value = selectedSongs[i].version;
-                                    doption.textContent = selectedSongs[i].version;
+                                    doption.textContent = selectedSongs[i].version.replaceAll('_', ' ');
                                 }
                                 doption.selected = true;
 
 
                                 // add all the versions:
+                                // console.log("song.name: " + song.name);
                                 if (versions[song.name]) {
                                     for (const v of versions[song.name]) {
                                         if (v !== doption.value) { // skip re-adding the currently-added option
                                             const option = document.createElement('option');
                                             option.value = v;
-                                            option.textContent = v;
+                                            option.textContent = v.replaceAll('_', ' ');
 
                                             select.appendChild(option);
                                             li.appendChild(select);
@@ -299,7 +312,7 @@
                                         }
                                     }
                                 } else {
-                                    doption.textContent = `!! ${song.name} empty !!`;
+                                    doption.textContent = `!! ${(song.name).replaceAll('_', ' ')} empty !!`;
                                 }
 
 
@@ -428,6 +441,8 @@
                             feedbackForm.style = 'color: #11ee11'; // green
                             feedbackForm.innerHTML = feedbackForm.textContent.replace(/\n/g, '<br>');
 
+                            console.log("New album orders:");
+                            console.log(getFaunixAlbumOrders());
 
                             /* 
                             // ALBUM_ORDERS:

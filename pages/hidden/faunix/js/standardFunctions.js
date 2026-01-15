@@ -143,13 +143,22 @@ function getSongNames(alphabetize = true) {
     return (list);
 }
 
+function getSongNamesFormattedForS3(alphabetize = true) {
+    let songnames = getSongNames(alphabetize);
+    let newlist = [];
+    for (let song of songnames) {
+        newlist.push(song.replaceAll(' ', '_'));
+    }
+    return newlist;
+}
+
 
 
 function getFaunixAlbumOrders() {
     let albumOrders = JSON.parse(localStorage.getItem('faunix_album_orders'));
 
-    console.log("Getting album orders.");
-    console.log(albumOrders);
+    // console.log("Getting album orders.");
+    // console.log(albumOrders);
 
     // return blank if none, else self.
     return !albumOrders ? [] : albumOrders;

@@ -313,7 +313,7 @@ async function putAudioFileInBucket(file, accessUrl) {
 
 }
 
-function preventNav(e) {
+function preventNav(e) { // connects via eventListener, ctrl+F for 'eventListener' to see the hooks.
     if (UPLOAD_IN_PROGRESS) {
         e.preventDefault();
         e.returnValue = '';
