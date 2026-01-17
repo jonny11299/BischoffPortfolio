@@ -239,7 +239,8 @@ function getVersionsMappedToName() {
         if (!map[v.song_name]) {
             map[v.song_name] = [];
         }
-        map[v.song_name].push(v.version_name);
+        // map[v.song_name].push(v.version_name);
+        map[v.song_name].push(v);
     }
     // console.log(map);
     return map;

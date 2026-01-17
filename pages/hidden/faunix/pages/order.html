@@ -205,7 +205,7 @@
                                 // if (vertical) button.className = 'songSelectVertical';
 
                                 // could also add event listener, but this feels more simple/elegant
-                                button.onclick = () => appendToAlbumOrder(song);
+                                button.onclick = () => appendToSelectedAlbumOrderList(song);
 
                                 li.appendChild(button);
                                 songNameList.appendChild(li);
@@ -262,6 +262,7 @@
 
                             // okay so... upon selecting something, i have to update selectedSongs[song]
                             // then, upon constructing this list, i have to use the default option iff selectedSongs[song] not available.
+                            // this is my versions select here.
 
                             let i = -1;
                             for (let song of selectedSongs) {
@@ -277,22 +278,32 @@
                                 // Otherwise we get a js closure issue.
                                 const capturedIndex = i;
                                 select.onchange = () => {
-                                    selectedSongs[capturedIndex].version = select.value;
+                                    // console.log("Parsing:");
+                                    // console.log(select.value);
+                                    // console.log("Now it's:");
+                                    // console.log(JSON.parse(select.value));
+                                    selectedSongs[capturedIndex].version = JSON.parse(select.value);
                                     // console.log(selectedSongs);
                                 }
 
 
 
                                 // add a default option:
+                                // okay, in order to update this, we need to know what selectedSongs is doing.
                                 const doption = document.createElement('option');
-                                if (selectedSongs[i].version === 'blank') {
+                                // console.log("selectedSongs[i] is");
+                                // console.log(selectedSongs[i]);
+                                if (selectedSongs[i].version.version_name === 'blank') {
                                     doption.value = '';
                                     doption.textContent = `-- ${song.name} default --`;
                                     doption.disabled = true;
                                 } else {
                                     // default to the already-selected value (i.e. remember state when re-building the list)
-                                    doption.value = selectedSongs[i].version;
-                                    doption.textContent = selectedSongs[i].version.replaceAll('_', ' ');
+                                    // console.log('getting from selectedSongs[i]:');
+                                    // console.log("specifically " + selectedSongs[i].name);
+                                    // console.log(selectedSongs[i].version);
+                                    doption.value = JSON.stringify(selectedSongs[i].version);
+                                    doption.textContent = selectedSongs[i].version.version_name.replaceAll('_', ' ');
                                 }
                                 doption.selected = true;
 
@@ -300,11 +311,20 @@
                                 // add all the versions:
                                 // console.log("song.name: " + song.name);
                                 if (versions[song.name]) {
+                                    // console.log("There is a version for " + song.name + ": ");
+                                    // console.log(versions[song.name]);
+                                    // the above actually stores an array of the versions, pretty cool.
                                     for (const v of versions[song.name]) {
-                                        if (v !== doption.value) { // skip re-adding the currently-added option
+                                        if (JSON.stringify(v) !== doption.value) { // skip re-adding the currently-added option
+                                            // we will need to update all of doption
+                                            // console.log(`JSON.stringify(v) !== doption.value for v, doption.value:`);
+                                            // console.log(JSON.stringify(v));
+                                            // console.log(doption.value);
+
                                             const option = document.createElement('option');
-                                            option.value = v;
-                                            option.textContent = v.replaceAll('_', ' ');
+                                            option.value = JSON.stringify(v);
+                                            // console.log(v);
+                                            option.textContent = v.version_name.replaceAll('_', ' ');
 
                                             select.appendChild(option);
                                             li.appendChild(select);
@@ -352,14 +372,16 @@
                             setHtmlElements();
                         }
 
-                        function appendToAlbumOrder(songName) {
+                        function appendToSelectedAlbumOrderList(songName) {
                             let newIndex = selectedSongs.length + 1;
                             // here I need to select the actual default option:
-                            let versionName = getDefaultSongVersion(songName).version_name;
+                            let defaultV = getDefaultSongVersion(songName);
+                            // this stores the actual object, not the stringified version.
+                            // the select option.value stores the stringified version.
                             selectedSongs.push({
                                 order: newIndex,
                                 name: songName,
-                                version: versionName
+                                version: defaultV
                             });
 
                             // console.log(selectedSongs);
@@ -387,6 +409,7 @@
 
                         // obviously need to build this out
                         function submitAlbumOrder() {
+                            console.log("Submitting:");
                             console.log(selectedSongs);
 
                             const nameForm = document.getElementById("album_order_name");
