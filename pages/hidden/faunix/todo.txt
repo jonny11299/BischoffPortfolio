@@ -9,6 +9,15 @@
 
 2. Build out the "embed link" --> listening functionality 
   - build out "how to create embed link"
+
+2.5: Build out the whole 'player' functionality:
+  - I need to add event listeners to the playback
+  - allow me to cycle between them
+  - set volume maybe?
+  - add notes
+  - Make the player cool
+
+
 3. incorporate the server 
 4. add a "Recover from deleted" option (use the backend server to keep deleted instances)
 
@@ -25,14 +34,27 @@
 
 
 
+
+// 1/16/26
+// Alright bro, I'm approaching a MVP. I'm going to speed ahead and complete it via:
+  // Getting Google server to work 
+  // Filling in all the required song files / album orders / etc 
+// Then, I'm going to go back and 
+  // Add notes section 
+  // Add volume control 
+  // Make the player look better
+  // Add a background maybe? 
+  // incorporate feedback 
+
+
+
+
+
 // 1/13/26 okay bro, here's where I'm at:
   // modify upload to use the s3 bucket
   // modify listen to work
   // make it work good on localstorage 
   // build a database 
-
-
-
 
 
 1. Create forms on the webpages that allow me to submit the required data 

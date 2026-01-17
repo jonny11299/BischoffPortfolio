@@ -63,6 +63,10 @@
                         <li>
                             <button id='listen_test' onclick="listenTest()">test listen</button>
                         </li>
+
+                        <li>
+                            <button id='print_album_orders' onclick="printAlbumOrders()">Print Album Orders</button>
+                        </li>
                         <li>
                             <h3>Testing album orders. Click one to start it in the player:</h3>
                         </li>
@@ -90,6 +94,7 @@
 
 
                     <ul id='playerList'>
+                        <li id="status"></li>
                         <li id='albumordername'></li>
                         <li id='songname'></li>
                         <li id='versionname'></li>
@@ -114,6 +119,9 @@
 
                     <script>
 
+                        function printAlbumOrders() {
+                            console.log(getFaunixAlbumOrders());
+                        }
 
                         /*
 
@@ -138,6 +146,7 @@
                         }
 
                         // actually completely insert a different, pre-made child into this element
+                        // it's fine if it doesn't already have a child.
                         let replaceChild = (e, newChild) => {
                             e.innerHTML = '';
                             e.appendChild(newChild);
@@ -151,6 +160,7 @@
                             const versionname = document.getElementById('versionname');
                             // const player = document.getElementById('player');
                             const autoplay = document.getElementById('autoplay');
+                            const status = document.getElementById('status');
                             // const navlistcontainer = document.getElementById('navlistcontainer');
                             // const navlist = document.getElementById('navlist');
                             const prev = document.getElementById('prev');
@@ -160,141 +170,82 @@
                             const notes = document.getElementById('notes');
 
 
-                            /*
-                            let giveChild = (e, childType, textContent, style = 'default') => {
-                                e.innerHTML = '';
-                                const c = document.createElement(childType);
-                                c.textContent = textContent;
-                                if (c.style !== 'default') c.style = style;
-                                e.appendChild(c);
-                            };
-                            */
-
-
                             // Okay, I'm getting cool ideas here.
                             // These should use my button element from before, and clicking on each should do something.
                             // Clicking on album version should take me to a list of the song order, details about it, etc.
                             // Clicking on songname should show me all the other versions for it.
                             // clicking on version name should bring me to its location in the google drive.
                             // 
-                            giveChild(albumordername, 'h2', settings.album_order_name, (c) => {
+                            giveChild(status, 'h4', `status: ${settings.status}`);
+
+                            giveChild(albumordername, 'h2', `album order name: ${settings.album_order_name}`, (c) => {
                                 c.style = 'color: white';
                             });
-                            giveChild(songname, 'h2', settings.version.song_name);
-                            giveChild(versionname, 'h2', settings.version.version_name);
+                            giveChild(songname, 'h3', `song name: ${settings.version.song_name}`);
+                            giveChild(versionname, 'h4', `version name: ${settings.version.version_name}`);
 
-                            giveChild(prev, 'h4', '<--');
-                            giveChild(playpause, 'h4', 'play/pause');
-                            giveChild(next, 'h4', '-->');
+
+                            giveChild(prev, 'button', '<--', (c) => {
+                                c.onclick = prevSong;
+                            });
+
+                            const ppt = settings.playing ? 'pause' : 'play';
+                            giveChild(playpause, 'button', ppt, (c) => {
+                                c.onclick = playOrPause;
+                            });
+                            giveChild(next, 'button', '-->', (c) => {
+                                c.onclick = nextSong;
+                            });
+
 
                             giveChild(notes, 'h4', 'notes section');
 
                         }
 
+                        function playOrPause() {
+                            const a = settings.audioComponent;
 
-                        function listenToVersion(version, embedLink = 'blank') {
-                            // let embedLink = version.s3_url;
-                            // embedLink = 'https://docs.google.com/uc?export=preview&id=1OcIcQCBj6gXdczyHXmaFzPqz1L-YuFbv';
-                            console.log(`launching ${version.version_name} from ${embedLink}`);
-
-                            settings.album_order_name = 'single version play';
-                            settings.status = 'playing';
-                            settings.song_name = version.song_name;
-                            settings.version_name = version.version_name;
-
-                            syncPlayerWithSettings();
-
-                            // build out the audio component and append it to the html:
-                            const player = document.getElementById('player');
-
-                            let audioComponent;
-                            try {
-                                // build out a functional audio component
-                                const iframe = document.createElement('iframe');
-                                iframe.src = embedLink;
-                                iframe.width = '400';
-                                iframe.height = '200';
-                                iframe.allow = 'autoplay';
-
-                                audioComponent = iframe;
-                                settings.audioComponent = audioComponent;
-
-                                /* audioComponent.addEventListener('loadedmetadata', () => {
-                                    console.log(`loaded song ${version.song_name}: ${version.version_name}\nfrom ${embedLink}`);
-                                    console.log('Duration:', audioComponent.duration);
-                                });*/
-
-                                // audioComponent.play();
-                                settings.playing = true;
-                            } catch (error) {
-                                // replace with a standard red feedback text
-                                audioComponent = document.createElement('h2');
-                                audioComponent.style = "color: red";
-                                audioComponent.textContent = `Failed to get embed link because ${error.message}`;
+                            if (settings.playing) {
+                                console.log("Paused");
                                 settings.playing = false;
-                                settings.status = 'failed to play';
+                                if (a) {
+                                    a.pause();
+                                }
+                            } else {
+                                console.log("Played");
+                                settings.playing = true;
+                                if (a) {
+                                    a.play();
+                                }
                             }
 
-                            // append child
-                            replaceChild(player, audioComponent);
-                        }
-
-                        function listenIndividual() {
-                            const indivSelect = document.getElementById('listen_individual_select');
-                            let version = JSON.parse(indivSelect.value);
-                            // console.log(version);
-                        }
-
-
-                        // okay bro... listenTest() plays a random url from my locally-stored versions, and i don't know
-                        // the version that is passed in for 'version'
-                        // maybe i can just make the url equal to the one possessed by version... maybe we are safe enough!
-                        // quick github check...
-                        let playedSongsIndex = -1;
-                        function listenTest() {
-                            const vs = getVersionsFromLocalStorage();
-                            let songItems = vs.reduce((list, v) => {
-                                list.push({
-                                    name: v.song_name + ": " + v.version_name,
-                                    url: v.s3_url
-                                });
-                                return list;
-                            }, []);
-
-
-                            // get this to cycle thru the elements of the array with each button click
-                            playedSongsIndex++;
-                            if (playedSongsIndex == songItems.length) playedSongsIndex = 0;
-
-                            let url = songItems[playedSongsIndex].url;
-                            console.log(`boutta play from ${url}`);
-
-
-                            const indivSelect = document.getElementById('listen_individual_select');
-                            const version = JSON.parse(indivSelect.value);
-                            // console.log(version);
-                            if (version.value == '') { // default version
-                                let versionsList = getVersionsFromLocalStorage();
-                                version.value = versionsList[0];
+                            const playpause = document.getElementById('playpause');
+                            try {
+                                const c = playpause.children[0];
+                                c.textContent = settings.playing ? 'pause' : 'play';
+                            } catch (error) {
+                                console.log("Probably don't have a child on playpause element yet.");
                             }
-
-                            listenToVersion(vs[0], url);
+                            // console.log(playpause.children[0].textContent);
                         }
 
+                        function nextSong() {
+                            if (curSong !== null) {
+                                // reminder that order is 1-indexed
+                                const nextIndex = curSong.order;
+                                if (nextIndex === settings.albumOrder.songs.length) return;
+                                launchSong(settings.albumOrder.songs[nextIndex]);
+                            }
+                        }
 
-                        /*
-                        // ALBUM_ORDERS:
-                            timestamp
-                            album_order_name
-                            songs: [{
-                                name
-                                version
-                            }]
-                            uploader
-                            uploader_id: userID
-                            
-                        */
-
+                        function prevSong() {
+                            if (curSong !== null) {
+                                // reminder that order is 1-indexed
+                                const prevIndex = curSong.order - 2;
+                                if (prevIndex === -1) return;
+                                launchSong(settings.albumOrder.songs[prevIndex]);
+                            }
+                        }
 
 
                         // okay, we need to be able to take the above, and get:
@@ -363,8 +314,150 @@
 
                         }
 
-                        function launchSong(version, paused = true) {
-                            settings.status = 'playing';
+
+                        function stuffWithEventListeners(audio) {
+                            function formatTime(seconds) {
+                                const mins = Math.floor(seconds / 60);
+                                const secs = Math.floor(seconds % 60);
+                                return `${mins}:${secs.toString().padStart(2, '0')}`;
+                            }
+
+                            audio.addEventListener('timeupdate', () => {
+                                // Fires constantly as song plays - perfect for progress bars!
+                                // console.log(formatTime(audio.currentTime));
+                            });
+
+                            audio.addEventListener('ended', () => {
+                                // Song finished - play next track!
+                                if (settings.autoplay) {
+                                    nextSong();
+                                }
+                            });
+
+                            audio.addEventListener('loadedmetadata', () => {
+                                // Duration is now available
+                                console.log('Song length:', audio.duration);
+                            });
+
+
+
+                            /*
+                            Hell yeah, the <audio> element is packed with useful stuff! Here's what you can grab:
+                                Time & Playback
+                                javascript
+                                audio.duration         // Total length in seconds (e.g., 245.5)
+                                audio.currentTime      // Current position in seconds (e.g., 67.3)
+                                audio.paused           // Boolean - is it paused?
+                                audio.ended            // Boolean - has it finished?
+                                audio.playbackRate     // Playback speed (1.0 = normal, 2.0 = 2x speed)
+                                Volume & Audio
+                                javascript
+                                audio.volume           // 0.0 to 1.0
+                                audio.muted            // Boolean - is it muted?
+                                Loading State
+                                javascriptaudio.readyState       // 0-4, how much has loaded
+                                audio.buffered         // TimeRanges object of buffered portions
+                                audio.seeking          // Boolean - currently seeking?
+                                Useful Methods
+                                javascriptaudio.play()           // Returns a Promise!
+                                audio.pause()
+                                audio.load()           // Reload the audio
+                                Practical Example:
+                                javascriptconst audio = settings.audioComponent;
+
+                                // Get progress as percentage
+                                const progress = (audio.currentTime / audio.duration) * 100;
+
+                                // Jump to 30 seconds in
+                                audio.currentTime = 30;
+
+                                // Check if almost done
+                                if (audio.duration - audio.currentTime < 10) {
+                                    console.log("Less than 10 seconds left!");
+                                }
+
+                                // Format time nicely
+                                function formatTime(seconds) {
+                                    const mins = Math.floor(seconds / 60);
+                                    const secs = Math.floor(seconds % 60);
+                                    return `${mins}:${secs.toString().padStart(2, '0')}`;
+                                }
+
+                                console.log(formatTime(audio.currentTime)); // "2:47"
+                                */
+
+                        }
+
+
+
+
+                        // load all the metadata, setup the player.
+                        // song is from object {order, name, version}
+                        function launchSong(song) {
+                            let autoplay = settings.autoplay;
+                            curSong = song;
+
+                            console.log(`launching ${song.name} with autoplay setting ${autoplay}`);
+                            console.log(song);
+
+                            // so much setting metadata...
+                            if (!autoplay) {
+                                settings.status = 'paused ' + song.name;
+                                settings.playing = false;
+                            } else {
+                                settings.status = 'playing ' + song.name;
+                                settings.playing = true;
+                            }
+
+                            settings.version = song.version;
+
+                            syncPlayerWithSettings();
+
+                            // build out the audio component and append it to the html:
+                            const player = document.getElementById('player');
+                            const embedLink = song.version.s3_url;
+
+                            let audioComponent;
+                            try {
+                                // build out a functional audio component
+                                const audio = document.createElement('audio');
+                                audio.src = embedLink;
+                                audio.controls = true; // show play/pause controls
+
+                                // Later when you want to play/pause:
+                                // audio.play()
+                                // audio.pause()
+
+                                audioComponent = audio;
+                                settings.audioComponent = audioComponent;
+
+                                /* audioComponent.addEventListener('loadedmetadata', () => {
+                                    console.log(`loaded song ${version.song_name}: ${version.version_name}\nfrom ${embedLink}`);
+                                    console.log('Duration:', audioComponent.duration);
+                                });*/
+                                if (!autoplay) {
+                                    audioComponent.pause();
+                                } else {
+                                    audioComponent.play();
+                                }
+
+
+                                stuffWithEventListeners(audio);
+
+
+                            } catch (error) {
+                                // replace with a standard red feedback text
+                                audioComponent = document.createElement('h2');
+                                audioComponent.style = "color: red";
+                                audioComponent.textContent = `Failed to get embed link because ${error.message}`;
+                                settings.playing = false;
+                                settings.status = 'failed to play';
+                                curSong = null;
+                            }
+
+                            // append child
+                            replaceChild(player, audioComponent);
+
                         }
 
                         function startAlbumOrder(albumOrder) {
@@ -375,9 +468,12 @@
                                 return;
                             }
                             settings.albumOrder = albumOrder;
-                            settings.autoplay = false;
+                            settings.album_order_name = albumOrder.album_order_name;
+                            settings.autoplay = true;
                             settings.playing = false;
+                            settings.status = 'paused ' + albumOrder.songs[0].name;
 
+                            launchSong(albumOrder.songs[0])
 
 
                             // Need to give the user the controls to switch between different songs.
@@ -398,8 +494,27 @@
                             version: getBlankSongVersion(),
                             autoplay: true,
                             playing: false,
-                            audioComponent: null // will be replaced by a reference to the actual component
+                            audioComponent: null, // will be replaced by a reference to the actual component
                         }
+
+                        // would like a decent system for keeping track of the current album order and what's being played
+                        let curSong = null;
+                        /*
+                            {
+                                order: (1-indexed)
+                                name:
+                                version:
+                            }
+                        */
+                        let songInfo = null;
+                        // ^will be populated with:
+                        // actually... maybe I want to pull that directly from the audioComponent?
+                        /*
+                            {
+                                duration: number
+                            }
+                        */
+
 
                         setHtmlElements();
                     </script>
