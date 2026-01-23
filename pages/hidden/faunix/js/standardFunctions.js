@@ -273,3 +273,4 @@ function getDefaultSongVersion(songName) {
 
     return getBlankSongVersion();
 }
+

@@ -31,6 +31,11 @@
             <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
               style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
           </div>
+
+
+
+          Bugs to fix:
+          play/pause button doesn't change if I pause from the element itself
 -->
 
 
@@ -108,11 +113,17 @@
                             </ul>
                         </li>
                         <li id="spacing"><br></li>
-                        <li id="notes"></li>
+                        <li id="leaveNotesButton"></li>
+                        <li>
+                            <ul id="notesList">
+                                <!-- empty now, will be filled -->
+                            </ul>
+                        </li>
                     </ul>
                     <br>
                     <br>
                     <br>
+
 
 
 
@@ -167,7 +178,8 @@
                             const playpause = document.getElementById('playpause');
                             const next = document.getElementById('next');
                             // const spacing = document.getElementById('spacing');
-                            const notes = document.getElementById('notes');
+                            const leave_Notes_LI = document.getElementById('leaveNotesButton');
+
 
 
                             // Okay, I'm getting cool ideas here.
@@ -176,9 +188,10 @@
                             // Clicking on songname should show me all the other versions for it.
                             // clicking on version name should bring me to its location in the google drive.
                             // 
-                            giveChild(status, 'h4', `status: ${settings.status}`);
+                            // giveChild(status, 'h4', `status: ${settings.status}`);
 
-                            giveChild(albumordername, 'h2', `album order name: ${settings.album_order_name}`, (c) => {
+                            giveChild(albumordername, 'h2', `playing Album Order ${settings.album_order_name}\n
+                            song ${curSong.order} / ${settings.albumOrder.songs.length}`, (c) => {
                                 c.style = 'color: white';
                             });
                             giveChild(songname, 'h3', `song name: ${settings.version.song_name}`);
@@ -198,8 +211,122 @@
                             });
 
 
-                            giveChild(notes, 'h4', 'notes section');
+                            giveChild(leave_Notes_LI, 'button', 'Leave Note', (c) => {
+                                setupNotesButton(c);
+                            });
 
+                            autoplayText = settings.autoplay ? 'disable autoplay' : 'enable autoplay';
+                            giveChild(autoplay, 'button', autoplayText, (c) => {
+                                c.onclick = toggleAutoplay
+                            })
+                        }
+
+                        function setupNotesButton(buttonObj) {
+
+                            notesButton = buttonObj;
+                            const nb = notesButton;
+                            nb.style = "color: green";
+                            // nb.textContent = 'leave note';
+                            // actually the rest is done in stuffWithEventListeners, really, so...
+                        }
+
+
+
+                        // comes from the button created by leaveNote
+
+                        function submitNote(formId, song, timeInSong, albumOrder) {
+
+                            try {
+                                const form = document.getElementById(formId);
+                                const t = form.value.trim()
+
+                                //console.log("Submitting note for:");
+                                //console.log(formId);
+                                //console.log(t);
+                                //console.log(song);
+                                //console.log(time);
+                                //console.log(albumOrder);
+                                postSongNote(t, song, timeInSong, albumOrder);
+                                // it's in postman.js
+
+                                form.parentElement.parentElement.remove();
+
+
+                            } catch (error) {
+                                console.error(`Failed to submit note for ${formId}, ${song}`);
+                                console.log(error);
+                            }
+
+
+                            // only if noteslist is empty
+                            const noteslist = document.getElementById('notesList');
+                            const childCount = notesList.children.length;
+                            console.log("noteslist child count " + childCount);
+                            settings.autoplay = settings.returnToAutoPlay;
+                        }
+
+                        // yeah dude
+                        // every time this happens, I create a new form with the right stuff
+                        // you can have multiple notes up, they just get appended to notesList
+                        // and removed once notesList is submitted
+
+                        function leaveNote(song, time, albumOrder) {
+                            console.log("leaving a note on " + song.name + " at " + time);
+                            // console.log(song);
+                            // console.log(albumOrder);
+
+                            // disable autoplay until submitNote
+                            // perhaps add a setting to make it default pause when leaving notes, or not.
+
+                            settings.returnToAutoPlay = settings.autoplay;
+                            settings.autoplay = false;
+
+                            // create the note form:
+                            const formlist = document.createElement('ul');
+
+                            const form = document.createElement('form');
+                            const li1 = document.createElement('li');
+                            li1.appendChild(form);
+                            formlist.appendChild(li1);
+
+                            const textArea = document.createElement('textarea');
+                            const tid = `notesText_${Date.now()}`;
+                            textArea.id = tid;
+                            textArea.rows = "10";
+                            textArea.cols = "50";
+                            textArea.placeholder = "Enter your notes here...";
+                            const li2 = document.createElement('li');
+                            li2.appendChild(textArea)
+                            formlist.appendChild(li2);
+
+
+                            const submitButton = document.createElement('button');
+                            submitButton.textContent = `submit above note for ${song.name} at ${formatTime(time)}`;
+                            submitButton.onclick = () => submitNote(tid, song, time, albumOrder);
+
+                            const li3 = document.createElement('li');
+                            li3.appendChild(submitButton);
+                            formlist.appendChild(li3);
+
+
+                            const notesList = document.getElementById('notesList');
+                            notesList.appendChild(formlist);
+
+
+
+                        }
+
+
+                        function toggleAutoplay() {
+                            settings.autoplay = !settings.autoplay;
+
+                            const autplay = document.getElementById('autoplay');
+                            try {
+                                const c = autplay.children[0];
+                                c.textContent = settings.autoplay ? 'disable autoplay' : 'enable autoplay';
+                            } catch (error) {
+                                console.log("Probably don't have a child on autoplay element yet.");
+                            }
                         }
 
                         function playOrPause() {
@@ -314,17 +441,39 @@
 
                         }
 
+                        function formatTime(seconds) {
+                            const mins = Math.floor(seconds / 60);
+                            const secs = Math.floor(seconds % 60);
+                            return `${mins}:${secs.toString().padStart(2, '0')}`;
+                        }
+
 
                         function stuffWithEventListeners(audio) {
-                            function formatTime(seconds) {
-                                const mins = Math.floor(seconds / 60);
-                                const secs = Math.floor(seconds % 60);
-                                return `${mins}:${secs.toString().padStart(2, '0')}`;
-                            }
 
                             audio.addEventListener('timeupdate', () => {
                                 // Fires constantly as song plays - perfect for progress bars!
                                 // console.log(formatTime(audio.currentTime));
+
+                                try {
+                                    curtime = formatTime(audio.currentTime);
+                                    if (notesButton) {
+
+                                        const notesList = document.getElementById('notesList');
+                                        const childCount = notesList.children.length;
+
+                                        if (childCount > 0) {
+                                            notesButton.textContent = `Leave additional note at ${curtime}`;
+                                        } else {
+                                            notesButton.textContent = `Leave note at ${curtime}`;
+                                        }
+
+
+                                        notesButton.onclick = () => leaveNote(curSong, audio.currentTime, settings.albumOrder);
+                                    }
+                                } catch (error) {
+                                    console.log("Error with notesButton ");
+                                    console.log(error);
+                                }
                             });
 
                             audio.addEventListener('ended', () => {
@@ -493,6 +642,7 @@
                             albumOrder: 'none',
                             version: getBlankSongVersion(),
                             autoplay: true,
+                            returnToAutoPlay: true, // this is used for submitting notes, so we don't autoplay to the next song while typing up a note
                             playing: false,
                             audioComponent: null, // will be replaced by a reference to the actual component
                         }
@@ -514,6 +664,7 @@
                                 duration: number
                             }
                         */
+                        let notesButton = null; // the object for the button for leaving notes
 
 
                         setHtmlElements();

@@ -1,7 +1,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxqHYM9LlD3dFYSUgewpXsPusPKGEtdWgA6tGADDeGi8zeIDsSgG4ybu0WphxFlHkgbvQ/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbzHbgGRSKULqPRDg-PHdFDNSTa5wov4Ey5UxWba_4fMoRJEaBxXE1E_1SdLq1xLYD-R4Q/exec";
 const LOCAL_SECRET = "BUTIREALLYTRIEDTO";
 
 
@@ -428,6 +428,49 @@ function addSongToLocalStorage(version, file) {
 
 
 }
+
+
+
+// noteText is string, song is the {name, order, version} object, timeInSong is a number, albumOrder is the albumOrder the note is in.
+// I'll need to capture the stuff that lets this note be associated with all its relevant context
+// probably:
+/*
+// post already handles uploader, uploader_id, timestamp
+note = {
+    uploader (handled by post)
+    uploader_id (handled by post)
+
+    (these from object)
+    song_name
+    version_name
+    version_timestamp
+
+    album_order_name
+    album_order_timestamp
+    note_text
+    time_in_song
+}
+
+*/
+function postSongNote(noteText, song, timeInSong, albumOrder) {
+    const dataObject = {
+        song_name: song.version.song_name,
+        version_name: song.version.version_name,
+        version_timestamp: song.version.timestamp,
+
+        album_order_name: albumOrder.album_order_name,
+        album_order_timestamp: albumOrder.timestamp,
+        note_text: noteText,
+        time_in_song: timeInSong
+    };
+
+    console.log("Posting song note: ");
+    console.log(dataObject);
+
+    post('song_note', dataObject);
+}
+
+
 
 
 function markAsDeletedInSheets(version) {

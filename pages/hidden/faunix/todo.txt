@@ -48,6 +48,18 @@
 
 
 
+// 1/18/26:
+//  Got to complete the postSongNote function in postman.js
+//  probably fix the play/pause bug in listen 
+//  make the handshake
+//  finish 'feature request' form
+//  test a bit
+//  call it an mvp! 
+
+
+
+
+
 
 
 // 1/13/26 okay bro, here's where I'm at:
