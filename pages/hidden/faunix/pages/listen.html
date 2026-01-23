@@ -46,39 +46,22 @@
 
                     <!-- Add "Submit new links:"-->
 
-
                     <ul>
                         <li>
-                            <h3>
-                                Select a version:
-                            </h3>
+                            <h2>Select an Album Order</h2>
                         </li>
                         <li>
-                            <select id="listen_individual_select">
-                                <option value="o1">option 1</option>
-                                <option value="o2">option 2</option>
-                                <option value="o3">option 3</option>
-                            </select>
+                            <h3>or, <a href="order.html">create a new one</a></h3>
                         </li>
                         <li>
-                            <button id="listen_individual_button" onclick="listenIndividual()">Listen to
-                                Version</button>
-                        </li>
-                        <li><br><br><br></li>
-                        <li>
-                            <button id='listen_test' onclick="listenTest()">test listen</button>
-                        </li>
-
-                        <li>
-                            <button id='print_album_orders' onclick="printAlbumOrders()">Print Album Orders</button>
+                            <select id="album_order_select"></select>
                         </li>
                         <li>
-                            <h3>Testing album orders. Click one to start it in the player:</h3>
-                        </li>
-                        <li>
-                            <ul id="album_order_list" class="songSelect"></ul>
+                            <button id='start_album_order_button'>Start selected album order</button>
                         </li>
                     </ul>
+
+
 
 
                     <!-- Build out a player, get the individual song playing -->
@@ -114,6 +97,7 @@
                         </li>
                         <li id="spacing"><br></li>
                         <li id="leaveNotesButton"></li>
+                        <li><br><br><br></li>
                         <li>
                             <ul id="notesList">
                                 <!-- empty now, will be filled -->
@@ -294,7 +278,7 @@
                             textArea.id = tid;
                             textArea.rows = "10";
                             textArea.cols = "50";
-                            textArea.placeholder = "Enter your notes here...";
+                            textArea.placeholder = "Enter your notes here...\nLeave this form blank and submit it to cancel.";
                             const li2 = document.createElement('li');
                             li2.appendChild(textArea)
                             formlist.appendChild(li2);
@@ -382,6 +366,7 @@
 
                         function setHtmlElements() {
 
+                            /*
                             // Set delete dropdown:
                             const indivSelect = document.getElementById('listen_individual_select');
                             indivSelect.innerHTML = '';
@@ -404,9 +389,79 @@
 
                                 indivSelect.appendChild(option);
                             }
+                            */
 
 
 
+
+                            // Select album orders from the dropdown:
+
+                            const aoselect = document.getElementById("album_order_select");
+                            aoselect.innerHTML = '';
+
+                            const doption = document.createElement('option');
+                            doption.value = '';
+                            doption.textContent = '-- Select an Album Order to Listen To --';
+                            doption.disabled = true;
+                            doption.selected = true;
+                            aoselect.appendChild(doption);
+
+
+                            const aorders = getFaunixAlbumOrders();
+                            console.log("Getting album orders:");
+                            console.log(aorders);
+                            for (let ao of aorders) {
+                                const aoption = document.createElement('option');
+                                aoption.value = JSON.stringify(ao);
+                                let aoname = ao.album_order_name;
+                                aoption.textContent = aoname
+
+                                aoselect.appendChild(aoption);
+
+                                /*
+                                // console.log(ao);
+                                let blanknum = ao.songs.reduce((num, s) => {
+                                    if (s.version === 'blank') {
+                                        num++;
+                                    }
+                                    return num;
+                                }, 0);
+                                let fillednum = ao.songs.length - blanknum;
+
+                                const previewstring = `${ao.album_order_name} | (${fillednum} filled, ${blanknum} blank)`;
+                                // console.log(previewstring);
+
+                                let button = document.createElement('button');
+                                button.textContent = previewstring;
+                                button.value = JSON.stringify(ao);
+                                button.onclick = () => startAlbumOrder(ao);
+                                // console.log(button.value);
+
+                                const li = document.createElement('li');
+                                li.class = "songSelect";
+                                li.appendChild(button);
+                                alist.appendChild(li);
+
+                                */
+
+                                document.getElementById('start_album_order_button').onclick = startAlbumOrderViaSelect;
+
+                            }
+
+                            function startAlbumOrderViaSelect() {
+                                // just need to do a normal if/then here...
+                                const aostring = document.getElementById('album_order_select').value;
+                                if (aostring.length === 0) {
+                                    console.log("Haven't selected anything. Can't play.");
+                                } else {
+                                    const ao = JSON.parse(aostring);
+                                    console.log(ao);
+                                    startAlbumOrder(ao);
+                                }
+                            }
+
+
+                            /*
                             const alist = document.getElementById('album_order_list');
                             alist.innerHTML = '';
                             const aorders = getFaunixAlbumOrders();
@@ -437,6 +492,7 @@
                                 li.appendChild(button);
                                 alist.appendChild(li);
                             }
+                                */
 
 
                         }
@@ -570,6 +626,12 @@
                             try {
                                 // build out a functional audio component
                                 const audio = document.createElement('audio');
+                                audio.addEventListener('error', (e) => {
+                                    console.error("Audio failed to load:", audio.src);
+                                    audio.src = '/pages/hidden/faunix/audios/womp.m4a';
+                                    audio.load(); // Important! Forces reload with new src
+                                    audio.play().catch(err => console.log('Even the womp womp failed!'));
+                                }, true)
                                 audio.src = embedLink;
                                 audio.controls = true; // show play/pause controls
 
@@ -596,6 +658,8 @@
 
                             } catch (error) {
                                 // replace with a standard red feedback text
+                                console.log("Catching failed launchSong here (1): ");
+                                console.log(error);
                                 audioComponent = document.createElement('h2');
                                 audioComponent.style = "color: red";
                                 audioComponent.textContent = `Failed to get embed link because ${error.message}`;

@@ -38,29 +38,38 @@
 
                     <header>
                         <p></p>
-                        <h1>Feature Request:</h1>
-                        <br>
-                        <br>
-                        <h3>If Prismo beams an idea to your brain about something this website could include, please
-                            type it below and hit submit! Thanks.</h3>
+                        <h1>Random Biz:</h1>
                     </header>
 
                     <!-- Add "Submit new links:"-->
 
 
-                    <br>
-                    <br>
 
-                    <textarea id="featureInput" rows="10" cols="50" placeholder="Type feature idea here..."></textarea>
-                    <br>
-                    <button onclick="submitFeatureRequest()">Submit</button>
+
+                    <ul>
+                        <li>
+                            <button id="faunixian_name" onclick="giveRandomFaunixianName()">Give me a random Faunixian
+                                name</button>
+                        </li>
+                        <li><br></li>
+                        <li>
+                            <h3 id="msg" style="color: greenyellow"></h3>
+                        </li>
+                        <li><br><br></li>
+                        <p>If you have any ideas for cool Faunixian names, (first or last, or both),
+                            I encourage you to write them in a journal, then send them to me via the <a
+                                href="/pages/hidden/faunix/pages/featureRequest.html">feature request form</a> :)</p>
+                    </ul>
+
+
+
 
                     <script>
-                        function submitFeatureRequest() {
-                            const textarea = document.getElementById('featureInput');
-                            const featureText = textarea.value;
-                            postFeatureRequest(featureText);
-                            textarea.value = ''; // Clear after submitting
+                        function giveRandomFaunixianName() {
+                            const name = getFaunixName();
+
+                            const msg = document.getElementById('msg');
+                            msg.innerText = name;
                         }
                     </script>
 

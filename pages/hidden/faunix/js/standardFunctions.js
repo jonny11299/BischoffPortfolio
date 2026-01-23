@@ -4,6 +4,14 @@
 
 Implmements lots of getting and setting that is required across various webpages.
 
+This does not depend on postman.js.
+A few functions from postman.js depend on this.
+
+Include order on every webpage must be:
+standardFunctions.js
+postman.js
+handshake.js
+
 */
 
 

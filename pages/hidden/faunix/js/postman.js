@@ -1,7 +1,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbzHbgGRSKULqPRDg-PHdFDNSTa5wov4Ey5UxWba_4fMoRJEaBxXE1E_1SdLq1xLYD-R4Q/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxtst1WaqKti7sGu7-DIuWcJ1pEZ4pDEOLXmdaKsS1o3w3l487l8lufBKZawoim8KXi6Q/exec";
 const LOCAL_SECRET = "BUTIREALLYTRIEDTO";
 
 
@@ -24,7 +24,10 @@ let userName = getName();
 
         
 
-        
+    Include order on every webpage must be:
+        standardFunctions.js
+        postman.js
+        handshake.js
 
 
 */
@@ -453,6 +456,15 @@ note = {
 
 */
 function postSongNote(noteText, song, timeInSong, albumOrder) {
+
+    // console.log(noteText);
+
+    if (noteText.length === 0) {
+        // blank note, don't submit.
+        console.log("Left a blank note, don't submit.");
+        return;
+    }
+
     const dataObject = {
         song_name: song.version.song_name,
         version_name: song.version.version_name,
@@ -468,6 +480,19 @@ function postSongNote(noteText, song, timeInSong, albumOrder) {
     console.log(dataObject);
 
     post('song_note', dataObject);
+}
+
+
+function postFeatureRequest(featureText) {
+    console.log('Posting feature request:', featureText);
+
+    if (featureText.length === 0) {
+        console.log("Blank feature, don't submit.");
+        return;
+    }
+
+
+    post('feature_request', featureText);
 }
 
 
