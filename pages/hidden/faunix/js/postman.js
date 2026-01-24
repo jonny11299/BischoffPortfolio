@@ -1,7 +1,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxtst1WaqKti7sGu7-DIuWcJ1pEZ4pDEOLXmdaKsS1o3w3l487l8lufBKZawoim8KXi6Q/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbwSEg0D_aV54n09N1jqIicNo0_qqqNzWfAn6rvCOZqqjxDqsY2-9_IXZrLjyvudAiekyQ/exec";
 const LOCAL_SECRET = "BUTIREALLYTRIEDTO";
 
 
@@ -119,7 +119,7 @@ function deleteLocalName() {
 //      but then would be asyc... let's keep this sync, then create a new function for async communications with server.
 // type: how to route it to the server
 // data: content for the server. (Does not yet have to be stringified).
-function post(type, data) {
+function post(type, data, onSuccess = (response) => { }, onFail = (response) => { }) {
     // Send to Google Sheets
     fetch(LATEST_DEPLOYMENT, {
         method: 'POST',
@@ -138,10 +138,12 @@ function post(type, data) {
         console.log("Success on post : " + type);
         console.log("Data: ", data);
         console.log('Response: ', response);
+        onSuccess(response);
     }).catch(err => {
         console.log("Failure on post : " + type);
         console.log("Data: ", data);
         console.log('err: ', err);
+        onFail(err);
     });
 }
 
@@ -325,18 +327,65 @@ function preventNav(e) { // connects via eventListener, ctrl+F for 'eventListene
 }
 
 
-function setUploadComplete(version) {
+
+function postSongVersionToSheets(version) {
+    // run a post, define the 'then' functionality
+    const success = (response) => {
+        // successful post, we can now set our flag 'in_db' to 'true'
+
+        const songVersions = getVersionsFromLocalStorage();
+        let vers = songVersions.find(v => v.timestamp === version.timestamp);
+        vers.in_db = true;
+        console.log(`Successfully completed post of ${version.song_name} : ${version.version_name}`);
+        // console.log(songVersions);
+        localStorage.setItem('faunix_song_versions', JSON.stringify(songVersions));
+
+        UPLOAD_IN_PROGRESS = false;
+        window.removeEventListener('beforeunload', preventNav);
+        const timeElapsed = Date.now() - upload_started;
+        console.log(`time elapsed (ms): ${timeElapsed}`);
+
+        if (upWarning) {
+            upWarning.textContent = "Upload Successful :)";
+            upWarning.style = "color: green";
+        }
+    };
+    const fail = (err) => {
+        console.error(`Failed to post ${version.song_name} : ${version.version_name} to sheets because of:`);
+        console.error(err);
+
+
+        if (upWarning) {
+            upWarning.textContent = "Upload failed to post to google Sheets -- server responded with error. See console logs for more details.";
+        }
+
+        UPLOAD_IN_PROGRESS = false;
+        window.removeEventListener('beforeunload', preventNav);
+        const timeElapsed = Date.now() - upload_started;
+        console.log(`time elapsed (ms): ${timeElapsed}`);
+    }
+    post('upload_song_version', version, success, fail);
+}
+
+
+// this is where I upload the song
+function setS3LinkComplete(version) {
     let songs = getVersionsFromLocalStorage();
-    let vers = songs.find(v => v.timestamp === version.timestamp);
-    vers.upload_complete = true;
+    let vers = songs.find(v => v.timestamp === version.timestamp); // .find returns a reference to the obj, so we can write to it.
+    vers.upload_complete = true; // goddamn it... now 'upload_complete' means the s3 link is properly placed, not that it's in the server.
+    // whatever, i'm just goint to give it a flag in_db
     console.log("Completed upload for " + vers.version_name);
     console.log(songs);
     // set local storage with 'songs' then
     localStorage.setItem('faunix_song_versions', JSON.stringify(songs));
-    UPLOAD_IN_PROGRESS = false;
-    window.removeEventListener('beforeunload', preventNav);
-    const timeElapsed = Date.now() - upload_started;
-    console.log(`time elapsed (ms): ${timeElapsed}`);
+
+    postSongVersionToSheets(vers);
+
+    // Instead of the below here, I should do it after posting in the server
+    // UPLOAD_IN_PROGRESS = false;
+    // window.removeEventListener('beforeunload', preventNav);
+    // const timeElapsed = Date.now() - upload_started;
+    // console.log(`time elapsed (ms): ${timeElapsed}`);
 }
 
 // returns the embed link of a particular song upload.
@@ -361,19 +410,28 @@ function replaceSpaces(obj) {
 
 // Don't make it async because I don't want to immediately return a promise.
 // localstorage access is sync, server communications are async.
+
+// tryna mark this on whatever page wants to warn of upload in-progres... i.e. uploadSong.html
+// have to wait till the dom loads
+let upWarning;
+setTimeout(() => {
+    upWarning = document.getElementById('upload_warning');
+}, 10);
+
+
 function addSongToLocalStorage(version, file) {
 
     // version.song_name = version.song_name.replace(' ', '_');
     // version.version_name = version.version_name.replace(' ', '_');
     replaceSpaces(version);
 
-    let songs = getVersionsFromLocalStorage();
+    let vs = getVersionsFromLocalStorage();
 
     // url just needs the version / submission...
     // needs to replace any ' ' with '_'
     let url = generateAccessUrl(version);
 
-    songs.push({
+    vs.push({
         timestamp: version.timestamp,
         song_name: version.song_name,
         version_name: version.version_name,
@@ -381,17 +439,16 @@ function addSongToLocalStorage(version, file) {
         uploader_id: version.uploader_id,
         drive_name: version.drive_name,
         s3_url: url,
-        upload_complete: false
+        upload_complete: false,
+        in_db: false
     })
 
-    localStorage.setItem('faunix_song_versions', JSON.stringify(songs));
+    localStorage.setItem('faunix_song_versions', JSON.stringify(vs));
 
     console.log(`Successful publish to localStorage for ${version.version_name} `);
-    console.log(songs);
+    console.log(vs);
 
     console.log("Uploading song file to s3 bucket now: ");
-    // tryna mark this on whatever page wants to warn of upload in-progres... i.e. uploadSong.html
-    const upWarning = document.getElementById('upload_warning');
     if (upWarning) {
         upWarning.textContent = "UPLOAD IN PROGRESS -- DO NOT CLOSE THIS WINDOW";
         upWarning.style = "color: red";
@@ -401,7 +458,7 @@ function addSongToLocalStorage(version, file) {
             console.log("uploadPromise resolved. Response:");
             console.log(response);
             if (response.success) {
-                setUploadComplete(version);
+                setS3LinkComplete(version);
                 // workflow:
                 // remove embed link...
                 // 1. Choose file
@@ -409,10 +466,6 @@ function addSongToLocalStorage(version, file) {
                 // 3. get "listen" to work good :)
 
 
-                if (upWarning) {
-                    upWarning.textContent = "Upload Successful :)";
-                    upWarning.style = "color: green";
-                }
             } else {
                 // unsuccessful... remove song entry? Or let people do partial uploads? Maybe just have them send it to me.
                 if (upWarning) {
