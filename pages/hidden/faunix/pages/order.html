@@ -447,7 +447,8 @@
                                 album_order_name: name,
                                 songs: selectedSongs,
                                 uploader: getName(),
-                                uploader_id: getUserID()
+                                uploader_id: getUserID(),
+                                in_db: false
                             };
 
                             console.log("Package:");
@@ -457,15 +458,17 @@
                             localStorage.setItem('faunix_album_orders', JSON.stringify(albumOrders));
 
                             // create feedback
-                            feedbackForm.textContent = 'Successfully submitted!\n';
+                            feedbackForm.textContent = 'AWAITING UPLOAD, PLEASE DON\'T CLOSE WINDOW\n';
                             if (hadToRename) feedbackForm.textContent += 'Your inputted name already exists, so we submitted it as\n';
                             feedbackForm.textContent += `"${name}"`;
 
-                            feedbackForm.style = 'color: #11ee11'; // green
+                            // feedbackForm.style = 'color: #11ee11'; // green
+                            feedbackForm.style = 'color: #ee0000'; // red
                             feedbackForm.innerHTML = feedbackForm.textContent.replace(/\n/g, '<br>');
 
-                            console.log("New album orders:");
+                            console.log("New local album orders:");
                             console.log(getFaunixAlbumOrders());
+                            postAlbumOrderToSheets(package, feedbackForm);
 
                             /* 
                             // ALBUM_ORDERS:

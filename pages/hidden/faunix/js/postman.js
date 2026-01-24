@@ -1,7 +1,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbwSEg0D_aV54n09N1jqIicNo0_qqqNzWfAn6rvCOZqqjxDqsY2-9_IXZrLjyvudAiekyQ/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbwNWZJJStgkOfaFvjXfR7mr-ANsRZVhM1qJAV5lChTYJvnEWHVwxw8rd_jadqF-MDNGlA/exec";
 const LOCAL_SECRET = "BUTIREALLYTRIEDTO";
 
 
@@ -365,6 +365,40 @@ function postSongVersionToSheets(version) {
         console.log(`time elapsed (ms): ${timeElapsed}`);
     }
     post('upload_song_version', version, success, fail);
+}
+
+function postAlbumOrderToSheets(package, feedbackForm) {
+
+    /*
+        const package = {
+            timestamp: timestamp,
+            album_order_name: name,
+            songs: selectedSongs,
+            uploader: getName(),
+            uploader_id: getUserID(),
+            in_db: false
+        };
+    */
+
+    const success = (response) => {
+        const albumOrders = getFaunixAlbumOrders();
+        let ao = albumOrders.find((a) => a.timestamp === package.timestamp);
+        console.log("Found ao! Here it is: ");
+        console.log(ao);
+        ao.in_db = true;
+        localStorage.setItem('faunix_album_orders', JSON.stringify(albumOrders));
+        console.log("Successfully posted album order to sheets: " + package.album_order_name);
+
+        feedbackForm.style = 'color: #11ee11'; // green
+        feedbackForm.textContent = "Upload Successful :)";
+    }
+
+    const fail = (err) => {
+        console.error("Failed to upload album order to google sheets:");
+        console.error(err);
+    }
+
+    post('upload_album_order', package, success, fail);
 }
 
 

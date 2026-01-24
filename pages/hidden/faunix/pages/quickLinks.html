@@ -123,6 +123,7 @@
                             for (let link of links) {
                                 if (link.text === value) {
                                     console.log("Deleting: " + link.href);
+                                    post('delete_quick_link', { name: link.text, href: link.href });
                                 } else {
                                     newLinks.push(link);
                                 }
@@ -236,6 +237,7 @@
                             }
 
                             addLinkToLocalStorage(href, name);
+                            post('add_quick_link', { href: href, name: name });
                             feedback.textContent = "Link added successfully.";
                             console.log("Link added successfully.");
 

@@ -11,8 +11,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
 
 
-    <script src="/pages/hidden/faunix/js/postman.js"></script>
     <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
 </head>
 
 <body data-page="home">
@@ -142,7 +142,10 @@
                             // Create a new list, skipping the value if it matches
                             for (let v of versions) {
                                 if (v.timestamp === value) { // timestamp is unique key here.
-                                    console.log("Deleting: " + v.version_name);
+                                    console.log("Deleting: " + v.album_order_name);
+                                    console.log(v);
+                                    // post about it (update the sheet)
+                                    post('delete_album_order', v); // deceptively, v is the entire album order.
                                 } else {
                                     newAlbumOrders.push(v);
                                 }
@@ -150,6 +153,7 @@
 
                             // Reset the local list without it:
                             localStorage.setItem('faunix_album_orders', JSON.stringify(newAlbumOrders));
+
 
                             // Reset the local html elements:
                             setHtmlElements();

@@ -58,6 +58,12 @@
 
 
 
+// 1/24/26:
+// Alright sick bro. I made it so that all my local uploads stuff actually makes a post.
+// Now I just have to get everything from the server, choose those that aren't 'deleted: true',
+// and then put them into localStorage
+// 
+
 
 
 
