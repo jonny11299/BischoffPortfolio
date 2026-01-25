@@ -1,7 +1,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbyWbFh2UM1mEyYmoTxA760wdi0RCo4sTrKBQZCEe_CyZIK0j1bi2T4MrySQrA0IoBsnrg/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbyve453LzrD98ZOwKTe5C6X54p2-xmqYWLjcSEw1xNVkTvqcHO5CQxHZH5ZeC3EErkuFA/exec";
 const LOCAL_SECRET = "BUTIREALLYTRIEDTO";
 
 
