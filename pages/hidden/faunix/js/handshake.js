@@ -18,7 +18,7 @@ console.log(getFaunixName());
 
 
 function getLastUpdatedTime() {
-    const lastUpdate = localStorage.getItem('faunix_last_update');
+    const lastUpdate = Number(localStorage.getItem('faunix_last_update'));
 
     if (!lastUpdate) {
         console.log("Never updated");
@@ -28,25 +28,277 @@ function getLastUpdatedTime() {
     return lastUpdate;
 }
 
+function getFormattedLastUpdatedTime() {
+
+    try {
+        const time = new Date(getLastUpdatedTime()).toLocaleString();
+        return time;
+    } catch (error) {
+        console.error('error on getting formatted last updated time.');
+        console.error(error);
+        return 'never updated.';
+    }
+
+}
+
 function setUpdate() {
     localStorage.setItem('faunix_last_update', Date.now());
 }
 
 
 
+
+let handshakeComplete = false;
+function completeHandshake() {
+    setUpdate();
+    console.log("Completed handshake. New last update time is " + getFormattedLastUpdatedTime());
+    console.log("Raw number: " + getLastUpdatedTime());
+
+    handshakeComplete = true;
+    setFooterData();
+}
+
+
+function runHandshake() {
+    console.log("Running handshake. Getting all data from sheets.");
+    console.log(`Last updated ${getFormattedLastUpdatedTime()}`);
+    handshakeComplete = false;
+
+
+    try {
+        const getPromise = get('get_all');
+        getPromise.then((msg) => {
+            console.log("Got handshake data from sheets. Here it is:");
+            console.log(msg);
+
+            if (msg.links) {
+                updateLinksFromServer(msg.links);
+            }
+            if (msg.song_versions) {
+                updateSongVersionsFromServer(msg.song_versions);
+            }
+            if (msg.album_orders) {
+                updateAlbumOrdersFromServer(msg.album_orders);
+            }
+
+            completeHandshake();
+        });
+
+    } catch (error) {
+        console.error("Failed to get_all");
+        console.error(error);
+    }
+}
+
+
+// assumes [0] is headers, [1:end] is data
+function formatServerToLocal(a) {
+    if (a) {
+        if (a.length < 1) {
+            console.log("arrayToObject on blank array, returning null")
+            return null;
+        }
+        if (a.length < 2) {
+            console.log("arrayToObject on empty array, returning null")
+            return null;
+        }
+
+        const newArray = [];
+        for (let i = 1; i < a.length; i++) {
+            const obj = {};
+            a[0].forEach((header, j) => {
+                obj[header] = a[i][j];
+            });
+            // console.log(obj);
+            newArray.push(obj);
+        }
+
+        console.log(newArray);
+        return newArray;
+    }
+    return [];
+}
+
+
+function quickAppendToLocalStorage(storageId, obj) {
+    if (storageId === 'faunix_song_versions') {
+        let vs = getVersionsFromLocalStorage();
+        vs.push(obj);
+        localStorage.setItem(storageId, JSON.stringify(vs));
+    } else if (storageId === 'faunix_album_orders') {
+        let ao = getFaunixAlbumOrders();
+        ao.push(obj);
+        localStorage.setItem(storageId, JSON.stringify(ao));
+    } else if (storageId === 'faunix_quicklinks_list') {
+        let links = getLinksFromLocalStorage();
+        links.push(obj);
+        localStorage.setItem(storageId, JSON.stringify(links));
+    } else {
+        console.error(`Trying to append to a localStorage whose id is invalid: ${storageId}`);
+    }
+}
+
+
+function updateLinksFromServer(serverLinks) {
+    // first row is headers
+    console.log("updating links from server");
+    const serverLinksFull = formatServerToLocal(serverLinks);
+    // console.log(serverLinksFull);
+    const links = serverLinksFull.filter((l) => !l.deleted);
+    // console.log(links);
+
+    const ll = getLinksFromLocalStorage();
+    console.log(ll);
+
+    const diff = compare(ll, links, 'text');
+    diff.serverOnly.forEach((sl) => {
+        quickAppendToLocalStorage('faunix_quicklinks_list', sl);
+    });
+    // console.log(diff);
+}
+
+function updateSongVersionsFromServer(serverVersions) {
+    // first row is headers
+    console.log("updating song versions from server");
+    const versionsFull = formatServerToLocal(serverVersions);
+    const versions = versionsFull.filter((v) => !v.deleted);
+    // console.log("Versions with the deleted ones scrubbed:");
+    // console.log(versions);
+
+
+    let lhvs = getVersionsFromLocalStorage();
+    // console.log(lhvs);
+
+    // compare lhvs to versions. Yes, this is O(n^2)
+
+    const diff = compare(lhvs, versions, 'timestamp');
+    diff.serverOnly.forEach((sv) => {
+        quickAppendToLocalStorage('faunix_song_versions', sv);
+    });
+
+    // diff.localOnly.forEach((sv) => {Add it to an upload queue so it gets put on the server. Might not be necessary, though.})
+
+}
+
+function updateAlbumOrdersFromServer(serverAlbumOrders) {
+    // first row is headers
+    console.log("updating album orders from server");
+    const aoFull = formatServerToLocal(serverAlbumOrders);
+    const aos = aoFull.filter((a) => !a.deleted);
+
+    // going to make sure my songs aren't still in JSON format
+    aos.forEach((a) => {
+        try {
+            a.songs = JSON.parse(a.songs);
+        } catch (error) {
+            console.log("Couldn't parse a:");
+            console.log(a);
+        }
+    });
+
+    const ls = getFaunixAlbumOrders();
+
+    const diff = compare(ls, aos, 'album_order_name');
+    console.log(diff);
+    diff.serverOnly.forEach((ao) => {
+        quickAppendToLocalStorage('faunix_album_orders', ao);
+    });
+}
+
+
+function compare(localHost, server, uid) {
+    const localOnly = [];
+    const serverOnly = [];
+    const both = [];
+
+    localHost.forEach((lh) => {
+        let sv = server.find((s) => lh[uid] === s[uid]);
+        // console.log(`lh, sv, uid: ${lh}, ${sv}, ${uid}`);
+
+        // sv is the server version such that the uid from the localHost version matches my uId
+        // undefined if none.
+
+        if (sv === undefined) {
+            // it's not on the server, but it's on localHost
+            localOnly.push(lh);
+        } else {
+            // it's on both
+            both.push(sv);
+        }
+    });
+
+    server.forEach((sv) => {
+        let lhv = localHost.find((lh) => lh[uid] === sv[uid]);
+
+        if (lhv === undefined) {
+            // it's on the server, but not localHost
+            serverOnly.push(sv);
+        } else {
+            both.push(lhv);
+        }
+    });
+
+    // could remove duplicates from both, but not necessary.
+    // won't really use this property except for affirmation that we have them.
+
+
+
+    const dataObject = {
+        localOnly,
+        serverOnly,
+        both
+    };
+
+    console.log(dataObject);
+
+    return dataObject;
+}
+
+
 // Runs this upon entry, (or 2ms in):
 setTimeout(() => {
-    console.log(getLastUpdatedTime());
 
+    const timeSinceLastUpdateSeconds = (Date.now() - getLastUpdatedTime()) / 1000;
+
+    console.log("Last updated " + timeSinceLastUpdateSeconds);
+
+    // 5 minutes is 60 * 5 = 300 seconds
+
+    if (timeSinceLastUpdateSeconds > 300) {
+        runHandshake();
+    } else {
+        console.log("No need for handshake, since last update was only " + timeSinceLastUpdateSeconds + " seconds ago.");
+    }
+
+    /*
     const getPromise = get('faunix_song_versions');
     getPromise.then((msg) => {
         console.log("Promise resolved in handshake");
         console.log(msg);
     });
+    */
 
-    console.log();
+
 }, 2);
 
+
+setTimeout(() => {
+    setFooterData();
+}, 25);
+
+
+
+function setFooterData() {
+    console.log("Running setFooterData()");
+    try {
+        const lastUpdated = getFormattedLastUpdatedTime();
+        document.getElementById('footerLastUpdated').textContent = `Last updated: ${lastUpdated}`;
+        console.log("Updated footer");
+    } catch (error) {
+        console.error("In footer, couldn't get last update time because of error:");
+        console.error(error);
+    }
+}
 
 
 // 1/22/26 wrapping-up thoughts:

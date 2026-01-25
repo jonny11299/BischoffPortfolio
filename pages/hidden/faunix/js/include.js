@@ -32,7 +32,7 @@
       document.querySelectorAll(`nav.site-nav a[href$="${currentFile}"]`).forEach((a) => {
         a.classList.add('is-active');
       });
-    }, 50); // slight delay to ensure injected nav is present
+    }, 20); // slight delay to ensure injected nav is present
   };
 
   if (document.readyState === 'loading') {

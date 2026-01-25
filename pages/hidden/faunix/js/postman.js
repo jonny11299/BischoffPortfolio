@@ -1,7 +1,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbwNWZJJStgkOfaFvjXfR7mr-ANsRZVhM1qJAV5lChTYJvnEWHVwxw8rd_jadqF-MDNGlA/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbyWbFh2UM1mEyYmoTxA760wdi0RCo4sTrKBQZCEe_CyZIK0j1bi2T4MrySQrA0IoBsnrg/exec";
 const LOCAL_SECRET = "BUTIREALLYTRIEDTO";
 
 
@@ -194,6 +194,7 @@ function fetchViaJSONP(url) {
         script.onerror = (err) => {
             delete window[callbackName];
             document.head.removeChild(script);
+            console.error(err);
             reject(new Error('JSONP request failed', err));
         };
 
