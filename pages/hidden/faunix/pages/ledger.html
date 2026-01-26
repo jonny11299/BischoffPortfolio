@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -11,7 +10,6 @@
 
     <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
-
 
     <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
     <script src="/pages/hidden/faunix/js/postman.js"></script>
@@ -34,40 +32,23 @@
             <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
               style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
           </div>
+
+
+
+          Bugs to fix:
+          play/pause button doesn't change if I pause from the element itself
 -->
 
 
                     <header>
                         <p></p>
-                        <h1>Feature Request:</h1>
-                        <br>
-                        <br>
-                        <h3>If Prismo beams an idea to your brain about something this website could include, please
-                            type it below and hit submit! Thanks.</h3>
+                        <h1>Ledger:</h1>
                     </header>
 
                     <!-- Add "Submit new links:"-->
+                    <ul id="ledgerList">
 
-
-                    <br>
-                    <br>
-
-                    <textarea id="featureInput" rows="10" cols="50" placeholder="Type feature idea here..."></textarea>
-                    <br>
-                    <button onclick="submitFeatureRequest()">Submit</button>
-
-                    <script>
-                        function submitFeatureRequest() {
-                            const textarea = document.getElementById('featureInput');
-                            const featureText = textarea.value;
-                            postFeatureRequest(featureText);
-                            textarea.value = ''; // Clear after submitting
-                        }
-                    </script>
-
-
-
-
+                    </ul>
 
 
 

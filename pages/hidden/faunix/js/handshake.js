@@ -292,8 +292,20 @@ function setFooterData() {
     console.log("Running setFooterData()");
     try {
         const lastUpdated = getFormattedLastUpdatedTime();
-        document.getElementById('footerLastUpdated').textContent = `Last updated: ${lastUpdated}`;
+        document.getElementById('footerLastUpdated').textContent = `Last fetched: ${lastUpdated}`;
         console.log("Updated footer");
+        /*
+                const inProgress = document.getElementById('footerUpdateInProgress');
+        
+                if (handshakeComplete) {
+                    inProgress.textContent = "Update complete.";
+                    inProgress.style = "color: green";
+                } else {
+                    inProgress.textContent = "Update in-progress. Please don't navigate away.";
+                    inProgress.style = "color: red";
+                }
+                    */
+
     } catch (error) {
         console.error("In footer, couldn't get last update time because of error:");
         console.error(error);

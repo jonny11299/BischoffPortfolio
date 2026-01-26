@@ -1,7 +1,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbyve453LzrD98ZOwKTe5C6X54p2-xmqYWLjcSEw1xNVkTvqcHO5CQxHZH5ZeC3EErkuFA/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxn9UAW21Hz0unMDydovO1ptcNTZDakVX3Dmo2EypulOpxKarx8rN6ETQHPlf9B6h8wrw/exec";
 const LOCAL_SECRET = "BUTIREALLYTRIEDTO";
 
 
@@ -107,6 +107,30 @@ function setName(thisName) {
 function deleteLocalName() {
     localStorage.removeItem('faunix_name');
 }
+
+
+
+
+function deleteLinkFromLocalStorage(textName) {
+    const links = getLinksFromLocalStorage();
+
+    let newLinks = [];
+
+    // Create a new list, skipping the value if it matches
+    for (let link of links) {
+        if (link.text === textName) {
+            console.log("Deleting: " + link.href);
+            post('delete_quick_link', { name: link.text, href: link.href });
+        } else {
+            newLinks.push(link);
+        }
+    }
+
+    // Reset the local list without it:
+    localStorage.setItem('faunix_quicklinks_list', JSON.stringify(newLinks));
+}
+
+
 
 
 

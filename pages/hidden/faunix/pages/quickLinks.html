@@ -15,6 +15,7 @@
 
     <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
     <script src="/pages/hidden/faunix/js/postman.js"></script>
+    <script src="/pages/hidden/faunix/js/handshake.js"></script>
 </head>
 
 <body data-page="home">
@@ -110,27 +111,13 @@
 
                     <script>
 
+
                         function deleteSelectedLink() {
                             const select = document.getElementById('deleteSelect');
                             const value = select.value;
                             console.log(value);
+                            deleteLinkFromLocalStorage(value);
 
-                            const links = getLinksFromLocalStorage();
-
-                            let newLinks = [];
-
-                            // Create a new list, skipping the value if it matches
-                            for (let link of links) {
-                                if (link.text === value) {
-                                    console.log("Deleting: " + link.href);
-                                    post('delete_quick_link', { name: link.text, href: link.href });
-                                } else {
-                                    newLinks.push(link);
-                                }
-                            }
-
-                            // Reset the local list without it:
-                            localStorage.setItem('faunix_quicklinks_list', JSON.stringify(newLinks));
 
                             // Reset the local html elements:
                             setLinkList();

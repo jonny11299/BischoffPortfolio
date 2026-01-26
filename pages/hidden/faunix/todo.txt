@@ -28,8 +28,9 @@
 
 2. Ensure every page has:
   - whoareyou
-  - postman 
   - standardFunctions 
+  - postman 
+  - handshake
 
 
 
@@ -64,7 +65,29 @@
 // and then put them into localStorage
 // 
 
+// Dude fuck yeah! It's working!!
+// I just have to go across every page and ensure that they have included the right scripts, that is, handshake, postman, etc.
+// Ensure every page has:
+  - whoareyou
+  - standardFunctions 
+  - postman 
+  - handshake
+// Actually upload the latest versions
+// Do I want to make a ledger? We'll see.
 
+
+
+// Make that lock pattern for when it's running handshake (just update something in the footer)
+// Make handshake update a ledger via compiling timestamps together
+
+
+
+
+
+// 1/26/26:
+// I've made an mvp!
+// Bugs so far:
+- Deleting from one user doesn't delete it for the other user. It's still in localStorage. 
 
 
 
