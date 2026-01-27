@@ -46,9 +46,70 @@
                     </header>
 
                     <!-- Add "Submit new links:"-->
-                    <ul id="ledgerList">
-
+                    <ul>
+                        <li id='ledgerlistparent'>
+                            <h3 style="color: yellow">Ledger loading...</h3>
+                        </li>
                     </ul>
+
+                    <script>
+
+                        function updateLedgerList(ll) {
+
+
+                            try {
+                                const parent = document.getElementById('ledgerlistparent');
+                                parent.innerHTML = '';
+                                parent.style = "font-size: 11px; color: white";
+
+                                const headers = ll[0];
+                                const body = ll.slice(1);
+
+
+                                // old school reversing an array
+                                for (let i = 0; i < body.length / 2; i++) {
+                                    let temp = body[i];
+                                    body[i] = body[body.length - i - 1];
+                                    body[body.length - i - 1] = temp;
+                                }
+
+
+                                const table = document.createElement('table');
+                                const thead = table.createTHead();
+                                const tbody = table.createTBody();
+
+                                const headerRow = thead.insertRow();
+                                headers.forEach(e => {
+                                    const th = document.createElement('th');
+                                    th.textContent = `${e}`;
+                                    headerRow.appendChild(th);
+                                });
+
+                                body.forEach(bod => {
+                                    const row = tbody.insertRow();
+                                    bod.forEach(cell => {
+                                        const c = row.insertCell();
+                                        c.textContent = cell.slice(0, 100);
+                                    })
+                                });
+
+                                parent.appendChild(table);
+
+                            } catch (error) {
+                                console.error("Error on updateLedgerList");
+                                console.error(error);
+                            }
+                        }
+
+                        function getledgerlist() {
+                            const getPromise = get('get_ledger_list').then(response => {
+                                console.log("Got the ledger list: ");
+                                console.log(response);
+                                updateLedgerList(response);
+                            })
+                        }
+                        getledgerlist();
+                    </script>
 
 
 

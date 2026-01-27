@@ -370,8 +370,13 @@ function getAllLocalStorage(onlyFaunixKeys = true, logResults = false) {
 
 
         const obj = localStorage.getItem(key);
+        const size = new Blob([obj]).size;
+        const sizeString = `${size} bytes (${(size / 1024).toFixed(2)} KB)`;
         // console.log(typeof obj);
         // console.log(obj);
+
+
+
 
         if (typeof obj === 'string') {
             try {
@@ -379,13 +384,15 @@ function getAllLocalStorage(onlyFaunixKeys = true, logResults = false) {
                     // console.log("Seeing a potential array of JSON.string-ified objects");
                     localObjects.push({
                         key: `${key}`,
-                        obj: obj
+                        obj: obj,
+                        size: sizeString
                     });
                 } else {
                     // console.log("Probably just a single string.");
                     localStrings.push({
                         key: `${key}`,
-                        obj: obj
+                        obj: obj,
+                        size: sizeString
                     });
                 }
             } catch (error) {
@@ -397,7 +404,8 @@ function getAllLocalStorage(onlyFaunixKeys = true, logResults = false) {
             if (logResults) console.log("Not a string!!");
             localErrors.push({
                 key: `${key}`,
-                obj: obj
+                obj: obj,
+                size: sizeString
             });
         }
     });

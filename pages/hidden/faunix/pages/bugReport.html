@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
+    <script src="/pages/hidden/faunix/js/handshake.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>Bug Report:</h1>
+                        <br>
+                        <br>
+                        <h3>Please enter a brief description of the bug, then click submit:</h3>
+                    </header>
+
+                    <!-- Add "Submit new links:"-->
+
+
+                    <br>
+                    <br>
+
+                    <textarea id="bugText" rows="10" cols="50"
+                        placeholder="Type quick description of bug here..."></textarea>
+                    <br>
+                    <button onclick="submitBugReport()">Submit</button>
+
+                    <script>
+                        function submitBugReport() {
+
+                            const lastLogs = localStorage.getItem('faunix_lastpagelogs') || "lastLogs empty";
+
+                            const textarea = document.getElementById('bugText');
+                            const featureText = textarea.value;
+                            const bugReportObject = {
+                                description: featureText,
+                                logs: lastLogs
+                            }
+
+                            post('bug_report', bugReportObject);
+                            textarea.value = ''; // Clear after submitting
+                        }
+                    </script>
+
+
+
+
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

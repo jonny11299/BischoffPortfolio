@@ -85,6 +85,18 @@
             <li>
               <button id="printLocalStorage" onclick="printAllLocalStorage()">Print all local storage</button>
             </li>
+            <li>
+              <button id="checkStorageSize" onclick="checkStorageSize()">Check storage size</button>
+            </li>
+            <li>
+              <button onclick="escapeOverwrittenLogging()">Escape overwritten logging</button>
+            </li>
+            <li>
+              <button onclick="returnToOverwrittenLogging()">Return to overwritten logging</button>
+            </li>
+            <li>
+              <a href="/pages/hidden/faunix/pages/viewErrorLogs.html">View error logs</a>
+            </li>
 
           </ul>
           <br>
@@ -133,7 +145,28 @@
 
 
 
+            function escapeOverwrittenLogging() {
+              console.log("You've escaped overwritten logging. Reload to see.");
+              localStorage.setItem('faunix_escapeOverwrittenLogging', 'true');
+              localStorage.removeItem('faunix_lastpagelogs');
+            }
+            function returnToOverwrittenLogging() {
+              console.log("You've returned to overwritten logging. Reload to see.");
+              localStorage.removeItem('faunix_escapeOverwrittenLogging');
+            }
 
+
+            function checkStorageSize() {
+              // Get total size in bytes
+              const totalSize = new Blob(Object.values(localStorage)).size;
+              console.log(`Total: ${totalSize} bytes (${(totalSize / 1024).toFixed(2)} KB)`);
+
+              // See each item's size
+              Object.keys(localStorage).forEach(key => {
+                const size = new Blob([localStorage.getItem(key)]).size;
+                console.log(`${key}: ${size} bytes (${(size / 1024).toFixed(2)} KB)`);
+              });
+            }
 
             function setQuickLinks() {
               const list = document.getElementById('link_list');

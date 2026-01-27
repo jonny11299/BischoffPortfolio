@@ -99,10 +99,231 @@ referrer
 
 
 
-// ------------------ END OF OUTLINE OF THE SHEETS / COLUMNS ------------------
 
 
 
+// ------------------ DEBUG CAPTURE ------------------
+
+
+function overwriteLogging() {
+    const ls = localStorage.getItem('faunix_escapeOverwrittenLogging');
+    if (ls) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+
+// Create an array to store all console output
+const capturedLogs = [];
+if (overwriteLogging()) {
+
+
+    // Store references to original console methods
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+
+    // Helper function to extract stack info
+    function getStackInfo() {
+        const stack = new Error().stack;
+        const stackLines = stack.split('\n');
+
+        // Primary source: index [2] is the actual caller
+        const callerLine = stackLines[2] || '';
+
+        // Extract file:line:column from the caller
+        const match = callerLine.match(/([^\/\\]+):(\d+):(\d+)/);
+        const source = match ? {
+            file: match[1],
+            line: match[2],
+            column: match[3],
+            raw: callerLine.trim()
+        } : {
+            file: 'unknown',
+            line: '?',
+            column: '?',
+            raw: callerLine.trim()
+        };
+
+        // Full call stack (from [2] onward) for context
+        const callStack = stackLines.slice(2).map(line => line.trim());
+
+        return { source, callStack };
+    }
+
+    // Override console methods
+    console.log = function (...args) {
+        const stackInfo = getStackInfo();
+
+        capturedLogs.push({
+            type: 'log',
+            timestamp: new Date().toISOString(),
+            message: args.map(arg =>
+                typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+            ).join(' '),
+            callStack: stackInfo.callStack.slice(1)
+        });
+
+        args.push(stackInfo.callStack.slice(1));
+        originalLog.apply(console, args);
+    };
+
+    console.warn = function (...args) {
+        const stackInfo = getStackInfo();
+
+        capturedLogs.push({
+            type: 'warn',
+            timestamp: new Date().toISOString(),
+            message: args.map(arg =>
+                typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+            ).join(' '),
+            callStack: stackInfo.callStack.slice(1)
+        });
+
+        args.push(stackInfo.callStack.slice(1));
+        originalWarn.apply(console, args);
+    };
+
+    console.error = function (...args) {
+        const stackInfo = getStackInfo();
+
+        capturedLogs.push({
+            type: 'error',
+            timestamp: new Date().toISOString(),
+            message: args.map(arg =>
+                typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+            ).join(' '),
+            callStack: stackInfo.callStack.slice(1)
+        });
+
+        args.push(stackInfo.callStack.slice(1));
+        originalError.apply(console, args);
+    };
+
+}
+
+// Function to get all captured logs for the bug report
+function getBugReportData() {
+    try {
+        return {
+            logs: JSON.stringify(capturedLogs),
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            timestamp: new Date().toISOString()
+        };
+    } catch (error) {
+        console.error("Failed to getBugReportData()");
+        console.error(error);
+        return {
+            logs: 'empty',
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            timestamp: new Date().toISOString()
+        };
+    }
+}
+
+
+function startBugReport() {
+    console.log("Starting a bug report");
+
+
+    let myLogs = 'empty';
+    if (overwriteLogging()) {
+        // now I can get the logs.
+        myLogs = getBugReportData();
+    }
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: black;
+        padding: 20px;
+        border: 2px solid #333;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        z-index: 10000;
+        max-width: 600px;
+        width: 90%;
+    `;
+
+    modal.innerHTML = `
+        <header>
+        <p></p>
+        <h1>Bug Report:</h1>
+        <br>
+        <br>
+        <h3>Please enter a brief description of the bug, then click submit:</h3>
+        </header>
+        
+        <br>
+        <br>
+        
+        <textarea id="bugText" rows="10" cols="50" placeholder="Type quick description of bug here..."></textarea>
+        <br>
+        <button id="submitBugButton">Submit</button>
+        <button id="cancelBugButton">Cancel</button>
+    `;
+
+    document.body.appendChild(modal);
+
+
+    // Submit handler
+    document.getElementById('submitBugButton').addEventListener('click', async () => {
+        const description = document.getElementById('bugText').value;
+
+        const amazonObject = {
+            description: description,
+            logs: myLogs
+        }
+
+        const errorLogURL = generateErrorLogUrl(); // from postman
+        const bugReportObject = {
+            description: description,
+            logs: errorLogURL
+        }
+
+        // need to post the bugreport object to amazon with myLogs
+        try {
+            let uploadPromise = putBugReportInBucket(amazonObject, errorLogURL).then(response => {
+                console.log("uploadPromise for bug report resolved. Response:");
+                console.log(response);
+                if (response.success) {
+
+                } else {
+
+                }
+            });
+        } catch (error) {
+            console.log(`Could not upload bug because:`);
+            console.log(error);
+        }
+
+
+
+        post('bug_report', bugReportObject);
+
+        document.body.removeChild(modal);
+    });
+
+    // Cancel handler
+    document.getElementById('cancelBugButton').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+
+
+}
+
+
+
+
+
+// ------------------ PREVIOUS STUFF: ------------------
 
 
 function bubbleSort(list) {
@@ -282,3 +503,35 @@ function getDefaultSongVersion(songName) {
     return getBlankSongVersion();
 }
 
+
+
+
+// ------------------ JSON FORMATTING TO HTML: ------------------
+
+
+function getULfromJSONobj(obj) {
+
+    const ul = document.createElement('ul');
+
+    for (let key in obj) {
+        const li = document.createElement('li');
+        li.style = "margin: 0;line-height: 1.2;"
+
+        if (typeof obj[key] === 'object') {
+            li.appendChild(getULfromJSONobj(obj[key]));
+        } else {
+            const keytext = document.createElement('p');
+            const objtext = document.createElement('p');
+            keytext.style = "color: green; display: inline-block;";
+            objtext.style = "color: white; display: inline-block;";
+            keytext.textContent = `${key}: \t`;
+            objtext.textContent = `\t${obj[key]}`;
+            li.appendChild(keytext);
+            li.appendChild(objtext);
+        }
+
+        ul.appendChild(li);
+    }
+
+    return ul;
+}

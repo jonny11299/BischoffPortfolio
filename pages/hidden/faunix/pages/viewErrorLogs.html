@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
+    <script src="/pages/hidden/faunix/js/handshake.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+
+
+
+          Bugs to fix:
+          play/pause button doesn't change if I pause from the element itself
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>View Error Logs:</h1>
+                    </header>
+
+                    <!-- Add "Submit new links:"-->
+                    <ul id="itemList">
+                        <li>
+                            <button id="getNewLogButton" onclick="getNewLog()">Get New Log</button>
+                        </li>
+                        <li><br></li>
+                        <li>
+                            <h2 id="error_header"></h2>
+                        </li>
+                        <li>
+                            <h3 id="error_url"></h3>
+                        </li>
+                        <li>
+                            <h3 id="error_timestamp"></h3>
+                        </li>
+                        <li>
+                            <h3 id="error_userAgent"></h3>
+                        </li>
+                        <li>
+                            <h2 id='error_begin_transcript' style="color: yellow"></h2>
+                        </li>
+                        <li id="give_me_child">
+
+                        </li>
+                    </ul>
+
+
+                    <script>
+                        function getNewLog() {
+                            const url = prompt("Paste url to bucket item: ");
+                            if (url) {
+                                fetch(url)
+                                    .then(response => response.json())
+                                    .then(data => parseErrorLog(data));
+                            }
+                        }
+
+                        function parseErrorLog(data) {
+                            console.log("Parsing that biz");
+                            console.log(data)
+                            try {
+                                const h = document.getElementById('error_header');
+                                h.textContent = `Description: ${data.description}`;
+
+
+                                const hurl = document.getElementById('error_url');
+                                hurl.textContent = `Url: ${data.logs.url}`;
+
+                                const htimestamp = document.getElementById('error_timestamp');
+                                htimestamp.textContent = `Timestamp: ${data.logs.timestamp}`;
+
+                                const huserAgent = document.getElementById('error_userAgent');
+                                huserAgent.textContent = `userAgent: ${data.logs.userAgent}`;
+
+                                document.getElementById('error_begin_transcript').textContent = 'Begin Transcript:';
+
+                                const logs = JSON.parse(data.logs.logs);
+                                console.log('%cActual log', 'color: green');
+                                console.log(logs);
+                                // console.log(logs);
+                                const child = getULfromJSONobj(logs);
+
+                                const gm = document.getElementById('give_me_child');
+                                gm.innerHTML = '';
+                                gm.appendChild(child);
+
+                            } catch (error) {
+                                console.error("Couldn't parse error log");
+                                console.error(error);
+                            }
+                        }
+                    </script>
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

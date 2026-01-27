@@ -1,7 +1,7 @@
 
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxn9UAW21Hz0unMDydovO1ptcNTZDakVX3Dmo2EypulOpxKarx8rN6ETQHPlf9B6h8wrw/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbzwc3wvMcIvxTuKwy-pe59ySLlQyyuxEf4r52xQzoMgj03h-WP64_nRgZ_SrC_6T0tEGg/exec";
 const LOCAL_SECRET = "BUTIREALLYTRIEDTO";
 
 
@@ -343,6 +343,108 @@ async function putAudioFileInBucket(file, accessUrl) {
 
 }
 
+
+
+async function putBugReportInBucket(bugReportObject, accessUrl) {
+    // reportObject instead of file
+    UPLOAD_IN_PROGRESS = true;
+    upload_started = Date.now();
+    window.addEventListener('beforeunload', preventNav);
+
+    // YEAH BRO YOU'RE GONNA GET A NICELY FORMATTED OBJECT FROM THIS ONE!!
+    const returnObject = {
+        success: false,
+        reason: 'string',
+        content: 'string'
+    }
+
+    const uid = getUserID(); // This is used to verify permission, and also determines the folder the file goes in.
+
+    console.log(`Requesting upload URL for: ${bugReportObject.description}\nusing url = ${accessUrl}`);
+
+    // Step 1: Get presigned URL from your Lambda
+    const response = await fetch('https://s6lwojpyb8.execute-api.us-west-2.amazonaws.com/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            uid: uid,
+            filename: `${Date.now()}.json`,
+            url: accessUrl
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const reason = 'Failed to get upload URL: ' + JSON.stringify(data.error);
+        console.error(reason);
+        alert('Upload failed: ' + data.error); // modify this to be feedback form
+        return {
+            success: false,
+            reason: reason,
+            content: null
+        };
+    }
+
+    // getting the signed upload URL
+    const { uploadUrl, key } = data;
+    // From server lambda: const key = `uploads/${uid}/${Date.now()}_${filename}`;
+
+
+    console.log('Got presigned URL, uploading to S3...');
+
+    // Step 2: Upload file directly to S3 using presigned URL
+    try {
+
+        const uploadResponse = await fetch(uploadUrl, {
+            method: 'PUT',
+            body: JSON.stringify(bugReportObject),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+
+        if (uploadResponse.ok) {
+            const publicUrl = `https://faunix-objects.s3.us-west-2.amazonaws.com/${key}`;
+            console.log('✅ Upload successful!');
+            console.log('File URL:', publicUrl);
+            // console.log('anticipated url:', accessUrl);
+            // console.log(`anticipated == actual? ${publicUrl === accessUrl}`); // could wrap this in tr
+            if (publicUrl !== accessUrl) {
+                throw new Error("Url provided by server doesn't match locally-anticipated uploadURL");
+            }
+            return {
+                success: true,
+                reason: 'link posted successfully.',
+                content: publicUrl
+            };
+        } else {
+            const reason = 'S3 upload failed:' + JSON.stringify(uploadResponse.status);
+            console.error(reason);
+            alert('Upload to S3 failed');
+
+            return {
+                success: false,
+                reason: reason,
+                content: null
+            };
+        }
+
+    } catch (error) {
+        console.log("Error on fetch: ", error);
+        const reason = 'Error on fetch:' + JSON.stringify(error);
+
+        return {
+            success: false,
+            reason: reason,
+            content: null
+        };
+    }
+
+}
+
+
 function preventNav(e) { // connects via eventListener, ctrl+F for 'eventListener' to see the hooks.
     if (UPLOAD_IN_PROGRESS) {
         e.preventDefault();
@@ -449,10 +551,18 @@ function setS3LinkComplete(version) {
 
 // returns the embed link of a particular song upload.
 // Should only use this once and reference it later.
+const AMAZONBASE = `https://faunix-objects.s3.us-west-2.amazonaws.com/`;
 function generateAccessUrl(version) {
-    const base = `https://faunix-objects.s3.us-west-2.amazonaws.com/`;
-    const key = base + `uploads/${version.uploader}/${version.uploader_id}/${version.song_name}/${version.version_name}_${Date.now()}`
+    const base = AMAZONBASE
+    const key = base + `uploads/${version.uploader}/${version.uploader_id}/${version.song_name}/${version.version_name}_${Date.now()}`;
     console.log("generateAccessUrl: " + key);
+    return key;
+}
+
+function generateErrorLogUrl() {
+    const base = AMAZONBASE;
+    const key = base + `lambda_error_log/${getName()}/${getUserID()}/${Date.now()}`;
+    console.log("generateErrorLogUrl: " + key);
     return key;
 }
 
