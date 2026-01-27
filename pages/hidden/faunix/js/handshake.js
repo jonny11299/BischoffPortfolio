@@ -309,6 +309,10 @@ function setFooterData() {
     } catch (error) {
         console.error("In footer, couldn't get last update time because of error:");
         console.error(error);
+        // try again in a bit, it probably just hasn't loaded yet.
+        setTimeout(() => {
+            setFooterData();
+        }, 200)
     }
 }
 
