@@ -9,10 +9,11 @@ function post_blob(cell, content, onSuccess = (response) => { }, onFail = (respo
 }
 
 async function get_blob(cell) {
-    console.log("Getting blob at cell " + cell);
+    // console.log("Getting blob at cell " + cell);
     const obj = await get('get_blob', cell);
-    console.log("Got blob:");
-    console.log(obj);
+    // console.log("Got blob:");
+    // console.log(obj);
+    return obj;
 }
 
 

@@ -79,6 +79,28 @@
         }
             */
 
+            // all that work setting up a server, reflected in the bottom functions.
+            // they use the imports in the head.
+            // now I can post a blob and get a blob.
+            // fo'geddablobit.
+
+            async function postCopyPasteBlob(blob) {
+                post_blob(getLocation('copypaste_body'), blob);
+            }
+
+            async function getCopyPasteBlob() {
+                const blob = await get_blob(getLocation('copypaste_body'));
+                return JSON.parse(blob);
+            }
+
+            async function logCopyPasteBlob() {
+                const res = await getCopyPasteBlob();
+                console.log(res);
+            }
+
+
+            /*
+
 
             async function load_list() {
                 const instruction_set = await fetch('copypaste_instructions.JSON').then(r => r.text());
@@ -93,14 +115,22 @@
             }
             set_list_to_original();
 
+                        post_blob("a2", {
+                            type: "Test",
+                            content: "Hey bro"
+                        });
+            
+                        get_blob("a2");
+            */
 
 
-            post_blob("a2", {
-                type: "Test",
-                content: "Hey bro"
+            postCopyPasteBlob({
+                test: 'test2',
+                message: 'nope not even real this time'
             });
 
-            get_blob("a2");
+            logCopyPasteBlob();
+
 
         </script>
 

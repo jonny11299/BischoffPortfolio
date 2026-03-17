@@ -10,7 +10,7 @@
 // shoves a bunch of JSON blobs into a google sheet
 
 
-const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxukLa_fUW1NW5m4LTjbALpvNgVQ3AjIp0A-Xq_H-63wxoTwXqkfqNbjtX6L5_ZhYrnjA/exec";
+const LATEST_DEPLOYMENT = "https://script.google.com/macros/s/AKfycbxwmLs3CKJfIj58pdWViRjWG54B-zQwq1tx2vgTokIiKL0o5eteI4EJy3G8v8pmc_nn3w/exec";
 const LOCAL_SECRET = "BLOBS_ARE_SO_EASY";
 
 
@@ -57,8 +57,8 @@ function get(eventType, cell) {
         .then(response => {
             if (response) {
                 // remember to check if response is string or object.
-                console.log(`response from get(${eventType}):`);
-                console.log(response);
+                // console.log(`response from get(${eventType}):`);
+                // console.log(response);
                 return response;
             } else {
                 console.log("Blank response.");
