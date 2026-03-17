@@ -25,7 +25,7 @@
 
     .columns {
         display: grid;
-        grid-template-columns: 40% 20% 40%;
+        grid-template-columns: 40% 45% 15%;
         padding: 1rem;
         margin: 5px;
 
@@ -36,6 +36,46 @@
         padding: 1rem;
         border: 3px blue solid;
 
+    }
+
+    .myConsole {
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .textAreaForm {
+        width: 90%;
+        min-height: 3rem;
+        overflow: hidden;
+        resize: none;
+    }
+
+    .colUl {
+        list-style: none;
+    }
+
+    .iconList {
+        list-style: none;
+        /* removes bullets */
+        display: flex;
+        /* flex style, horizontal layout */
+        padding: 1rem;
+        margin: 0;
+        gap: 0.5rem;
+    }
+
+    .iconListItem {
+        background-color: white;
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .iconListItem:hover {
+        background-color: rgb(178, 236, 255);
+    }
+
+    .iconListItem:active {
+        background-color: rgb(55, 169, 207);
     }
 </style>
 
@@ -51,19 +91,54 @@
 
         <!-- ennumerate the tool: -->
         <br>
-        <button>Add Entry</button>
+        <p id="myConsole" class="myConsole">
+            My Console
+        </p>
         <br>
         <br>
-        <button>Remove Entry</button>
+        <button id="putBlob">Put Blob</button>
+        <button id="getBlob">Get Blob</button>
+
+        <br>
+        <br>
+        <ul id="icons list" class="iconList">
+            <li><button id="add" class="iconListItem"></button></li>
+            <li><button id="remove" class="iconListItem"></button></li>
+            <li><button id="edit" class="iconListItem"></button></li>
+        </ul>
         <div class="columns">
-            <div class="column-child">
-                <p>hey</p>
+            <div id="col1" class="column-child">
+                <ul id="col1ul" class="colUl">
+                    <li>
+                        <h1>Name:</h1>
+                    </li>
+                    <li id="col1edits">
+                        <textarea id="nameEntry" class="textAreaForm"></textarea>
+                    </li>
+                    <li id="col1body">
+
+                    </li>
+                </ul>
             </div>
-            <div class="column-child" style="align-items: center;">
-                <p>hey</p>
+            <div id="col2" class="column-child">
+                <ul id="col2ul" class="colUl">
+                    <li>
+                        <h1>Body:</h1>
+                    </li>
+                    <li id="col2edits">
+                        <textarea id="bodyEntry" class="textAreaForm"></textarea>
+                    </li>
+                    <li id="col2body">
+
+                    </li>
+                </ul>
             </div>
-            <div class="column-child">
-                <p>hey</p>
+            <div id="col3" class="column-child" style="align-items: left;">
+                <ul id="col3ul" class="colUl">
+                    <li>
+                        <h1>Edits:</h1>
+                    </li>
+                </ul>
             </div>
         </div>
 
@@ -99,6 +174,20 @@
             }
 
 
+            function putConsole(text) {
+                const con = document.getElementById('myConsole');
+                con.innerText = con.innerText + '\n' + text;
+            }
+            function eraseConsole() {
+                const con = document.getElementById('myConsole');
+                con.innerText = '';
+            }
+            function replaceConsole(text) {
+                eraseConsole();
+                putConsole(text);
+            }
+
+
             /*
 
 
@@ -121,7 +210,6 @@
                         });
             
                         get_blob("a2");
-            */
 
 
             postCopyPasteBlob({
@@ -130,6 +218,85 @@
             });
 
             logCopyPasteBlob();
+            */
+
+
+
+
+
+            // Setting up localStorage:
+
+            const lsname = 'copypast_bischoff_ls';
+
+            function getItemsLS() {
+                const itemsList = JSON.parse(localStorage.getItem(lsname));
+                return itemsList;
+            }
+            function putItemsLS(fullStructure) {
+                const str = JSON.stringify(fullStructure);
+                localStorage.setItem(lsname, str);
+            }
+
+
+
+
+            function appendSVG(liElement, svgPath, w = "2rem") {
+                const img = document.createElement('img');
+
+                try {
+                    img.src = svgPath;
+                    img.alt = `${liElement.id}`; // sets the alternative if it can't find the path
+                    img.style = `width: ${w}`;
+                    liElement.innerHTML = '';
+                    liElement.appendChild(img);
+                    console.log(liElement);
+
+                } catch (error) {
+                    console.error("Error appending SVG:");
+                    console.error(liElement);
+                    console.error(error);
+                }
+            }
+
+            setTimeout(() => {
+
+                // add the icons 
+                console.log("Appending icons");
+                const add = document.getElementById('add');
+                const edit = document.getElementById('edit');
+                const remove = document.getElementById('remove');
+
+                appendSVG(add, 'icons/add.svg');
+                appendSVG(edit, 'icons/edit.svg');
+                appendSVG(remove, 'icons/remove.svg');
+
+
+                // setup the list:
+
+                // input forms:
+                // this quick function ensures that they grow and shrink with the inputted text
+                document.querySelectorAll('.textAreaForm').forEach(textarea => {
+                    textarea.addEventListener('input', function () {
+                        this.style.height = 'auto';                          // reset first
+                        this.style.height = this.scrollHeight + 'px';       // then expand
+                    });
+                });
+
+
+            }, 50);
+
+
+            // setting up the item logic in general
+
+            const item = {
+                name: "blank",
+                body: "blank body",
+                active: false
+            };
+
+            // putConsole(JSON.stringify(item));
+            // eraseConsole();
+
 
 
         </script>
