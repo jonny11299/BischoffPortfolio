@@ -1,5 +1,9 @@
 <head>
-    <title>find-and-replace macros</title>
+    <title>Copy + Paste scripts</title>
+
+
+    <script src="../backend/blob_keys.js"></script>
+    <script src="../backend/tool_server.js"></script>
 </head>
 
 <style>
@@ -67,6 +71,36 @@
 
 
         <script>
+
+
+            /*
+        async function loadFiles() {
+            faminfo = await fetch('/raws/faminfo.txt').then(r => r.text());
+        }
+            */
+
+
+            async function load_list() {
+                const instruction_set = await fetch('copypaste_instructions.JSON').then(r => r.text());
+                console.log(instruction_set)
+                return instruction_set;
+            }
+            load_list();
+
+
+            async function set_list_to_original() {
+
+            }
+            set_list_to_original();
+
+
+
+            post_blob("a2", {
+                type: "Test",
+                content: "Hey bro"
+            });
+
+            get_blob("a2");
 
         </script>
 
