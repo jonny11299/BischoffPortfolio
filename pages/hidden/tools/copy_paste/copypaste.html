@@ -34,7 +34,7 @@
 
     .column-child {
         padding: 1rem;
-        border: 3px blue solid;
+        border: 0px blue solid;
         padding-left: 0px;
 
     }
@@ -124,6 +124,8 @@
 
     .bodyPreview {
         margin-left: 40px;
+        white-space: pre-wrap;
+        /* allows for display of \n characters */
     }
 
     .selected {
@@ -666,7 +668,7 @@
                         // console.log("clicked on name");
 
                         copyToClipboard(item.body);
-                        replaceConsole(`copied: ${item.body}`);
+                        replaceConsole(`copied: ${item.name}`);
                         putBodyPreview(item.body);
                         setActive(p);
                         // const ac = getActiveElement();
