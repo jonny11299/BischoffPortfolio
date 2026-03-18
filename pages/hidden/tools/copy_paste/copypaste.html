@@ -148,10 +148,12 @@
         </p>
         <br>
         <br>
-        <button id="putBlob">Put Blob</button>
-        <button id="getBlob">Get Blob</button>
+        <button id="putBlob" onclick="moveLStoBlob()">Put Blob</button>
+        <button id="getBlob" onclick="replaceLSwithBlob()">Get Blob</button>
+        <!--
         <button onclick="hideNewEntry()">Hide new entry</button>
         <button onclick="showNewEntry()">Show new entry</button>
+        -->
 
         <br>
         <br>
@@ -240,7 +242,12 @@
             // fo'geddablobit.
 
             async function postCopyPasteBlob(blob) {
-                post_blob(getLocation('copypaste_body'), blob);
+                putConsole('posting ls to blob');
+                post_blob(getLocation('copypaste_body'), blob, (successResponse) => {
+                    putConsole("Succeeded posting blob.");
+                }, (failResponse) => {
+                    putConsole("Failed to post blob.");
+                });
             }
 
             async function getCopyPasteBlob() {
@@ -265,6 +272,28 @@
             function replaceConsole(text) {
                 eraseConsole();
                 putConsole(text);
+            }
+
+
+            function moveLStoBlob() {
+                const ls = getItemsLS();
+                postCopyPasteBlob(ls);
+            }
+            async function replaceLSwithBlob() {
+
+                const inp = prompt('Are you sure you want to replace localStorage with blob data? This could overwrite your lists. \nType "yes" to continue.');
+
+                if (inp.toLowerCase() === 'yes') {
+                    putConsole("Replacing localStorage with blob data.");
+                    const blob = await getCopyPasteBlob();
+                    console.log(blob);
+                    putItemsLS(blob);
+                    putConsole("Successfully got blob.");
+                    updateColumns();
+
+                } else {
+                    putConsole('halted replacement of localStorage with blob data.')
+                }
             }
 
 
@@ -310,12 +339,36 @@
 
             function getItemsLS() {
                 const itemsList = JSON.parse(localStorage.getItem(lsname));
+                // console.log(itemsList);
+                /* itemsList.sort((a, b) => {
+                    if (a.name <= b.name) return -1;
+                    else return 1;
+                });*/
+                if (!Array.isArray(itemsList)) {
+                    return [];
+                }
                 return itemsList;
             }
             function putItemsLS(fullStructure) {
                 const str = JSON.stringify(fullStructure);
                 localStorage.setItem(lsname, str);
                 putConsole('updated localStorage');
+            }
+
+            function removeItemLS(itemToRemove) {
+                items = getItemsLS();
+                newItems = [];
+                for (let item of items) {
+                    if (itemToRemove.name === item.name && itemToRemove.body === item.body) {
+                        // skip
+                        console.log("found itemToRemove, ");
+                        console.log(itemToRemove);
+                    } else {
+                        newItems.push(item);
+                    }
+                }
+                putItemsLS(newItems);
+                updateColumns();
             }
 
 
@@ -330,7 +383,7 @@
                     img.style = `width: ${w}`;
                     liElement.innerHTML = '';
                     liElement.appendChild(img);
-                    console.log(liElement);
+                    // console.log(liElement);
 
                 } catch (error) {
                     console.error("Error appending SVG:");
@@ -339,10 +392,12 @@
                 }
             }
 
+
+            // runs on launch
             setTimeout(() => {
 
                 // add the icons 
-                console.log("Appending icons");
+                // console.log("Appending icons");
                 const add = document.getElementById('add');
                 const edit = document.getElementById('edit');
                 const remove = document.getElementById('remove');
@@ -374,10 +429,13 @@
 
                 add.onclick = () => addNewEntry();
                 remove.onclick = () => removeSelectedEntry();
+                edit.onclick = () => editSelectedEntry();
 
                 check.onclick = () => submitNewEntry();
                 x.onclick = () => cancelNewEntry();
 
+                // set all the items to inactive
+                deactivateAllItems();
                 updateColumns();
                 hideNewEntry();
 
@@ -392,7 +450,8 @@
                 active: false
             };
 
-            const items = getItemsLS();
+            let items = getItemsLS();
+
             /*
             items.push(item);
             items.push({
@@ -425,9 +484,13 @@
             }
 
 
+            let addingNewEntry = false;
+            let editingExistingEntry = false;
 
             function addNewEntry() {
                 // console.log("Running addNewEntry");
+                addingNewEntry = true;
+                editingExistingEntry = false;
                 showNewEntry();
             }
 
@@ -439,6 +502,7 @@
                     if (inp.toLowerCase() === 'yes') {
                         console.log('removing' + active.name);
                         putConsole('removing' + active.name);
+                        removeItemLS(active);
                     } else {
                         console.log('cancelled removal of' + active.name);
                         putConsole('cancelled removal of' + active.name)
@@ -447,14 +511,43 @@
                 }
             }
 
+            function editSelectedEntry() {
+                addingNewEntry = false;
+                editingExistingEntry = true;
+
+                const active = getActiveItem();
+                if (active) {
+                    // show the new entry, but first set newEntry to whatever the selected entry is
+                    const tan = document.getElementById('nameEntry');
+                    const tab = document.getElementById('bodyEntry');
+
+                    tan.value = active.name;
+                    tab.value = active.body;
+
+                    showNewEntry();
+                }
+            }
+
 
             function submitNewEntry() {
-                const name = document.getElementById('nameEntry').value;
-                const body = document.getElementById('bodyEntry').value;
+                // if we're editing an existing entry, we need to delete the selected one
+                let setNewItemToActive = false;
+                if (editingExistingEntry) {
+                    removeItemLS(getActiveItem());
+                    // need to set the element 'bodyPreview' to be whatever's in bodyEntry
+                    // in order to stomp this interesting bug where it still shows whatever the 
+                    // pre-edited version of the body was
+                    document.getElementById('bodyPreview').textContent = document.getElementById('bodyEntry').value;
+                    setNewItemToActive = true;
+                }
+
+
+                const nameEntry = document.getElementById('nameEntry');
+                const bodyEntry = document.getElementById('bodyEntry');
                 const newItem = {
-                    name: name,
-                    body: body,
-                    active: false
+                    name: nameEntry.value,
+                    body: bodyEntry.value,
+                    active: setNewItemToActive
                 };
                 console.log(newItem);
                 items.push(newItem);
@@ -462,15 +555,23 @@
 
                 putItemsLS(items);
 
-                // for some reason this doesn't ERASE THE EXISTING TEXT
-                name.value = '';
-                body.value = '';
+                nameEntry.value = '';
+                bodyEntry.value = '';
 
                 hideNewEntry();
                 updateColumns();
+
+
+                editingExistingEntry = false;
+                addingNewEntry = false;
             }
 
             function cancelNewEntry() {
+
+                const nameEntry = document.getElementById('nameEntry');
+                const bodyEntry = document.getElementById('bodyEntry');
+                nameEntry.value = '';
+                bodyEntry.value = '';
 
                 hideNewEntry();
                 updateColumns();
@@ -484,6 +585,16 @@
                 const bodyPreview = document.getElementById('bodyPreview');
                 bodyPreview.textContent = text;
             }
+
+
+            function deactivateAllItems() {
+                console.log("Deactivating all items");
+                for (let item of items) {
+                    item.active = false;
+                }
+                putItemsLS(items);
+            }
+
 
             function setActive(p) {
                 let nameContent = '';
@@ -512,8 +623,6 @@
                     }
                 }
 
-
-
                 console.log(items);
             }
 
@@ -538,6 +647,8 @@
             }
 
             function updateColumns() {
+                items = getItemsLS();
+
                 const namecol = document.getElementById('namecol');
                 namecol.innerHTML = '';
                 // const bodycol = document.getElementById('bodycol');
@@ -562,6 +673,7 @@
                         // console.log(ac);
                     });
 
+                    if (item.active) setActive(p);
 
                 });
             }
