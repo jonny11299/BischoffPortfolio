@@ -35,6 +35,7 @@
     .column-child {
         padding: 1rem;
         border: 3px blue solid;
+        padding-left: 0px;
 
     }
 
@@ -51,6 +52,9 @@
 
     .colUl {
         list-style: none;
+        padding: 0;
+        margin: 0;
+        padding-left: 0px;
     }
 
     .iconList {
@@ -77,6 +81,54 @@
     .iconListItem:active {
         background-color: rgb(55, 169, 207);
     }
+
+    .nameItemClass {
+        list-style: none;
+        background-color: rgb(208, 255, 212);
+        border: 5px solid rgb(0, 0, 0);
+        border-radius: 8px;
+        padding-left: 8px;
+        margin: 0;
+    }
+
+    .nameItemClass:hover {
+        background-color: rgb(65, 183, 74);
+    }
+
+    .nameItemClass:active {
+        background-color: rgb(65, 150, 183);
+    }
+
+    .bodyItemClass {
+        list-style: none;
+        background-color: rgb(208, 255, 212);
+        border: 5px solid rgb(0, 0, 0);
+        border-radius: 8px;
+        padding-left: 8px;
+        margin: 0;
+    }
+
+    .bodyItemClass:hover {
+        background-color: rgb(65, 183, 74);
+    }
+
+    .bodyItemClass:active {
+        background-color: rgb(65, 150, 183);
+    }
+
+    .newEntryForm {
+        margin-left: 40px;
+        margin-bottom: 40px;
+    }
+
+
+    .bodyPreview {
+        margin-left: 40px;
+    }
+
+    .selected {
+        background-color: rgb(90, 195, 236);
+    }
 </style>
 
 
@@ -98,6 +150,8 @@
         <br>
         <button id="putBlob">Put Blob</button>
         <button id="getBlob">Get Blob</button>
+        <button onclick="hideNewEntry()">Hide new entry</button>
+        <button onclick="showNewEntry()">Show new entry</button>
 
         <br>
         <br>
@@ -109,14 +163,17 @@
         <div class="columns">
             <div id="col1" class="column-child">
                 <ul id="col1ul" class="colUl">
-                    <li>
+                    <li class=>
                         <h1>Name:</h1>
                     </li>
-                    <li id="col1edits">
+                    <li id="col1textarea" class="newEntryForm">
                         <textarea id="nameEntry" class="textAreaForm"></textarea>
                     </li>
+                    <br>
                     <li id="col1body">
+                        <ul id="namecol">
 
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -125,18 +182,29 @@
                     <li>
                         <h1>Body:</h1>
                     </li>
-                    <li id="col2edits">
+                    <li id="col2textarea" class="newEntryForm">
                         <textarea id="bodyEntry" class="textAreaForm"></textarea>
                     </li>
+                    <br>
                     <li id="col2body">
+                        <!--<ul id="bodycol">
+
+                        </ul>-->
+                        <p id="bodyPreview" class="bodyPreview"></p>
 
                     </li>
                 </ul>
             </div>
-            <div id="col3" class="column-child" style="align-items: left;">
+            <div id="col3" class="column-child">
                 <ul id="col3ul" class="colUl">
                     <li>
                         <h1>Edits:</h1>
+                    </li>
+                    <li class="newEntryForm">
+                        <ul id="editsIcons" class="iconList" style="padding: 0rem">
+                            <li><button id="check" class="iconListItem" style="stroke-color: green"></button></li>
+                            <li><button id="x" class="iconListItem" style="stroke-color: red"></button></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -146,6 +214,18 @@
 
 
         <script>
+
+
+            // To do:
+            // finish implementation of 'delete'
+            // implement 'edit'
+
+
+
+
+
+
+
 
 
             /*
@@ -235,6 +315,7 @@
             function putItemsLS(fullStructure) {
                 const str = JSON.stringify(fullStructure);
                 localStorage.setItem(lsname, str);
+                putConsole('updated localStorage');
             }
 
 
@@ -271,6 +352,7 @@
                 appendSVG(remove, 'icons/remove.svg');
 
 
+
                 // setup the list:
 
                 // input forms:
@@ -283,6 +365,22 @@
                 });
 
 
+                const check = document.getElementById('check');
+                const x = document.getElementById('x');
+                appendSVG(check, 'icons/check.svg', "1.5rem");
+                appendSVG(x, 'icons/x.svg', "1.5rem");
+
+                // add button functionality:
+
+                add.onclick = () => addNewEntry();
+                remove.onclick = () => removeSelectedEntry();
+
+                check.onclick = () => submitNewEntry();
+                x.onclick = () => cancelNewEntry();
+
+                updateColumns();
+                hideNewEntry();
+
             }, 50);
 
 
@@ -294,9 +392,179 @@
                 active: false
             };
 
+            const items = getItemsLS();
+            /*
+            items.push(item);
+            items.push({
+                name: 'blank2',
+                body: 'more real body',
+                active: false
+            });
+            items.push({
+                name: 'blank3',
+                body: 'more 03q1508 body',
+                active: false
+            });*/
+
             // putConsole(JSON.stringify(item));
             // eraseConsole();
 
+            function hideNewEntry() {
+                // console.log("hideNewEntry run");
+                document.querySelectorAll('.newEntryForm').forEach(item => {
+                    item.style.display = "none"
+                });
+
+            }
+            function showNewEntry() {
+                // console.log("showNewEntry run");
+                document.querySelectorAll('.newEntryForm').forEach(item => {
+                    // console.log(item);
+                    item.style.display = "block"
+                });
+            }
+
+
+
+            function addNewEntry() {
+                // console.log("Running addNewEntry");
+                showNewEntry();
+            }
+
+            function removeSelectedEntry() {
+                const active = getActiveItem();
+                if (active) {
+                    const inp = prompt('Are you sure you want to remove the selected entry?\nEntry is:\n' + active.name + '\nType "yes" to continue.');
+
+                    if (inp.toLowerCase() === 'yes') {
+                        console.log('removing' + active.name);
+                        putConsole('removing' + active.name);
+                    } else {
+                        console.log('cancelled removal of' + active.name);
+                        putConsole('cancelled removal of' + active.name)
+                    }
+
+                }
+            }
+
+
+            function submitNewEntry() {
+                const name = document.getElementById('nameEntry').value;
+                const body = document.getElementById('bodyEntry').value;
+                const newItem = {
+                    name: name,
+                    body: body,
+                    active: false
+                };
+                console.log(newItem);
+                items.push(newItem);
+
+
+                putItemsLS(items);
+
+                // for some reason this doesn't ERASE THE EXISTING TEXT
+                name.value = '';
+                body.value = '';
+
+                hideNewEntry();
+                updateColumns();
+            }
+
+            function cancelNewEntry() {
+
+                hideNewEntry();
+                updateColumns();
+            }
+
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text);
+            }
+
+            function putBodyPreview(text) {
+                const bodyPreview = document.getElementById('bodyPreview');
+                bodyPreview.textContent = text;
+            }
+
+            function setActive(p) {
+                let nameContent = '';
+                for (let item of items) {
+                    if (p.textContent === item.name) {
+                        // console.log("active " + item.name);
+                        // p.parentElement.classList.add('selected');
+                        item.active = true;
+                        nameContent = item.name;
+                    } else {
+                        // console.log("deactivate " + item.name);
+                        // p.parentElement.classList.remove('selected');
+                        item.active = false;
+                    }
+                }
+
+
+                const els = document.getElementById('namecol');
+
+                for (let child of els.children) {
+                    const c = child.children[0];
+                    if (c.innerText === nameContent) {
+                        c.parentElement.classList.add('selected');
+                    } else {
+                        c.parentElement.classList.remove('selected');
+                    }
+                }
+
+
+
+                console.log(items);
+            }
+
+            function getActiveItem() {
+                for (let item of items) {
+                    if (item.active) return item;
+                }
+                return undefined;
+            }
+
+            function getActiveElement() {
+                const els = document.getElementById('namecol');
+                // console.log(els);
+                let activeItem = getActiveItem();
+
+                for (let child of els.children) {
+                    const c = child.children[0];
+                    if (c.innerText === activeItem.name) return c;
+                }
+
+
+            }
+
+            function updateColumns() {
+                const namecol = document.getElementById('namecol');
+                namecol.innerHTML = '';
+                // const bodycol = document.getElementById('bodycol');
+                // bodycol.innerHTML = '';
+
+
+                items.forEach((item) => {
+                    const p = document.createElement('p');
+                    p.textContent = item.name;
+                    const lin = document.createElement('li');
+                    lin.appendChild(p);
+                    namecol.appendChild(lin);
+                    lin.className = 'nameItemClass';
+                    lin.addEventListener('click', () => {
+                        // console.log("clicked on name");
+
+                        copyToClipboard(item.body);
+                        replaceConsole(`copied: ${item.body}`);
+                        putBodyPreview(item.body);
+                        setActive(p);
+                        // const ac = getActiveElement();
+                        // console.log(ac);
+                    });
+
+
+                });
+            }
 
 
         </script>
