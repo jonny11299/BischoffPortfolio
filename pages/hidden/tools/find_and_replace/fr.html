@@ -1,10 +1,10 @@
 <head>
-    <title>find-and-replace macros</title>
+    <title>Copy + Paste scripts</title>
+
 
     <script src="../backend/blob_keys.js"></script>
     <script src="../backend/tool_server.js"></script>
 </head>
-
 
 <style>
     .center {
@@ -22,6 +22,115 @@
         font-size: 18px;
         padding: 5px;
     }
+
+    .columns {
+        display: grid;
+        grid-template-columns: 40% 45% 15%;
+        padding: 1rem;
+        margin: 5px;
+
+        border: 4px black solid;
+    }
+
+    .column-child {
+        padding: 1rem;
+        border: 0px blue solid;
+        padding-left: 0px;
+
+    }
+
+    .myConsole {
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .textAreaForm {
+        width: 90%;
+        min-height: 3rem;
+        overflow: hidden;
+        resize: none;
+    }
+
+    .colUl {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        padding-left: 0px;
+    }
+
+    .iconList {
+        list-style: none;
+        /* removes bullets */
+        display: flex;
+        /* flex style, horizontal layout */
+        padding: 1rem;
+        margin: 0;
+        gap: 0.5rem;
+    }
+
+    .iconListItem {
+        background-color: white;
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .iconListItem:hover {
+        background-color: rgb(178, 236, 255);
+    }
+
+    .iconListItem:active {
+        background-color: rgb(55, 169, 207);
+    }
+
+    .nameItemClass {
+        list-style: none;
+        background-color: rgb(208, 255, 212);
+        border: 5px solid rgb(0, 0, 0);
+        border-radius: 8px;
+        padding-left: 8px;
+        margin: 0;
+    }
+
+    .nameItemClass:hover {
+        background-color: rgb(65, 183, 74);
+    }
+
+    .nameItemClass:active {
+        background-color: rgb(65, 150, 183);
+    }
+
+    .bodyItemClass {
+        list-style: none;
+        background-color: rgb(208, 255, 212);
+        border: 5px solid rgb(0, 0, 0);
+        border-radius: 8px;
+        padding-left: 8px;
+        margin: 0;
+    }
+
+    .bodyItemClass:hover {
+        background-color: rgb(65, 183, 74);
+    }
+
+    .bodyItemClass:active {
+        background-color: rgb(65, 150, 183);
+    }
+
+    .newEntryForm {
+        margin-left: 40px;
+        margin-bottom: 40px;
+    }
+
+
+    .bodyPreview {
+        margin-left: 40px;
+        white-space: pre-wrap;
+        /* allows for display of \n characters */
+    }
+
+    .selected {
+        background-color: rgb(90, 195, 236);
+    }
 </style>
 
 
@@ -32,15 +141,547 @@
 
         <!-- Previous window: -->
         <p><a href="../tool_index.html">All Tools</a></p>
-        <h4>(not much here yet...)</h4>
 
 
         <!-- ennumerate the tool: -->
-        <ul>
-            <li>
-            </li>
-            <br>
+        <br>
+        <p id="myConsole" class="myConsole">
+            My Console
+        </p>
+        <br>
+        <br>
+        <button id="putBlob" onclick="moveLStoBlob()">Put Blob</button>
+        <button id="getBlob" onclick="replaceLSwithBlob()">Get Blob</button>
+        <!--
+        <button onclick="hideNewEntry()">Hide new entry</button>
+        <button onclick="showNewEntry()">Show new entry</button>
+        -->
+
+        <br>
+        <br>
+        <ul id="icons list" class="iconList">
+            <li><button id="add" class="iconListItem"></button></li>
+            <li><button id="remove" class="iconListItem"></button></li>
+            <li><button id="edit" class="iconListItem"></button></li>
         </ul>
+        <div class="columns">
+            <div id="col1" class="column-child">
+                <ul id="col1ul" class="colUl">
+                    <li class=>
+                        <h1>Name:</h1>
+                    </li>
+                    <li id="col1textarea" class="newEntryForm">
+                        <textarea id="nameEntry" class="textAreaForm"></textarea>
+                    </li>
+                    <br>
+                    <li id="col1body">
+                        <ul id="namecol">
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id="col2" class="column-child">
+                <ul id="col2ul" class="colUl">
+                    <li>
+                        <h1>Body:</h1>
+                    </li>
+                    <li id="col2textarea" class="newEntryForm">
+                        <textarea id="bodyEntry" class="textAreaForm"></textarea>
+                    </li>
+                    <br>
+                    <li id="col2body">
+                        <!--<ul id="bodycol">
+
+                        </ul>-->
+                        <p id="bodyPreview" class="bodyPreview"></p>
+
+                    </li>
+                </ul>
+            </div>
+            <div id="col3" class="column-child">
+                <ul id="col3ul" class="colUl">
+                    <li>
+                        <h1>Edits:</h1>
+                    </li>
+                    <li class="newEntryForm">
+                        <ul id="editsIcons" class="iconList" style="padding: 0rem">
+                            <li><button id="check" class="iconListItem" style="stroke-color: green"></button></li>
+                            <li><button id="x" class="iconListItem" style="stroke-color: red"></button></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
+
+        <script>
+
+
+            // To do:
+            // finish implementation of 'delete'
+            // implement 'edit'
+
+
+
+
+
+
+
+
+
+            /*
+        async function loadFiles() {
+            faminfo = await fetch('/raws/faminfo.txt').then(r => r.text());
+        }
+            */
+
+            // all that work setting up a server, reflected in the bottom functions.
+            // they use the imports in the head.
+            // now I can post a blob and get a blob.
+            // fo'geddablobit.
+
+            async function postCopyPasteBlob(blob) {
+                putConsole('posting ls to blob');
+                post_blob(getLocation('copypaste_body'), blob, (successResponse) => {
+                    putConsole("Succeeded posting blob.");
+                }, (failResponse) => {
+                    putConsole("Failed to post blob.");
+                });
+            }
+
+            async function getCopyPasteBlob() {
+                const blob = await get_blob(getLocation('copypaste_body'));
+                return JSON.parse(blob);
+            }
+
+            async function logCopyPasteBlob() {
+                const res = await getCopyPasteBlob();
+                console.log(res);
+            }
+
+
+            function putConsole(text) {
+                const con = document.getElementById('myConsole');
+                con.innerText = con.innerText + '\n' + text;
+            }
+            function eraseConsole() {
+                const con = document.getElementById('myConsole');
+                con.innerText = '';
+            }
+            function replaceConsole(text) {
+                eraseConsole();
+                putConsole(text);
+            }
+
+
+            function moveLStoBlob() {
+                const ls = getItemsLS();
+                postCopyPasteBlob(ls);
+            }
+            async function replaceLSwithBlob() {
+
+                const inp = prompt('Are you sure you want to replace localStorage with blob data? This could overwrite your lists. \nType "yes" to continue.');
+
+                if (inp.toLowerCase() === 'yes') {
+                    putConsole("Replacing localStorage with blob data.");
+                    const blob = await getCopyPasteBlob();
+                    console.log(blob);
+                    putItemsLS(blob);
+                    putConsole("Successfully got blob.");
+                    updateColumns();
+
+                } else {
+                    putConsole('halted replacement of localStorage with blob data.')
+                }
+            }
+
+
+            /*
+
+
+            async function load_list() {
+                const instruction_set = await fetch('copypaste_instructions.JSON').then(r => r.text());
+                console.log(instruction_set)
+                return instruction_set;
+            }
+            load_list();
+
+
+            async function set_list_to_original() {
+
+            }
+            set_list_to_original();
+
+                        post_blob("a2", {
+                            type: "Test",
+                            content: "Hey bro"
+                        });
+            
+                        get_blob("a2");
+
+
+            postCopyPasteBlob({
+                test: 'test2',
+                message: 'nope not even real this time'
+            });
+
+            logCopyPasteBlob();
+            */
+
+
+
+
+
+            // Setting up localStorage:
+
+            const lsname = 'copypast_bischoff_ls';
+
+            function getItemsLS() {
+                const itemsList = JSON.parse(localStorage.getItem(lsname));
+                // console.log(itemsList);
+                /* itemsList.sort((a, b) => {
+                    if (a.name <= b.name) return -1;
+                    else return 1;
+                });*/
+                if (!Array.isArray(itemsList)) {
+                    return [];
+                }
+                return itemsList;
+            }
+            function putItemsLS(fullStructure) {
+                const str = JSON.stringify(fullStructure);
+                localStorage.setItem(lsname, str);
+                putConsole('updated localStorage');
+            }
+
+            function removeItemLS(itemToRemove) {
+                items = getItemsLS();
+                newItems = [];
+                for (let item of items) {
+                    if (itemToRemove.name === item.name && itemToRemove.body === item.body) {
+                        // skip
+                        console.log("found itemToRemove, ");
+                        console.log(itemToRemove);
+                    } else {
+                        newItems.push(item);
+                    }
+                }
+                putItemsLS(newItems);
+                updateColumns();
+            }
+
+
+
+
+            function appendSVG(liElement, svgPath, w = "2rem") {
+                const img = document.createElement('img');
+
+                try {
+                    img.src = svgPath;
+                    img.alt = `${liElement.id}`; // sets the alternative if it can't find the path
+                    img.style = `width: ${w}`;
+                    liElement.innerHTML = '';
+                    liElement.appendChild(img);
+                    // console.log(liElement);
+
+                } catch (error) {
+                    console.error("Error appending SVG:");
+                    console.error(liElement);
+                    console.error(error);
+                }
+            }
+
+
+            // runs on launch
+            setTimeout(() => {
+
+                // add the icons 
+                // console.log("Appending icons");
+                const add = document.getElementById('add');
+                const edit = document.getElementById('edit');
+                const remove = document.getElementById('remove');
+
+                appendSVG(add, 'icons/add.svg');
+                appendSVG(edit, 'icons/edit.svg');
+                appendSVG(remove, 'icons/remove.svg');
+
+
+
+                // setup the list:
+
+                // input forms:
+                // this quick function ensures that they grow and shrink with the inputted text
+                document.querySelectorAll('.textAreaForm').forEach(textarea => {
+                    textarea.addEventListener('input', function () {
+                        this.style.height = 'auto';                          // reset first
+                        this.style.height = this.scrollHeight + 'px';       // then expand
+                    });
+                });
+
+
+                const check = document.getElementById('check');
+                const x = document.getElementById('x');
+                appendSVG(check, 'icons/check.svg', "1.5rem");
+                appendSVG(x, 'icons/x.svg', "1.5rem");
+
+                // add button functionality:
+
+                add.onclick = () => addNewEntry();
+                remove.onclick = () => removeSelectedEntry();
+                edit.onclick = () => editSelectedEntry();
+
+                check.onclick = () => submitNewEntry();
+                x.onclick = () => cancelNewEntry();
+
+                // set all the items to inactive
+                deactivateAllItems();
+                updateColumns();
+                hideNewEntry();
+
+            }, 50);
+
+
+            // setting up the item logic in general
+
+            const item = {
+                name: "blank",
+                body: "blank body",
+                active: false
+            };
+
+            let items = getItemsLS();
+
+            /*
+            items.push(item);
+            items.push({
+                name: 'blank2',
+                body: 'more real body',
+                active: false
+            });
+            items.push({
+                name: 'blank3',
+                body: 'more 03q1508 body',
+                active: false
+            });*/
+
+            // putConsole(JSON.stringify(item));
+            // eraseConsole();
+
+            function hideNewEntry() {
+                // console.log("hideNewEntry run");
+                document.querySelectorAll('.newEntryForm').forEach(item => {
+                    item.style.display = "none"
+                });
+
+            }
+            function showNewEntry() {
+                // console.log("showNewEntry run");
+                document.querySelectorAll('.newEntryForm').forEach(item => {
+                    // console.log(item);
+                    item.style.display = "block"
+                });
+            }
+
+
+            let addingNewEntry = false;
+            let editingExistingEntry = false;
+
+            function addNewEntry() {
+                // console.log("Running addNewEntry");
+                addingNewEntry = true;
+                editingExistingEntry = false;
+                showNewEntry();
+            }
+
+            function removeSelectedEntry() {
+                const active = getActiveItem();
+                if (active) {
+                    const inp = prompt('Are you sure you want to remove the selected entry?\nEntry is:\n' + active.name + '\nType "yes" to continue.');
+
+                    if (inp.toLowerCase() === 'yes') {
+                        console.log('removing' + active.name);
+                        putConsole('removing' + active.name);
+                        removeItemLS(active);
+                    } else {
+                        console.log('cancelled removal of' + active.name);
+                        putConsole('cancelled removal of' + active.name)
+                    }
+
+                }
+            }
+
+            function editSelectedEntry() {
+                addingNewEntry = false;
+                editingExistingEntry = true;
+
+                const active = getActiveItem();
+                if (active) {
+                    // show the new entry, but first set newEntry to whatever the selected entry is
+                    const tan = document.getElementById('nameEntry');
+                    const tab = document.getElementById('bodyEntry');
+
+                    tan.value = active.name;
+                    tab.value = active.body;
+
+                    showNewEntry();
+                }
+            }
+
+
+            function submitNewEntry() {
+                // if we're editing an existing entry, we need to delete the selected one
+                let setNewItemToActive = false;
+                if (editingExistingEntry) {
+                    removeItemLS(getActiveItem());
+                    // need to set the element 'bodyPreview' to be whatever's in bodyEntry
+                    // in order to stomp this interesting bug where it still shows whatever the 
+                    // pre-edited version of the body was
+                    document.getElementById('bodyPreview').textContent = document.getElementById('bodyEntry').value;
+                    setNewItemToActive = true;
+                }
+
+
+                const nameEntry = document.getElementById('nameEntry');
+                const bodyEntry = document.getElementById('bodyEntry');
+                const newItem = {
+                    name: nameEntry.value,
+                    body: bodyEntry.value,
+                    active: setNewItemToActive
+                };
+                console.log(newItem);
+                items.push(newItem);
+
+
+                putItemsLS(items);
+
+                nameEntry.value = '';
+                bodyEntry.value = '';
+
+                hideNewEntry();
+                updateColumns();
+
+
+                editingExistingEntry = false;
+                addingNewEntry = false;
+            }
+
+            function cancelNewEntry() {
+
+                const nameEntry = document.getElementById('nameEntry');
+                const bodyEntry = document.getElementById('bodyEntry');
+                nameEntry.value = '';
+                bodyEntry.value = '';
+
+                hideNewEntry();
+                updateColumns();
+            }
+
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text);
+            }
+
+            function putBodyPreview(text) {
+                const bodyPreview = document.getElementById('bodyPreview');
+                bodyPreview.textContent = text;
+            }
+
+
+            function deactivateAllItems() {
+                console.log("Deactivating all items");
+                for (let item of items) {
+                    item.active = false;
+                }
+                putItemsLS(items);
+            }
+
+
+            function setActive(p) {
+                let nameContent = '';
+                for (let item of items) {
+                    if (p.textContent === item.name) {
+                        // console.log("active " + item.name);
+                        // p.parentElement.classList.add('selected');
+                        item.active = true;
+                        nameContent = item.name;
+                    } else {
+                        // console.log("deactivate " + item.name);
+                        // p.parentElement.classList.remove('selected');
+                        item.active = false;
+                    }
+                }
+
+
+                const els = document.getElementById('namecol');
+
+                for (let child of els.children) {
+                    const c = child.children[0];
+                    if (c.innerText === nameContent) {
+                        c.parentElement.classList.add('selected');
+                    } else {
+                        c.parentElement.classList.remove('selected');
+                    }
+                }
+
+                console.log(items);
+            }
+
+            function getActiveItem() {
+                for (let item of items) {
+                    if (item.active) return item;
+                }
+                return undefined;
+            }
+
+            function getActiveElement() {
+                const els = document.getElementById('namecol');
+                // console.log(els);
+                let activeItem = getActiveItem();
+
+                for (let child of els.children) {
+                    const c = child.children[0];
+                    if (c.innerText === activeItem.name) return c;
+                }
+
+
+            }
+
+            function updateColumns() {
+                items = getItemsLS();
+
+                const namecol = document.getElementById('namecol');
+                namecol.innerHTML = '';
+                // const bodycol = document.getElementById('bodycol');
+                // bodycol.innerHTML = '';
+
+
+                items.forEach((item) => {
+                    const p = document.createElement('p');
+                    p.textContent = item.name;
+                    const lin = document.createElement('li');
+                    lin.appendChild(p);
+                    namecol.appendChild(lin);
+                    lin.className = 'nameItemClass';
+                    lin.addEventListener('click', () => {
+                        // console.log("clicked on name");
+
+                        copyToClipboard(item.body);
+                        replaceConsole(`copied: ${item.name}`);
+                        putBodyPreview(item.body);
+                        setActive(p);
+                        // const ac = getActiveElement();
+                        // console.log(ac);
+                    });
+
+                    if (item.active) setActive(p);
+
+                });
+            }
+
+
+        </script>
 
     </div>
 </body>
