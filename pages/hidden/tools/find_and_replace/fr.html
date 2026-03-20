@@ -20,6 +20,33 @@ hmmm... maybe it just operates under one ruleset that is modifiable with passwor
 
 
 Backend thinking:
+Server design: Postman
+https://www.postman.com/
+
+
+"Designed a RESTFul API with postman"
+I should either use Python Flask or FAST API
+
+"REST endpoints for CRUD on rulesets and log persistence
+The full roundtrip from a vanilla JS frontend to a real DB"
+
+
+
+
+-----------------------------------
+
+
+
+In the future, you'll have to make this more friendly to multiple users.
+
+
+You'll have to give them an auto-generated username, and then
+mod the blob posting to checkout a new cell for a new username that doesn't exist yet.
+
+Given a dedicated column, you can probably
+chain some 'awaits' together to have a 
+'username key' at the top of the column,
+then get this key upon launch, reference which cell is ours, and then route accordingly.
 
 
 
@@ -34,16 +61,22 @@ Backend thinking:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clipboard → Table</title>
+  <title>Find → Replace</title>
+  <!-- Including my own backend tools: -->
+  <script src="../backend/blob_keys.js"></script>
+  <script src="../backend/tool_server.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;500&display=swap');
 
     :root {
-      --bg: #0e0f11;
+      --bg: #090b0d;
       --surface: #161719;
       --border: #2a2c30;
-      --accent: #c8f060;
+      --accent: #f0d660;
       --accent2: #60c8f0;
+      --good: #50b967;
+      --bad: #f06060;
       --text: #e8eaed;
       --muted: #9aa0ac;
       --row-even: #13141600;
@@ -882,6 +915,98 @@ Backend thinking:
       text-align: right;
     }
 
+
+    /* -- DATABASE PANEL --------------------------------------------- */
+
+
+    .status-readout {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 6px 16px;
+      border: 0px solid var(--good);
+      background: transparent;
+      color: var(--good);
+      transition: all 0.15s;
+    }
+
+    .user-readout {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 6px 16px;
+      border: 0px solid var(--good);
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+
+
+    .btn-danger:hover {
+      border-color: var(--bad);
+      transition: all 0.15s ease;
+    }
+
+    .btn-blue:hover {
+      border-color: var(--accent2);
+      transition: all 0.15s ease;
+    }
+
+
+
+
+    .mode-btn-style-copy {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 18px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .mode-btn-style-copy:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .mode-btn-style-copy.active[data-mode="tsv"] {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: #c8f06010;
+    }
+
+    .mode-btn-style-copy.active[data-mode="html"] {
+      border-color: var(--accent2);
+      color: var(--accent2);
+      background: #60c8f010;
+    }
+
+    .mode-btn-style-copy.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+
+    .mode-btn-style-copy.active[data-mode="tsv"]::after {
+      background: var(--accent);
+    }
+
+    .mode-btn-style-copy.active[data-mode="html"]::after {
+      background: var(--accent2);
+    }
+
+
     /* ── DIFF MODE ──────────────────────────────────────────────── */
     .diff-banner {
       display: none;
@@ -989,14 +1114,15 @@ Backend thinking:
 <body>
 
   <header>
-    <h1>clipboard → table</h1>
-    <span>paste spreadsheet cells, get a table</span>
+    <h1>Find → Replace</h1>
+    <span>paste spreadsheet cells, replace macros with a ruleset</span>
   </header>
 
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="table">Table</button>
-    <button class="tab-btn" data-tab="rules">Rules</button>
+    <button class="tab-btn" data-tab="rules" id="rules-tab-button">Rules</button>
     <button class="tab-btn" data-tab="log">Log</button>
+    <button class="tab-btn" data-tab="database">Database</button>
   </div>
 
   <div class="tab-panel active" id="tab-table">
@@ -1013,6 +1139,7 @@ Backend thinking:
           paste target
           <span class="mode-indicator html" id="modeIndicator">HTML</span>
         </label>
+        <br> <!-- I added this (Jonny), hehe. -->
         <button class="select-all-btn" id="selectAllBtn">select_all</button>
       </div>
       <textarea id="pasteArea" placeholder="Click here, then paste your spreadsheet cells (Ctrl+V / Cmd+V)…"
@@ -1098,6 +1225,41 @@ Backend thinking:
 
   </div><!-- /tab-log -->
 
+  <div class="tab-panel" id="tab-database">
+
+
+    <div class="log-toolbar">
+      <span class="mode-label">User:</span>
+      <button class="user-readout" id="user-readout" disabled>No user currently</button>
+    </div>
+
+    <div class="log-toolbar">
+      <span class="mode-label">Status:</span>
+      <button class="status-readout" id="status-readout" disabled>No status currently</button>
+    </div>
+
+    <div class="log-header"></div>
+
+    <br>
+
+    <div class="mode-bar">
+      <span class="mode-label">Database Options:</span>
+      <button class="mode-btn-style-copy btn-blue" id="saveUserRuleset">Save Local Ruleset</button>
+      <button class="mode-btn-style-copy" id="loadUserRuleset">Load Local Ruleset</button>
+    </div>
+
+    <br>
+
+    <div class="mode-bar">
+      <span class="mode-label">Admin Options:</span>
+      <button class="mode-btn-style-copy btn-danger" id="saveDefaultRuleset">Save As Default Ruleset</button>
+      <button class="mode-btn-style-copy" id="loadDefaultRuleset">Load Default Ruleset</button>
+    </div>
+
+
+
+  </div><!-- /tab-database -->
+
   <script>
     // ── TABS ──────────────────────────────────────────────────────
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1132,7 +1294,7 @@ Backend thinking:
         modeBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        modeIndicator.textContent = currentMode.toUpperCase();
+        if (currentMode) modeIndicator.textContent = currentMode.toUpperCase();
         modeIndicator.className = `mode-indicator ${currentMode}`;
 
         setStatus(`mode set to ${currentMode} — paste to parse`, `ok-${currentMode}`);
@@ -1780,7 +1942,129 @@ Backend thinking:
     renderLog();
 
 
+    /*
+    :root {
+      --bg: #090b0d;
+      --surface: #161719;
+      --border: #2a2c30;
+      --accent: #f0d660;
+      --accent2: #60c8f0;
+      --good: #50b967;
+      --text: #e8eaed;
+      --muted: #9aa0ac;
+      --row-even: #13141600;
+      --row-odd: #1c1e2255;
+      --th-bg: #1e2024;
+    }
 
+    */
+
+    /*
+    user-readout
+    status-readout
+
+    saveUserRuleset
+    loadUserRuleset
+    saveDefaultRuleset
+    loadDefaultRuleset
+
+    */
+
+
+    document.getElementById('rules-tab-button').addEventListener('click', () => {
+      renderRules();
+    });
+
+
+    setTimeout(async () => {
+      rules = await getDefaultRuleset();
+    }, 20);
+
+
+    const ur = document.getElementById('user-readout');
+    const sr = document.getElementById('status-readout');
+
+    const sur = document.getElementById('saveUserRuleset');
+    const lur = document.getElementById('loadUserRuleset');
+    const sdr = document.getElementById('saveDefaultRuleset');
+    const ldr = document.getElementById('loadDefaultRuleset');
+
+    const blob_default = 'fr_ruleset_default';
+    const blob_user = 'fr_ruleset_user';
+
+    const ls = 'fr_ruleset_localstorage';
+
+
+    // save local ruleset
+    sur.addEventListener('click', () => {
+      localStorage.setItem(ls, JSON.stringify(rules));
+      setStatus('Saved local ruleset.', 'var(--good)');
+    });
+    // load local ruleset
+    lur.addEventListener('click', () => {
+      const rsloaded = JSON.parse(localStorage.getItem(ls));
+      rules = rsloaded;
+      setStatus('Loaded local ruleset.', 'var(--good)');
+    });
+
+
+    sdr.addEventListener('click', async () => {
+      const res = prompt('Are you sure you want to overwrite the default ruleset? Enter the password to confirm.', 'no');
+      if (res.toLowerCase() === 'absolutely') {
+        postDefaultRuleset(rules);
+      } else {
+        setStatus('Failed to save default ruleset; entered incorrect password.', 'var(--bad)');
+      }
+
+    });
+
+    ldr.addEventListener('click', async () => {
+      rules = await getDefaultRuleset();
+
+      // Going to choose not to overwrite local storage:
+      // localStorage.setItem(ls, JSON.stringify(rules));
+    });
+
+
+    function setStatus(text, color = 'var(--muted)') {
+      console.log("%cSetting status to:", "color: #00aa00");
+      console.log(text);
+
+      sr.textContent = text;
+      sr.style.color = color;
+    }
+
+    async function postDefaultRuleset(blob) {
+      setStatus('Saving ruleset as default ruleset', 'var(--accent)');
+      post_blob(getLocation(blob_default), blob, (successResponse) => {
+        setStatus("Succeeded saving default ruleset.", 'var(--good)');
+      }, (failResponse) => {
+        setStatus("Failed to save default ruleset.", 'var(--bad)');
+      });
+    }
+
+    async function getDefaultRuleset() {
+      setStatus('Loading default ruleset', 'var(--accent)');
+      const blob = await get_blob(getLocation(blob_default)).then((result) => {
+        setStatus('Successfully loaded default ruleset. We have not overwritten your local version.', 'var(--good)');
+
+        // console.log("Logging result here...");
+        // console.log(result);
+        // console.log(typeof result);
+
+        return result;
+      }).catch((error) => {
+        setStatus('Failed getting default ruleset. See console for error', 'var(--bad)');
+        console.error(error);
+
+        return '[]';
+      });
+
+      // console.log("Logging blob again...");
+      // console.log(blob);
+      // console.log(typeof blob);
+      return JSON.parse(blob);
+    }
 
   </script>
 </body>

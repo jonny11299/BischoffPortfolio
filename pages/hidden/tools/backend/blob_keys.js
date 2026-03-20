@@ -29,8 +29,18 @@ const blob_keys = [
         name: 'blank',
         row: 0,
         column: 'a'
+    },
+    {
+        name: 'fr_ruleset_default',
+        row: 1,
+        column: 'b'
+    },
+    {
+        name: 'fr_ruleset_user',
+        row: 2,
+        column: 'b'
     }
-]
+];
 
 
 
