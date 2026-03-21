@@ -73,6 +73,14 @@ I'm going to need to overhaul certain aspects, namely:
 3. add the conditional ruleset (if cell includes this, replace this)
 
 
+
+Also, these ones are the IAS and DV exception. Check the big book of fw:
+#{request.keyValue("bundle_id")}
+#{section.attribute("appBundle")}
+#{site.attribute("appBundle")}
+#{request.keyValue("_fw_app_bundle")}
+
+
 -->
 
 
@@ -1298,7 +1306,7 @@ I'm going to need to overhaul certain aspects, namely:
 
     <div class="log-toolbar">
       <span class="mode-label">User:</span>
-      <button class="user-readout" id="user-readout" disabled>No user currently</button>
+      <button class="user-readout" id="user-readout" disabled>Pending implementation.</button>
     </div>
 
     <div class="log-toolbar">
