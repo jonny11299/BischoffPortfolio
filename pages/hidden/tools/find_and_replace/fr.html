@@ -65,7 +65,12 @@ Hotkey improvements:
 
 
 
+3/21/26:
+I'm going to need to overhaul certain aspects, namely:
 
+1. various rulesets (i.e. COPPA ruleset, GAM ruleset)
+2. various profiles (backend overhaul)
+3. add the conditional ruleset (if cell includes this, replace this)
 
 
 -->
@@ -292,7 +297,7 @@ Hotkey improvements:
     }
 
     textarea::placeholder {
-      color: var(--muted);
+      color: var(--accent);
     }
 
     textarea:focus {
@@ -1191,8 +1196,8 @@ Hotkey improvements:
         <br> <!-- I added this (Jonny), hehe. -->
         <button class="select-all-btn" id="selectAllBtn">select_all</button>
       </div>
-      <textarea id="pasteArea" placeholder="Click here, then paste your spreadsheet cells (Ctrl+V / Cmd+V)…"
-        spellcheck="false"></textarea>
+      <textarea id="pasteArea" class="paste-area"
+        placeholder="Click here, then paste your spreadsheet cells (Ctrl+V / Cmd+V)…" spellcheck="false"></textarea>
     </div>
 
     <div class="status" id="status">waiting for paste…</div>
@@ -1816,16 +1821,20 @@ Hotkey improvements:
 
         // console.log("Running hotkey.");
 
-        e.preventDefault();
         if (e.keyCode === 69) { // e
+          e.preventDefault();
           editSelectedRule();
         } else if (e.keyCode === 65) { // a
+          e.preventDefault();
           addNewRule();
         } else if (e.keyCode === 68) { // d
+          e.preventDefault();
           duplicateSelectedRule();
         } else if (e.keyCode === 83) { // s
+          e.preventDefault();
           saveCurrentRule();
         } else if (e.keyCode === 67) { // c
+          e.preventDefault();
           cancelCurrentRule();
         }
 
@@ -1917,6 +1926,10 @@ Hotkey improvements:
         const originalText = td.textContent;
         let text = originalText;
 
+
+        /*
+        This version is case-sensitive. We're going to ignore case.
+
         rules.forEach((rule, ri) => {
           if (!rule.pre) return;
           const parts = text.split(rule.pre);
@@ -1928,6 +1941,21 @@ Hotkey improvements:
             ruleChanges[ri].push({ rowIdx, colIdx, before: textBefore, after: text });
           }
         });
+        */
+        rules.forEach((rule, ri) => {
+          if (!rule.pre) return;
+          const escaped = rule.pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp(escaped, 'gi');
+          const parts = text.split(regex);
+          const hits = parts.length - 1;
+          if (hits > 0) {
+            const textBefore = text;
+            text = parts.join(rule.post);
+            ruleCounts[ri] += hits;
+            ruleChanges[ri].push({ rowIdx, colIdx, before: textBefore, after: text });
+          }
+        });
+
 
         if (text !== originalText) {
           td.textContent = text;
