@@ -50,6 +50,24 @@ then get this key upon launch, reference which cell is ours, and then route acco
 
 
 
+--------------------------
+
+3/20/26:
+1. Add the rules
+2. Submit blob
+3. Add the conditional
+
+
+Hotkey improvements:
+'a' -> add a new rule
+'e' -> edit selected rule
+'d' -> duplicate selected rule
+
+
+
+
+
+
 -->
 
 
@@ -791,6 +809,34 @@ then get this key upon launch, reference which cell is ours, and then route acco
       margin-bottom: 16px;
     }
 
+    .hotkey-toolbar {
+      margin-left: auto;
+    }
+
+    .hotkey-hint {
+      position: relative;
+      display: inline-block;
+      cursor: default;
+    }
+
+    .hotkey-tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      z-index: 100;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 8px 12px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .hotkey-hint:hover .hotkey-tooltip {
+      display: block;
+    }
+
     .rules-action-btn.btn-clear-log:hover {
       border-color: #f06060;
       color: #f06060;
@@ -1170,11 +1216,25 @@ then get this key upon launch, reference which cell is ours, and then route acco
 
   <div class="tab-panel" id="tab-rules">
 
+
+
     <div class="rules-toolbar">
       <span class="mode-label">rules</span>
       <button class="rules-action-btn btn-add" id="ruleAddBtn">+ add</button>
       <button class="rules-action-btn btn-edit" id="ruleEditBtn" disabled>edit</button>
       <button class="rules-action-btn btn-remove" id="ruleRemoveBtn" disabled>− remove</button>
+      <div class="hotkey-toolbar">
+        <div class="hotkey-hint">
+          <span class="mode-label">Hotkeys ▾</span>
+          <div class="hotkey-tooltip">
+            <div class="user-readout">a: add new rule</div>
+            <div class="user-readout">s: save current rule</div>
+            <div class="user-readout">e: edit selected rule</div>
+            <div class="user-readout">d: duplicate selected rule</div>
+            <div class="user-readout">c: cancel edits</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="rules-header">
@@ -1265,8 +1325,31 @@ then get this key upon launch, reference which cell is ours, and then route acco
 
   <script>
     // ── TABS ──────────────────────────────────────────────────────
+
+
+    /*
+
+    claude is using dataset attributes on the buttons, so we can use old-school methods like this to get the data:
+    btn.getAttribute("data-tab");      
+    btn.setAttribute("data-tab", "settings");
+    btn.removeAttribute("data-tab");
+
+    but the HTML attributes map dashes to camel case:
+    data-tab="hey" -> btn.dataset.tab = "hey" 
+    data-user-id -> btn.dataset.userId
+    data-my-long-name -> btn.dataset.myLongName
+
+
+    claude is using these attributes to store state.
+    */
+
+    let activeTab = 'table';
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        console.log("Switching tabs. switched to: " + btn.dataset.tab);
+        activeTab = btn.dataset.tab;
+
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
@@ -1274,6 +1357,7 @@ then get this key upon launch, reference which cell is ours, and then route acco
       });
     });
 
+    // used specifically for the paste handler
     let currentMode = 'html';
 
     const pasteArea = document.getElementById('pasteArea');
@@ -1615,16 +1699,19 @@ then get this key upon launch, reference which cell is ours, and then route acco
     }
 
     // ── ADD RULE ──────────────────────────────────────────────────
-    ruleAddBtn.addEventListener('click', () => {
+    function addNewRule() {
       exitDeleteMode(false);
       selectedRuleIdx = null;
       addPreTA.value = '';
       addPostTA.value = '';
       addRuleForm.classList.add('visible');
       addPreTA.focus();
+    }
+    ruleAddBtn.addEventListener('click', () => {
+      addNewRule();
     });
 
-    addRuleSave.addEventListener('click', () => {
+    function saveCurrentRule() {
       const pre = addPreTA.value;
       const post = addPostTA.value;
       if (!pre && !post) { addRuleForm.classList.remove('visible'); return; }
@@ -1632,14 +1719,43 @@ then get this key upon launch, reference which cell is ours, and then route acco
       addRuleForm.classList.remove('visible');
       selectedRuleIdx = rules.length - 1;
       renderRules();
+      saveLocalRulesetLS(); // this line makes our edits save to our local version, so that they can always be recalled.
+    }
+
+    // heyooo!! I wrote this fairly quickly, and it works. Woohoo!!
+    function duplicateSelectedRule() {
+      if (selectedRuleIdx === null) return;
+      const i = selectedRuleIdx;
+      const row = rulesList.querySelectorAll('.rule-row')[i];
+      if (!row || row.classList.contains('editing')) return;
+
+      const rule = rules[i];
+      console.log(rule);
+
+      addNewRule();
+      addPreTA.value = rule.pre;
+      addPostTA.value = rule.post;
+
+    }
+
+    addRuleSave.addEventListener('click', () => {
+      saveCurrentRule();
     });
 
-    addRuleCancel.addEventListener('click', () => {
+    function cancelCurrentRule() {
       addRuleForm.classList.remove('visible');
+
+    }
+    addRuleCancel.addEventListener('click', () => {
+      cancelCurrentRule();
     });
+
 
     // ── EDIT RULE ─────────────────────────────────────────────────
-    ruleEditBtn.addEventListener('click', () => {
+
+
+
+    function editSelectedRule() {
       if (selectedRuleIdx === null) return;
       const i = selectedRuleIdx;
       const row = rulesList.querySelectorAll('.rule-row')[i];
@@ -1647,6 +1763,8 @@ then get this key upon launch, reference which cell is ours, and then route acco
 
       const rule = rules[i];
       row.classList.add('editing');
+      // the class is eventually destroyed in renderRules, right after the .forEach(r => r.remove());
+
 
       row.innerHTML = `
       <div>
@@ -1674,6 +1792,44 @@ then get this key upon launch, reference which cell is ours, and then route acco
       });
 
       row.querySelector('#editPreTA').focus();
+    }
+
+    ruleEditBtn.addEventListener('click', () => editSelectedRule());
+
+    // key press listener:
+    // keycodes:
+    // e: 69
+    // a: 65
+    // d: 68
+    // s: 83
+    // c: 67
+
+    document.addEventListener('keydown', (e) => {
+      console.log("Keydown: " + e.key + ", " + e.keyCode);
+      if (activeTab === 'rules') {
+        const tag = document.activeElement.tagName;
+        // tagName is a property on any DOM element that returns its HTML tag as an uppercase string
+        // document.activeElement.tagName  // "TEXTAREA", "INPUT", "BUTTON", "DIV", etc.
+
+        // console.log(tag);
+        if (tag === 'TEXTAREA' || tag === 'INPUT') return; // user is typing, bail out
+
+        // console.log("Running hotkey.");
+
+        e.preventDefault();
+        if (e.keyCode === 69) { // e
+          editSelectedRule();
+        } else if (e.keyCode === 65) { // a
+          addNewRule();
+        } else if (e.keyCode === 68) { // d
+          duplicateSelectedRule();
+        } else if (e.keyCode === 83) { // s
+          saveCurrentRule();
+        } else if (e.keyCode === 67) { // c
+          cancelCurrentRule();
+        }
+
+      }
     });
 
     // ── REMOVE / DELETE MODE ──────────────────────────────────────
@@ -1698,6 +1854,7 @@ then get this key upon launch, reference which cell is ours, and then route acco
     deleteConfirmBtn.addEventListener('click', () => {
       rules = rules.filter((_, i) => !deleteCandidates.has(i));
       exitDeleteMode(true);
+      saveLocalRulesetLS();
     });
 
     deleteCancelBtn.addEventListener('click', () => exitDeleteMode(false));
@@ -1980,7 +2137,10 @@ then get this key upon launch, reference which cell is ours, and then route acco
 
 
     setTimeout(async () => {
-      rules = await getDefaultRuleset();
+      loadLocalRulesetLS();
+      if (rules.length === 0) {
+        rules = await getDefaultRuleset();
+      }
     }, 20);
 
 
@@ -1999,15 +2159,22 @@ then get this key upon launch, reference which cell is ours, and then route acco
 
 
     // save local ruleset
-    sur.addEventListener('click', () => {
+    function saveLocalRulesetLS() {
       localStorage.setItem(ls, JSON.stringify(rules));
       setStatus('Saved local ruleset.', 'var(--good)');
+    }
+    sur.addEventListener('click', () => {
+      saveLocalRulesetLS();
     });
     // load local ruleset
-    lur.addEventListener('click', () => {
+    function loadLocalRulesetLS() {
       const rsloaded = JSON.parse(localStorage.getItem(ls));
       rules = rsloaded;
+      if (!rules) rules = [];
       setStatus('Loaded local ruleset.', 'var(--good)');
+    }
+    lur.addEventListener('click', () => {
+      loadLocalRulesetLS();
     });
 
 
@@ -2023,6 +2190,8 @@ then get this key upon launch, reference which cell is ours, and then route acco
 
     ldr.addEventListener('click', async () => {
       rules = await getDefaultRuleset();
+
+      renderRules();
 
       // Going to choose not to overwrite local storage:
       // localStorage.setItem(ls, JSON.stringify(rules));
