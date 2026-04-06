@@ -628,10 +628,14 @@
             }
 
             function openLink(text) {
-                const a = document.createElement("a");
-                a.href = `${text}`;
-                a.target = "_blank";
-                a.click();
+                // pressing meta down will stop the link opening functionality
+                if (!metaDown) {
+                    const a = document.createElement("a");
+                    a.href = `${text}`;
+                    a.target = "_blank";
+                    a.click();
+
+                }
             }
 
             function putBodyPreview(text) {
@@ -698,6 +702,25 @@
 
 
             }
+
+
+            let metaDown = false;
+            document.addEventListener('keydown', (e) => {
+                // console.log("Keydown");
+                // console.log(e);
+                if (e.key === "Meta") {
+                    console.log("Meta down");
+                    metaDown = true;
+                }
+            });
+            document.addEventListener('keyup', (e) => {
+                // console.log("Keyup");
+                // console.log(e);
+                if (e.key === "Meta") {
+                    console.log("Meta up");
+                    metaDown = false;
+                }
+            });
 
             function updateColumns() {
                 items = getItemsLS();
