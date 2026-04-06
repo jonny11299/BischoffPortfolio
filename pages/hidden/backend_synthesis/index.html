@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+
+
+<head>
+    <title>Backend Synthesis</title>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/tools/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/tools/favicon/favicon-16x16.png">
+</head>
+
+<style>
+    .center {
+        padding: 10%;
+        margin: 10%;
+    }
+
+    .parent {
+        padding: 10px;
+        margin: 10px;
+    }
+
+
+    .p {
+        font-size: 18px;
+        padding: 5px;
+    }
+</style>
+
+
+<body>
+    <div class="parent">
+        <h1>Backend Synthesis</h1>
+        <p><a href="../dir.html">Go back</a></p>
+
+        <h4>See the file's comments to really learn.</h4>
+
+        <ul>
+        </ul>
+
+    </div>
+</body>
+
+
+
+<script>
+
+    /*
+
+
+    Brief:
+        - Many applications require data to be stored, retained, retrieved.
+            - various profiles, users
+        - Data storage and retrieval needs to be easy. It needs to be managed by something that you plug into, and it "just works."
+        - Too often, applications are tightly coupled to their data. So I keep designing things, then having to re-design them for different purposes.
+            - modular development is key.
+
+        - Furthermore, AI-assisted development makes frontend tweaks and designs extraordinarily fast.
+
+    Solution:
+        - A protocol that specifies designs in a way that is:
+            - Modular
+            - Accessable to AI-assisted dev
+            - Iterable
+            - Visible (its functionality can be explored quite clearly.)
+
+        - A backend architecture that reserves space, retrieves data.
+            - a plug-and-play backend solution.
+            - me-to-server: "here's what I need." Server-to-me: "Here's the space you have." Me: "Thanks, I'll remember this and use this storage now."
+
+        - A common language between me (programmer) and AI (fast builder) that prevents tangles from forming.
+            - We can co-design and implement.
+
+        - A visual design tool that allows me to build applications out on a canvas, much like Max MSP or PureData,
+            - showing where information is routed, and then just gives the spaces for me to fill in.
+            - it'd be sick if I could like... have the 2D canvas auto-create names for the different functions,
+            - then for the code itself to be render-able into a canvas / visual language.
+
+
+    I do want to design this proprietarily... it will be a good learning experience, and impressive.
+
+
+
+    
+
+    Visual design tool:
+
+        2-dimensional grid that lets us place "objects" on nodes
+        objects can be:
+            1. Functions
+            2. Data-syncs
+            3. User ops
+
+
+        Data can be:
+            1. sync
+            2. async
+            3. user-created
+
+            - the assumption is that it flows downstream, i.e. change to an input will cause another register to change
+
+        
+        Function protocol:
+            1. name
+            2. description
+            3. sync/async/user
+            4. data in
+            5. data out
+            
+        Data-sync protocol:
+            1. name
+            2. description
+            3. (all will be built synchronously with localStorage, and handshake with server upon a set of rules)
+            4. handshake protocol
+            5. registrationKey (not_set vs set)
+
+
+        Data protocol:
+        {
+            type: (sync/async/user),
+            (if async) speed: {low, avg, high},
+
+            trig: true/false (sets a flag if it should trigger the next function it connects to upon change, or not)
+        }
+
+
+
+    Backend:
+
+        3-dimensional
+        1st dimension: different tabs for different apps
+        2nd-3rd dimension: a 2d spreadsheet view of the data per app (google sheets style)
+
+
+        "Librarian" reserves space for different purposes
+        "Keychamp" maintains keys, verifies things, etc.
+
+
+        basic use case would be:
+            1. Storage space requested
+            2. Storage space approved
+            3. Requests for put/get automatically routed, managed by "data-syncs" above on the frontend, librarian on backend
+            4. Protocol for interaction is clearly specified for humans and AI, doesn't tangle
+
+
+
+    */
+
+
+
+
+
+</script>

@@ -84,6 +84,10 @@
         background-color: rgb(55, 169, 207);
     }
 
+    .iconListItem.toggled {
+        background-color: rgb(185, 250, 255);
+    }
+
     .nameItemClass {
         list-style: none;
         background-color: rgb(208, 255, 212);
@@ -98,6 +102,25 @@
     }
 
     .nameItemClass:active {
+        background-color: rgb(65, 150, 183);
+    }
+
+
+
+    .linkItemClass {
+        list-style: none;
+        background-color: rgb(208, 224, 255);
+        border: 5px solid rgb(0, 0, 0);
+        border-radius: 8px;
+        padding-left: 8px;
+        margin: 0;
+    }
+
+    .linkItemClass:hover {
+        background-color: rgb(65, 75, 183);
+    }
+
+    .linkItemClass:active {
         background-color: rgb(65, 150, 183);
     }
 
@@ -209,6 +232,7 @@
                     <li class="newEntryForm">
                         <ul id="editsIcons" class="iconList" style="padding: 0rem">
                             <li><button id="check" class="iconListItem" style="stroke-color: green"></button></li>
+                            <li><button id="isLink" class="iconListItem" style="stroke-color: green"></button></li>
                             <li><button id="x" class="iconListItem" style="stroke-color: red"></button></li>
                         </ul>
                     </li>
@@ -397,6 +421,8 @@
             }
 
 
+            let linkToggle = false;
+
             // runs on launch
             setTimeout(() => {
 
@@ -425,9 +451,11 @@
 
 
                 const check = document.getElementById('check');
+                const isLink = document.getElementById('isLink');
                 const x = document.getElementById('x');
                 appendSVG(check, 'icons/check.svg', "1.5rem");
                 appendSVG(x, 'icons/x.svg', "1.5rem");
+                appendSVG(isLink, 'icons/link.svg', "1.5rem");
 
                 // add button functionality:
 
@@ -436,6 +464,7 @@
                 edit.onclick = () => editSelectedEntry();
 
                 check.onclick = () => submitNewEntry();
+                isLink.onclick = () => toggleIsLink();
                 x.onclick = () => cancelNewEntry();
 
                 // set all the items to inactive
@@ -532,6 +561,17 @@
                 }
             }
 
+            function toggleIsLink() {
+                linkToggle = !linkToggle;
+
+                const isLink = document.getElementById('isLink');
+                if (linkToggle) {
+                    isLink.classList.add('toggled');
+                } else {
+                    isLink.classList.remove('toggled');
+                }
+            }
+
 
             function submitNewEntry() {
                 // if we're editing an existing entry, we need to delete the selected one
@@ -551,6 +591,7 @@
                 const newItem = {
                     name: nameEntry.value,
                     body: bodyEntry.value,
+                    isLink: linkToggle,
                     active: setNewItemToActive
                 };
                 console.log(newItem);
@@ -568,6 +609,7 @@
 
                 editingExistingEntry = false;
                 addingNewEntry = false;
+                linkToggle = false;
             }
 
             function cancelNewEntry() {
@@ -583,6 +625,13 @@
 
             function copyToClipboard(text) {
                 navigator.clipboard.writeText(text);
+            }
+
+            function openLink(text) {
+                const a = document.createElement("a");
+                a.href = `${text}`;
+                a.target = "_blank";
+                a.click();
             }
 
             function putBodyPreview(text) {
@@ -666,15 +715,26 @@
                     lin.appendChild(p);
                     namecol.appendChild(lin);
                     lin.className = 'nameItemClass';
+                    if (item.isLink) lin.className = 'linkItemClass';
                     lin.addEventListener('click', () => {
                         // console.log("clicked on name");
 
-                        copyToClipboard(item.body);
-                        replaceConsole(`copied: ${item.name}`);
-                        putBodyPreview(item.body);
-                        setActive(p);
-                        // const ac = getActiveElement();
-                        // console.log(ac);
+                        if (!item.isLink) {
+                            copyToClipboard(item.body);
+                            replaceConsole(`copied: ${item.name}`);
+                            putBodyPreview(item.body);
+                            setActive(p);
+                            // const ac = getActiveElement();
+                            // console.log(ac);
+
+                        } else {
+                            // add link functionality instead of copied
+                            openLink(item.body);
+                            replaceConsole(`opened link: ${item.name}`);
+                            putBodyPreview(item.body);
+                            setActive(p);
+
+                        }
                     });
 
                     if (item.active) setActive(p);
