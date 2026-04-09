@@ -366,7 +366,9 @@
             const lsname = 'copypast_bischoff_ls';
 
             function getItemsLS() {
-                const itemsList = JSON.parse(localStorage.getItem(lsname));
+                const itemsList = JSON.parse(localStorage.getItem(lsname)).sort((a, b) => a.name.localeCompare(b.name));
+
+                // items = items.sort((a, b) => a.name.localeCompare(b.name));
                 // console.log(itemsList);
                 /* itemsList.sort((a, b) => {
                     if (a.name <= b.name) return -1;
@@ -724,6 +726,7 @@
 
             function updateColumns() {
                 items = getItemsLS();
+                // console.log(items);
 
                 const namecol = document.getElementById('namecol');
                 namecol.innerHTML = '';
