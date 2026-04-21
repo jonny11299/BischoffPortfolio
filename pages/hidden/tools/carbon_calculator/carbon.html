@@ -1,0 +1,163 @@
+<head>
+    <title>LLM Carbon Calculator</title>
+</head>
+
+
+
+<style>
+    :root {
+        --bg: #1d2b1a;
+        --text: white;
+        --a: #aaaaff;
+        --aclicked: #aaffff;
+        --h: rgb(82, 177, 82);
+        --strong: rgb(163, 163, 255);
+
+        font-size: 120%;
+    }
+
+    body {
+        margin: 1rem;
+        padding: 1rem;
+        background-color: var(--bg);
+        color: var(--text);
+
+    }
+
+    a {
+        color: var(--a);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: var(--h);
+    }
+
+    strong {
+        color: var(--strong);
+    }
+
+    a:visited {
+        color: var(--aclicked);
+    }
+
+    .mainwin {
+        align-items: center;
+    }
+
+    input {
+        min-width: 8rem;
+    }
+</style>
+
+<body>
+    <div class="mainwin">
+
+        <!-- Current window: -->
+        <h1>LLM Carbon Calculator</h1>
+
+        <!-- Previous window: -->
+        <p><a href="../tool_index.html">All Tools</a></p>
+
+        <div></div>
+
+
+        <h3>Enter your Claude Sonnet token usage here:</h3>
+        <input id="tokens" placeholder="num tokens used">
+        <br>
+        <p>(eventually, pick lower bound, default, upper bound)</p>
+        <button id="calc">Calculate</button>
+        <br>
+
+        <div class="results">
+            <h3>Results:</h3>
+            <div class="result"><span><strong>CO2 (kg): </strong></span><span id="co2">placeholder</span><span>
+                    kg</span></div>
+            <div class="result"><span><strong>Miles driven (average car): </strong></span><span
+                    id="miles">placeholder</span><span> miles</span></div>
+            <div class="result"><span><strong>Smartphones charged: </strong></span><span
+                    id="smartphones">placeholder</span><span> smartphones</span></div>
+            <div class="result"><span><strong>Sequestered by [n] trees in a year:
+                    </strong></span><span id="trees">placeholder</span><span> trees</span></div>
+        </div>
+
+        <script>
+            const tokens = document.getElementById('tokens');
+            const calc = document.getElementById('calc');
+            const co2 = document.getElementById('co2');
+            const miles = document.getElementById('miles');
+            const smartphones = document.getElementById('smartphones');
+            const trees = document.getElementById('trees');
+
+            calc.addEventListener('click', () => {
+                console.log(tokens.value);
+
+                calculate();
+            });
+
+
+
+            function parseInput(value) {
+                const cleaned = String(value).trim().replace(/,/g, "");
+                const num = Number(cleaned);
+                return isNaN(num) ? null : num;
+            }
+
+            function calculate() {
+                const t = parseInput(tokens.value.trim());
+
+                const lowerbound = 0.0002;
+                const middlebound = 0.0004;
+                const upperbound = 0.001;
+
+                // dropdown: switch this to lowerbound, upperbound if the user selects different dropdown
+                // dropdown: add an event listener so if it changes, automatically calc again
+                const co2amount = t / 1000 * middlebound;
+                // 1 km = 0.621371 miles
+                const milesamount = co2amount / 0.12 /*km*/ * 0.621371;
+                const smartphonesamount = co2amount / 0.011;
+                const treesamount = co2amount / 21;
+
+                co2.textContent = (co2amount).toFixed(2);
+                miles.textContent = (milesamount).toFixed(2);
+                smartphones.textContent = (smartphonesamount).toFixed(2);
+                trees.textContent = (treesamount).toFixed(2);
+            }
+
+
+        </script>
+
+
+        <br> <br> <br> <br>
+        <p><small>
+                This website uses the following calculations derived from <a
+                    href="https://marketplace.visualstudio.com/items?itemName=claude-carbon-tracker-dev.claude-carbon-tracker"
+                    target="_blank">this
+                    website</a>:
+            </small></p>
+        <pre>
+        <small>
+Carbon Calculation:
+CO₂ (kg) = (total_tokens / 1000) × emission_factor
+
+Emission Factor:
+Lower bound: 0.0002 kg CO₂/1K tokens (optimal conditions: renewable energy, efficient hardware)
+Default: 0.0004 kg CO₂/1K tokens (conservative average)
+Upper bound: 0.001 kg CO₂/1K tokens (worst case: coal-powered grid, inefficient hardware)
+
+Environmental Impact Equivalents
+The extension converts CO₂ emissions to relatable comparisons:
+Trees needed for 1 year: CO₂ (kg) / 21 kg 
+Kilometers driven: CO₂ (kg) / 0.12 kg/km (average car) 
+Smartphones charged: CO₂ (kg) / 0.011 kg 
+60W light bulb hours: CO₂ (kg) / 0.0006 kg/hour 
+        </small>
+    </pre>
+
+
+    </div>
+</body>
