@@ -517,7 +517,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
     /* column headers */
     .rules-header {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
       padding: 0 12px 8px 12px;
       border-bottom: 1px solid var(--border);
@@ -541,7 +541,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
 
     .rule-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
       padding: 10px 12px;
       border: 1px solid transparent;
@@ -584,6 +584,162 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
 
     .rule-cell.post {
       color: var(--accent);
+    }
+
+    .rule-cell.cond {
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .condition-add-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border: 1px dashed var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      align-self: flex-start;
+      transition: all 0.15s;
+    }
+
+    .condition-add-btn:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    .condition-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      word-break: break-all;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .condition-value:hover {
+      color: var(--text);
+    }
+
+    .condition-clear-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      padding: 1px 5px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      align-self: flex-start;
+      transition: all 0.15s;
+    }
+
+    .condition-clear-btn:hover {
+      color: var(--bad);
+    }
+
+    .condition-mode-not {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--bad);
+      margin-right: 3px;
+    }
+
+    .condition-editor {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .condition-editor-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .condition-editor-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .condition-toggle-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border: 1px solid var(--accent2);
+      background: transparent;
+      color: var(--accent2);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .condition-toggle-btn:hover {
+      background: #ffffff0e;
+    }
+
+    .condition-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--accent2);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      padding: 4px 6px;
+      outline: none;
+      line-height: 1.5;
+    }
+
+    .condition-input-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .condition-save-btn,
+    .condition-cancel-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .condition-save-btn {
+      color: var(--accent2);
+      border-color: var(--accent2);
+    }
+
+    .condition-save-btn:hover {
+      background: #60c8f018;
+    }
+
+    .condition-cancel-btn {
+      color: var(--muted);
+    }
+
+    .condition-cancel-btn:hover {
+      color: var(--text);
+      border-color: var(--text);
+    }
+
+    .ldr-cond {
+      color: var(--muted);
     }
 
     /* inline edit textareas inside a rule row */
@@ -709,7 +865,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
     /* add-rule form */
     .add-rule-form {
       display: none;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
       margin-top: 12px;
       padding: 14px;
@@ -930,7 +1086,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
 
     .log-detail-header {
       display: grid;
-      grid-template-columns: 1fr 1fr 60px;
+      grid-template-columns: 1fr 1fr 1fr 60px;
       gap: 12px;
       padding: 8px 14px;
       border-bottom: 1px solid var(--border);
@@ -946,7 +1102,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
 
     .log-detail-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 60px;
+      grid-template-columns: 1fr 1fr 1fr 60px;
       gap: 12px;
       padding: 8px 14px;
       border-bottom: 1px solid var(--border);
@@ -1253,6 +1409,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
     <div class="rules-header">
       <span class="rules-col-label">find (pre)</span>
       <span class="rules-col-label">replace (post)</span>
+      <span class="rules-col-label" style="color:var(--muted)">condition</span>
     </div>
 
     <div class="rules-list" id="rulesList">
@@ -1267,6 +1424,13 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
       <div>
         <label>replace (post)</label>
         <textarea id="addPostTA" placeholder="replacement text…" spellcheck="false"></textarea>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <button class="condition-toggle-btn" id="addCondToggle">HAS</button>
+          <label style="color:var(--muted);margin-bottom:0">condition (optional)</label>
+        </div>
+        <textarea id="addCondTA" placeholder="If string contains…" spellcheck="false"></textarea>
       </div>
       <div class="add-rule-form-actions">
         <button class="add-rule-save" id="addRuleSave">save</button>
@@ -1657,6 +1821,24 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
     const addRuleForm = document.getElementById('addRuleForm');
     const addPreTA = document.getElementById('addPreTA');
     const addPostTA = document.getElementById('addPostTA');
+    const addCondTA = document.getElementById('addCondTA');
+    const addCondToggle = document.getElementById('addCondToggle');
+    let addCondInverse = false;
+
+    addCondToggle.addEventListener('click', () => {
+      addCondInverse = !addCondInverse;
+      addCondToggle.textContent = addCondInverse ? 'NOT' : 'HAS';
+      addCondToggle.style.color = addCondInverse ? 'var(--bad)' : 'var(--accent2)';
+      addCondToggle.style.borderColor = addCondInverse ? 'var(--bad)' : 'var(--accent2)';
+    });
+
+    function resetAddCondToggle() {
+      addCondInverse = false;
+      addCondToggle.textContent = 'HAS';
+      addCondToggle.style.color = 'var(--accent2)';
+      addCondToggle.style.borderColor = 'var(--accent2)';
+    }
+
     const addRuleSave = document.getElementById('addRuleSave');
     const addRuleCancel = document.getElementById('addRuleCancel');
     const deleteBar = document.getElementById('deleteBar');
@@ -1678,10 +1860,44 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
         if (deleteMode && deleteCandidates.has(i)) row.classList.add('delete-candidate');
         else if (!deleteMode && selectedRuleIdx === i) row.classList.add('selected');
 
+        const condInner = rule.condition
+          ? `${rule.conditionInverse ? '<span class="condition-mode-not">NOT</span>' : ''}<span class="condition-value">${escHtml(rule.condition)}</span><button class="condition-clear-btn" title="Remove condition">×</button>`
+          : `<button class="condition-add-btn" title="Add condition">+</button>`;
+
         row.innerHTML = `
         <div class="rule-cell pre">${escHtml(rule.pre)}</div>
         <div class="rule-cell post">${escHtml(rule.post)}</div>
+        <div class="rule-cell cond">${condInner}</div>
       `;
+
+        const condCell = row.querySelector('.rule-cell.cond');
+
+        const addBtn = condCell.querySelector('.condition-add-btn');
+        if (addBtn) {
+          addBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openConditionEditor(i, condCell, '', false);
+          });
+        }
+
+        const clearBtn = condCell.querySelector('.condition-clear-btn');
+        if (clearBtn) {
+          clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            delete rules[i].condition;
+            delete rules[i].conditionInverse;
+            saveLocalRulesetLS();
+            renderRules();
+          });
+        }
+
+        const condVal = condCell.querySelector('.condition-value');
+        if (condVal) {
+          condVal.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openConditionEditor(i, condCell, rules[i].condition || '', rules[i].conditionInverse);
+          });
+        }
 
         row.addEventListener('click', () => onRuleRowClick(i, row));
         rulesList.appendChild(row);
@@ -1711,12 +1927,81 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
       renderRules();
     }
 
+    // ── CONDITION EDITOR ─────────────────────────────────────────
+    function openConditionEditor(i, cell, initialValue, initialInverse) {
+      let isInverse = !!initialInverse;
+
+      function labelText() { return isInverse ? 'If string does not contain' : 'If string contains'; }
+      function btnColor() { return isInverse ? 'var(--bad)' : 'var(--accent2)'; }
+      function btnLabel() { return isInverse ? 'NOT' : 'HAS'; }
+
+      cell.innerHTML = `
+        <div class="condition-editor">
+          <div class="condition-editor-top">
+            <button class="condition-toggle-btn"></button>
+            <span class="condition-editor-label"></span>
+          </div>
+          <input class="condition-input" value="${escHtml(initialValue)}" placeholder="…" spellcheck="false">
+          <div class="condition-input-actions">
+            <button class="condition-save-btn">save</button>
+            <button class="condition-cancel-btn">cancel</button>
+          </div>
+        </div>`;
+
+      const toggleBtn = cell.querySelector('.condition-toggle-btn');
+      const label = cell.querySelector('.condition-editor-label');
+      const input = cell.querySelector('.condition-input');
+      const saveBtn = cell.querySelector('.condition-save-btn');
+      const cancelBtn = cell.querySelector('.condition-cancel-btn');
+
+      function updateToggleUI() {
+        toggleBtn.textContent = btnLabel();
+        toggleBtn.style.color = btnColor();
+        toggleBtn.style.borderColor = btnColor();
+        label.textContent = labelText();
+      }
+      updateToggleUI();
+
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isInverse = !isInverse;
+        updateToggleUI();
+      });
+
+      function saveCondition() {
+        const val = input.value.trim();
+        if (val) {
+          rules[i].condition = val;
+          if (isInverse) rules[i].conditionInverse = true;
+          else delete rules[i].conditionInverse;
+        } else {
+          delete rules[i].condition;
+          delete rules[i].conditionInverse;
+        }
+        saveLocalRulesetLS();
+        renderRules();
+      }
+
+      saveBtn.addEventListener('click', (e) => { e.stopPropagation(); saveCondition(); });
+      cancelBtn.addEventListener('click', (e) => { e.stopPropagation(); renderRules(); });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); saveCondition(); }
+        if (e.key === 'Escape') { e.stopPropagation(); renderRules(); }
+      });
+      input.addEventListener('click', (e) => e.stopPropagation());
+    }
+
     // ── ADD RULE ──────────────────────────────────────────────────
     function addNewRule() {
       exitDeleteMode(false);
       selectedRuleIdx = null;
       addPreTA.value = '';
       addPostTA.value = '';
+      addCondTA.value = '';
+      resetAddCondToggle();
       addRuleForm.classList.add('visible');
       addPreTA.focus();
     }
@@ -1727,12 +2012,18 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
     function saveCurrentRule() {
       const pre = addPreTA.value;
       const post = addPostTA.value;
+      const condition = addCondTA.value.trim();
       if (!pre && !post) { addRuleForm.classList.remove('visible'); return; }
-      rules.push({ pre, post });
+      const ruleObj = { pre, post };
+      if (condition) {
+        ruleObj.condition = condition;
+        if (addCondInverse) ruleObj.conditionInverse = true;
+      }
+      rules.push(ruleObj);
       addRuleForm.classList.remove('visible');
       selectedRuleIdx = rules.length - 1;
       renderRules();
-      saveLocalRulesetLS(); // this line makes our edits save to our local version, so that they can always be recalled.
+      saveLocalRulesetLS();
     }
 
     // heyooo!! I wrote this fairly quickly, and it works. Woohoo!!
@@ -1748,6 +2039,11 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
       addNewRule();
       addPreTA.value = rule.pre;
       addPostTA.value = rule.post;
+      addCondTA.value = rule.condition || '';
+      addCondInverse = !!rule.conditionInverse;
+      addCondToggle.textContent = addCondInverse ? 'NOT' : 'HAS';
+      addCondToggle.style.color = addCondInverse ? 'var(--bad)' : 'var(--accent2)';
+      addCondToggle.style.borderColor = addCondInverse ? 'var(--bad)' : 'var(--accent2)';
 
     }
 
@@ -1786,16 +2082,49 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
       <div>
         <textarea class="rule-edit-area" id="editPostTA" spellcheck="false">${escHtml(rule.post)}</textarea>
       </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <button class="condition-toggle-btn edit-cond-toggle"></button>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">condition</span>
+        </div>
+        <textarea class="rule-edit-area" id="editCondTA" spellcheck="false" placeholder="condition (optional)…">${escHtml(rule.condition || '')}</textarea>
+      </div>
       <div class="rule-edit-actions">
         <button class="rule-edit-save">save</button>
         <button class="rule-edit-cancel">cancel</button>
       </div>
     `;
 
+      const editCondToggle = row.querySelector('.edit-cond-toggle');
+      let editCondInverse = !!rule.conditionInverse;
+
+      function updateEditCondToggle() {
+        editCondToggle.textContent = editCondInverse ? 'NOT' : 'HAS';
+        editCondToggle.style.color = editCondInverse ? 'var(--bad)' : 'var(--accent2)';
+        editCondToggle.style.borderColor = editCondInverse ? 'var(--bad)' : 'var(--accent2)';
+      }
+      updateEditCondToggle();
+
+      editCondToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        editCondInverse = !editCondInverse;
+        updateEditCondToggle();
+      });
+
       row.querySelector('.rule-edit-save').addEventListener('click', (e) => {
         e.stopPropagation();
         rules[i].pre = row.querySelector('#editPreTA').value;
         rules[i].post = row.querySelector('#editPostTA').value;
+        const cond = row.querySelector('#editCondTA').value.trim();
+        if (cond) {
+          rules[i].condition = cond;
+          if (editCondInverse) rules[i].conditionInverse = true;
+          else delete rules[i].conditionInverse;
+        } else {
+          delete rules[i].condition;
+          delete rules[i].conditionInverse;
+        }
+        saveLocalRulesetLS();
         renderRules();
       });
 
@@ -1952,6 +2281,10 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
         */
         rules.forEach((rule, ri) => {
           if (!rule.pre) return;
+          if (rule.condition) {
+            const contains = text.toLowerCase().includes(rule.condition.toLowerCase());
+            if (rule.conditionInverse ? contains : !contains) return;
+          }
           const escaped = rule.pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           const regex = new RegExp(escaped, 'gi');
           const parts = text.split(regex);
@@ -1983,6 +2316,8 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
         rulesSnap: rules.map((r, i) => ({
           pre: r.pre,
           post: r.post,
+          condition: r.condition || '',
+          conditionInverse: !!r.conditionInverse,
           count: ruleCounts[i],
           cellsAffected: ruleChanges[i]
         })),
@@ -2089,6 +2424,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
             <div class="log-detail-row">
               <span class="ldr-pre">${escHtml(r.pre)}</span>
               <span class="ldr-post">${escHtml(r.post)}</span>
+              <span class="ldr-cond">${r.condition ? (r.conditionInverse ? '<span style="color:var(--bad);font-size:0.65rem;font-weight:600">NOT </span>' : '') + escHtml(r.condition) : '—'}</span>
               <span class="ldr-n${isClickable ? ' clickable' : ''}"
                     data-entry="${ei}" data-rule="${ri}"
                     title="${isClickable ? 'Click to view diff on Table tab' : ''}">×${r.count}</span>
@@ -2106,6 +2442,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
           <div class="log-detail-header">
             <span>find (pre)</span>
             <span>replace (post)</span>
+            <span style="color:var(--muted)">condition</span>
             <span style="text-align:right">hits</span>
           </div>
           ${detailRows}
@@ -2188,7 +2525,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
     const sdr = document.getElementById('saveDefaultRuleset');
     const ldr = document.getElementById('loadDefaultRuleset');
 
-    const blob_default = 'fr_ruleset_default';
+    const blob_default = 'fr_ruleset_default_conditional';
     const blob_user = 'fr_ruleset_user';
 
     const ls = 'fr_ruleset_localstorage';
