@@ -36,6 +36,11 @@ const blob_keys = [
         column: 'b'
     },
     {
+        name: 'fr_ruleset_default_conditional',
+        row: 3,
+        column: 'b'
+    },
+    {
         name: 'fr_ruleset_user',
         row: 2,
         column: 'b'
