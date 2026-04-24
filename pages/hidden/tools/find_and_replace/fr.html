@@ -517,7 +517,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
     /* column headers */
     .rules-header {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: auto 1fr 1fr 1fr;
       gap: 12px;
       padding: 0 12px 8px 12px;
       border-bottom: 1px solid var(--border);
@@ -541,7 +541,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
 
     .rule-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: auto 1fr 1fr 1fr;
       gap: 12px;
       padding: 10px 12px;
       border: 1px solid transparent;
@@ -576,6 +576,38 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
       word-break: break-all;
       line-height: 1.5;
       min-height: 1.2em;
+    }
+
+    /* reorder buttons */
+    .rule-order-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      align-self: center;
+      padding-right: 6px;
+    }
+
+    .rule-order-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      line-height: 1;
+      padding: 3px 5px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.1s;
+      user-select: none;
+    }
+
+    .rule-order-btn:hover:not(:disabled) {
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .rule-order-btn:disabled {
+      opacity: 0.15;
+      cursor: default;
     }
 
     .rule-cell.pre {
@@ -1407,6 +1439,7 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
     </div>
 
     <div class="rules-header">
+      <span class="rules-col-label"></span>
       <span class="rules-col-label">find (pre)</span>
       <span class="rules-col-label">replace (post)</span>
       <span class="rules-col-label" style="color:var(--muted)">condition</span>
@@ -1865,6 +1898,10 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
           : `<button class="condition-add-btn" title="Add condition">+</button>`;
 
         row.innerHTML = `
+        <div class="rule-order-btns">
+          <button class="rule-order-btn btn-up" ${i === 0 ? 'disabled' : ''} title="Move up">↑</button>
+          <button class="rule-order-btn btn-dn" ${i === rules.length - 1 ? 'disabled' : ''} title="Move down">↓</button>
+        </div>
         <div class="rule-cell pre">${escHtml(rule.pre)}</div>
         <div class="rule-cell post">${escHtml(rule.post)}</div>
         <div class="rule-cell cond">${condInner}</div>
@@ -1898,6 +1935,26 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
             openConditionEditor(i, condCell, rules[i].condition || '', rules[i].conditionInverse);
           });
         }
+
+        row.querySelector('.btn-up').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (i === 0) return;
+          [rules[i - 1], rules[i]] = [rules[i], rules[i - 1]];
+          if (selectedRuleIdx === i) selectedRuleIdx = i - 1;
+          else if (selectedRuleIdx === i - 1) selectedRuleIdx = i;
+          saveLocalRulesetLS();
+          renderRules();
+        });
+
+        row.querySelector('.btn-dn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (i === rules.length - 1) return;
+          [rules[i], rules[i + 1]] = [rules[i + 1], rules[i]];
+          if (selectedRuleIdx === i) selectedRuleIdx = i + 1;
+          else if (selectedRuleIdx === i + 1) selectedRuleIdx = i;
+          saveLocalRulesetLS();
+          renderRules();
+        });
 
         row.addEventListener('click', () => onRuleRowClick(i, row));
         rulesList.appendChild(row);
