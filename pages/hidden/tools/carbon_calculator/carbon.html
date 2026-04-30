@@ -66,23 +66,37 @@
         <div></div>
 
 
+        <br><br>
         <h3>Enter your Claude Sonnet token usage here:</h3>
-        <input id="tokens" placeholder="num tokens used">
+        Tokens:&emsp;&emsp;&emsp;&emsp;&emsp;<input id="tokens" placeholder="num tokens used"><small>
+            &emsp;&emsp;&emsp;&emsp;tokens</small>
         <br>
-        <p>(eventually, pick lower bound, default, upper bound)</p>
+        <br>
+        <span>
+            Emission Factor:&emsp;
+            <select name="emission factor" id="emfactorselector">
+                <option value="lower bound">Lower Bound</option>
+                <option value="defaultVSCode">Default (According to VSCode)</option>
+                <option value="default">Default (According to CNaught)</option>
+                <option value="upper bound">Upper Bound</option>
+            </select>
+            &emsp;&ensp;<small id="empreview">0.00055 </small><small>kg CO₂/1,000 tokens</small>
+        </span>
+        <br><br>
         <button id="calc">Calculate</button>
         <br>
 
+        <br><br>
         <div class="results">
             <h3>Results:</h3>
-            <div class="result"><span><strong>CO2 (kg): </strong></span><span id="co2">placeholder</span><span>
+            <div class="result"><span><strong>CO2 (kg): </strong></span><span id="co2">0</span><span>
                     kg</span></div>
             <div class="result"><span><strong>Miles driven (average car): </strong></span><span
-                    id="miles">placeholder</span><span> miles</span></div>
-            <div class="result"><span><strong>Smartphones charged: </strong></span><span
-                    id="smartphones">placeholder</span><span> smartphones</span></div>
+                    id="miles">0</span><span> miles</span></div>
+            <div class="result"><span><strong>Smartphones charged: </strong></span><span id="smartphones">0</span><span>
+                    smartphones</span></div>
             <div class="result"><span><strong>Sequestered by [n] trees in a year:
-                    </strong></span><span id="trees">placeholder</span><span> trees</span></div>
+                    </strong></span><span id="trees">0</span><span> trees</span></div>
         </div>
 
         <script>
@@ -92,11 +106,44 @@
             const miles = document.getElementById('miles');
             const smartphones = document.getElementById('smartphones');
             const trees = document.getElementById('trees');
+            const selector = document.getElementById('emfactorselector');
+
+            let emfact = 0.00055;
+            function getEmFact() {
+                const s = selector.value;
+                emfact = 0.00055;
+                if (s === "lower bound") {
+                    emfact = 0.0002;
+                } else if (s === "defaultVSCode") {
+                    emfact = 0.0004;
+                } else if (s === "default") {
+                    emfact = 0.00055;
+                } else if (s === "upper bound") {
+                    emfact = 0.001;
+                }
+
+                return emfact;
+            }
 
             calc.addEventListener('click', () => {
                 console.log(tokens.value);
 
                 calculate();
+            });
+
+            /* 
+
+                <option value="lower bound">Lower Bound</option>
+                <option value="defaultVSCode">Default (According to VSCode)</option>
+                <option value="default">Default (According to CNaught)</option>
+                <option value="upper bound">Upper Bound</option>
+            */
+            selector.addEventListener('change', () => {
+                console.log("Changed selector");
+                console.log(selector.value);
+
+                let emf = getEmFact();
+                document.getElementById('empreview').textContent = `${emf} `;
             });
 
 
@@ -110,13 +157,13 @@
             function calculate() {
                 const t = parseInput(tokens.value.trim());
 
-                const lowerbound = 0.0002;
-                const middlebound = 0.0004;
-                const upperbound = 0.001;
+                // const lowerbound = 0.0002;
+                // const middlebound = 0.0004;
+                // const upperbound = 0.001;
 
                 // dropdown: switch this to lowerbound, upperbound if the user selects different dropdown
                 // dropdown: add an event listener so if it changes, automatically calc again
-                const co2amount = t / 1000 * middlebound;
+                const co2amount = t / 1000 * getEmFact();
                 // 1 km = 0.621371 miles
                 const milesamount = co2amount / 0.12 /*km*/ * 0.621371;
                 const smartphonesamount = co2amount / 0.011;
@@ -134,21 +181,25 @@
 
         <br> <br> <br> <br>
         <p><small>
-                This website uses the following calculations derived from <a
+                This website uses calculations derived from <a
                     href="https://marketplace.visualstudio.com/items?itemName=claude-carbon-tracker-dev.claude-carbon-tracker"
                     target="_blank">this
-                    website</a>:
+                    website</a>, as well as <a
+                    href="https://github.com/CNaught-Inc/claude-code-plugins/tree/main/plugins/carbonlog"
+                    target="_blank">CNaught</a>
             </small></p>
         <pre>
         <small>
 Carbon Calculation:
 CO₂ (kg) = (total_tokens / 1000) × emission_factor
 
-Emission Factor:
+Emission Factor (according to VSCode Plugin): 
 Lower bound: 0.0002 kg CO₂/1K tokens (optimal conditions: renewable energy, efficient hardware)
 Default: 0.0004 kg CO₂/1K tokens (conservative average)
 Upper bound: 0.001 kg CO₂/1K tokens (worst case: coal-powered grid, inefficient hardware)
-Based on CNaught: (pending) (https://www.cnaught.com/blog/how-to-actually-measure-the-carbon-footprint-of-ai-code)
+
+Emission factor (back-calculated from 3 weeks' use of CNaught):
+0.00055 kg CO₂/1K tokens (average)
 
 Environmental Impact Equivalents
 The extension converts CO₂ emissions to relatable comparisons:
