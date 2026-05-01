@@ -272,6 +272,33 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
       background: #c8f06015;
     }
 
+    .zoom-btns {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .zoom-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .zoom-btn:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
     .paste-zone label span.mode-indicator {
       margin-left: 8px;
       padding: 2px 8px;
@@ -1391,6 +1418,10 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
         </label>
         <br> <!-- I added this (Jonny), hehe. -->
         <button class="select-all-btn" id="selectAllBtn">select_all</button>
+        <div class="zoom-btns">
+          <button class="zoom-btn" id="zoomOutBtn">−</button>
+          <button class="zoom-btn" id="zoomInBtn">+</button>
+        </div>
       </div>
       <textarea id="pasteArea" class="paste-area"
         placeholder="Click here, then paste your spreadsheet cells (Ctrl+V / Cmd+V)…" spellcheck="false"></textarea>
@@ -1584,6 +1615,17 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
       pasteArea.focus();
       selectAllBtn.classList.add('flash');
       setTimeout(() => selectAllBtn.classList.remove('flash'), 300);
+    });
+
+    // ── TABLE ZOOM ────────────────────────────────────────────────
+    let tableZoom = 1.0;
+    document.getElementById('zoomInBtn').addEventListener('click', () => {
+      tableZoom = Math.min(tableZoom + 0.1, 3.0);
+      tableWrap.style.zoom = tableZoom;
+    });
+    document.getElementById('zoomOutBtn').addEventListener('click', () => {
+      tableZoom = Math.max(tableZoom - 0.1, 0.3);
+      tableWrap.style.zoom = tableZoom;
     });
     modeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
