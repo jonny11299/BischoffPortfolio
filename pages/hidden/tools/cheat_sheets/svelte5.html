@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Svelte 5 State Management — A Cheat-Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=losveka:opsz,wght,SOFT@9..144,300..900,0..100&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Iosevka+Charon:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+  <style>
+    :root {
+      --paper: #f6f1e6;
+      --paper-deep: #ede5d2;
+      --ink: #1a1410;
+      --ink-soft: #3d342a;
+      --muted: #8a7e6e;
+      --rule: #d8cdb6;
+      --svelte: #ff3e00;
+      --svelte-deep: #c8310a;
+      --aubergine: #4a1a2c;
+      --code-bg: #1c1611;
+      --code-bg-soft: #251e16;
+      --code-text: #f6f1e6;
+      --tag-old: #6b6259;
+      --tag-new: var(--svelte);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.65;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        radial-gradient(at 20% 10%, rgba(255, 62, 0, 0.04) 0px, transparent 50%),
+        radial-gradient(at 80% 80%, rgba(74, 26, 44, 0.04) 0px, transparent 50%);
+    }
+
+    .page {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 80px 56px 120px;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 48px;
+      margin-bottom: 64px;
+      position: relative;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--svelte);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--svelte);
+    }
+
+    h1 {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: clamp(44px, 7vw, 76px);
+      line-height: 0.98;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 28px;
+      font-variation-settings: "opsz" 144, "SOFT" 30;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--svelte);
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+    }
+
+    .lede {
+      font-family: 'losveka', serif;
+      font-weight: 300;
+      font-size: 21px;
+      line-height: 1.5;
+      color: var(--ink-soft);
+      max-width: 640px;
+      font-variation-settings: "opsz" 36, "SOFT" 50;
+    }
+
+    .meta {
+      margin-top: 32px;
+      display: flex;
+      gap: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .meta span strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* ---------- TOC ---------- */
+    .toc {
+      background: var(--paper-deep);
+      border: 1px solid var(--rule);
+      padding: 28px 32px;
+      margin-bottom: 80px;
+      border-radius: 2px;
+    }
+
+    .toc-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .toc ol {
+      list-style: none;
+      counter-reset: toc;
+      columns: 2;
+      column-gap: 48px;
+    }
+
+    .toc li {
+      counter-increment: toc;
+      padding: 6px 0;
+      border-bottom: 1px dotted var(--rule);
+      break-inside: avoid;
+    }
+
+    .toc li:last-child {
+      border-bottom: none;
+    }
+
+    .toc a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 14.5px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      transition: color 0.15s;
+    }
+
+    .toc a::before {
+      content: counter(toc, decimal-leading-zero);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--svelte);
+      font-weight: 500;
+    }
+
+    .toc a:hover {
+      color: var(--svelte);
+    }
+
+    /* ---------- Sections ---------- */
+    section {
+      margin-bottom: 80px;
+      scroll-margin-top: 32px;
+    }
+
+    h2 {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: 36px;
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      margin-bottom: 8px;
+      font-variation-settings: "opsz" 72, "SOFT" 30;
+    }
+
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--svelte);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .section-intro {
+      font-family: 'losveka', serif;
+      font-weight: 300;
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin: 24px 0 32px;
+      max-width: 680px;
+      font-variation-settings: "opsz" 24, "SOFT" 50;
+    }
+
+    /* ---------- Code blocks ---------- */
+    .code-pair {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin: 24px 0;
+    }
+
+    @media (min-width: 880px) {
+      .code-pair.side-by-side {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--code-bg-soft);
+      position: relative;
+    }
+
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      color: var(--code-text);
+      border-bottom: 1px solid rgba(246, 241, 230, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--code-bg-soft);
+    }
+
+    .code-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--tag-old);
+    }
+
+    .code-block.new .code-tag::before {
+      background: var(--svelte);
+      box-shadow: 0 0 8px rgba(255, 62, 0, 0.5);
+    }
+
+    .code-tag .filename {
+      color: rgba(246, 241, 230, 0.5);
+      font-weight: 400;
+      margin-left: auto;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #d4cfc1;
+      /* fallback so unhighlighted blocks remain readable */
+    }
+
+    pre code {
+      font-family: inherit !important;
+      background: transparent !important;
+      padding: 0 !important;
+      color: inherit;
+    }
+
+    /* Inline code */
+    p code,
+    li code,
+    td code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: var(--paper-deep);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: var(--svelte-deep);
+      border: 1px solid var(--rule);
+      white-space: nowrap;
+    }
+
+    /* ---------- Body text ---------- */
+    p {
+      margin: 16px 0;
+      max-width: 680px;
+    }
+
+    strong {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    /* ---------- Callouts ---------- */
+    .callout {
+      border-left: 3px solid var(--svelte);
+      background: linear-gradient(to right, rgba(255, 62, 0, 0.06), transparent 60%);
+      padding: 18px 24px;
+      margin: 28px 0;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .callout-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--svelte);
+      margin-bottom: 8px;
+    }
+
+    .callout p {
+      margin: 0;
+      font-size: 15px;
+      color: var(--ink-soft);
+    }
+
+    .callout.deep {
+      border-left-color: var(--aubergine);
+      background: linear-gradient(to right, rgba(74, 26, 44, 0.05), transparent 60%);
+    }
+
+    .callout.deep .callout-label {
+      color: var(--aubergine);
+    }
+
+    /* ---------- Big mental model table ---------- */
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 32px 0;
+      font-size: 14.5px;
+      background: var(--paper-deep);
+      border: 1px solid var(--rule);
+    }
+
+    .summary-table thead th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 16px 18px;
+      background: var(--ink);
+      color: var(--paper);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .summary-table thead th:nth-child(3) {
+      color: var(--svelte);
+    }
+
+    .summary-table tbody td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+
+    .summary-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .summary-table tbody tr:hover {
+      background: rgba(255, 62, 0, 0.03);
+    }
+
+    .summary-table .concept {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: 15.5px;
+      color: var(--ink);
+      font-variation-settings: "opsz" 24, "SOFT" 30;
+    }
+
+    /* ---------- Footer rules ---------- */
+    .rules {
+      margin-top: 80px;
+      padding: 40px 0 0;
+      border-top: 2px solid var(--ink);
+    }
+
+    .rules h3 {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: 28px;
+      margin-bottom: 24px;
+      font-variation-settings: "opsz" 48, "SOFT" 30;
+    }
+
+    .rule-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 24px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--rule);
+      align-items: start;
+    }
+
+    .rule-item:last-child {
+      border-bottom: none;
+    }
+
+    .rule-num {
+      font-family: 'losveka', serif;
+      font-weight: 300;
+      font-size: 56px;
+      line-height: 0.9;
+      color: var(--svelte);
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+      font-style: italic;
+    }
+
+    .rule-text {
+      font-family: 'losveka', serif;
+      font-weight: 300;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--ink);
+      padding-top: 8px;
+      font-variation-settings: "opsz" 24, "SOFT" 50;
+    }
+
+    /* ---------- Colophon ---------- */
+    .colophon {
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--rule);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* ---------- Highlight.js theme override (atom-one-dark adjusted) ---------- */
+    .hljs {
+      background: transparent !important;
+      color: #d4cfc1 !important;
+    }
+
+    .hljs-keyword,
+    .hljs-built_in {
+      color: #ff8a65 !important;
+      font-weight: 500;
+    }
+
+    .hljs-string {
+      color: #b5d18a !important;
+    }
+
+    .hljs-number,
+    .hljs-literal {
+      color: #d19a66 !important;
+    }
+
+    .hljs-function .hljs-title,
+    .hljs-title.function_ {
+      color: #82c4f0 !important;
+    }
+
+    .hljs-comment {
+      color: #6b6259 !important;
+      font-style: italic;
+    }
+
+    .hljs-attr,
+    .hljs-property {
+      color: #e6c07b !important;
+    }
+
+    .hljs-tag,
+    .hljs-name {
+      color: #ff8a65 !important;
+    }
+
+    .hljs-variable,
+    .hljs-template-variable {
+      color: #d4cfc1 !important;
+    }
+
+    .hljs-meta {
+      color: #c2410c !important;
+    }
+
+    .hljs-type {
+      color: #82c4f0 !important;
+    }
+
+    /* ---------- Print ---------- */
+    @media print {
+      body {
+        background: white;
+      }
+
+      .page {
+        padding: 24px;
+        max-width: 100%;
+      }
+
+      .code-block {
+        break-inside: avoid;
+      }
+
+      section {
+        break-inside: avoid;
+      }
+
+      .toc {
+        break-after: page;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+
+    /* ---------- Mobile ---------- */
+    @media (max-width: 720px) {
+      .page {
+        padding: 48px 24px 80px;
+      }
+
+      .toc ol {
+        columns: 1;
+      }
+
+      .meta {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      h2 {
+        font-size: 28px;
+      }
+
+      .summary-table {
+        font-size: 13px;
+      }
+
+      .summary-table thead th,
+      .summary-table tbody td {
+        padding: 10px 12px;
+      }
+    }
+
+    .eyebrowcustom {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--svelte);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .eyebrowcustom:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <header>
+
+      <div class="eyebrowcustom" id="backbuttonincluded">A Migration Reference</div>
+      <script>
+        document.getElementById('backbuttonincluded').addEventListener('click', () => {
+          window.location.href = "cheat_sheets.html";
+        });
+      </script>
+
+
+
+      <h1>Svelte 5 <em>state</em><br>management</h1>
+      <p class="lede">From Svelte 4 + JavaScript to Svelte 5 + TypeScript — the syntax shifts that actually matter
+        day-to-day.</p>
+      <div class="meta">
+        <span><strong>SCOPE</strong> &nbsp;State, derived, effects, props, stores</span>
+        <span><strong>FORMAT</strong> &nbsp;Side-by-side comparison</span>
+      </div>
+    </header>
+
+    <nav class="toc">
+      <div class="toc-label">Contents</div>
+      <ol>
+        <li><a href="#local-state">Component-local state</a></li>
+        <li><a href="#derived">Derived values</a></li>
+        <li><a href="#effects">Side effects</a></li>
+        <li><a href="#props">Component props</a></li>
+        <li><a href="#stores">Stores — the big one</a></li>
+        <li><a href="#untrack">Effects & untracking</a></li>
+        <li><a href="#events">Event handlers</a></li>
+        <li><a href="#summary">Mental model summary</a></li>
+      </ol>
+    </nav>
+
+    <!-- ============ 1. LOCAL STATE ============ -->
+    <section id="local-state">
+      <span class="section-num">§ 01</span>
+      <h2>Component-local state</h2>
+      <p class="section-intro">The <code>$state</code> rune wraps values in a Proxy. Mutations to objects and arrays are
+        tracked — no more reassignment dance.</p>
+
+      <div class="code-pair side-by-side">
+        <div class="code-block">
+          <div class="code-tag">Svelte 4 <span class="filename">component.svelte</span></div>
+          <pre><code class="language-svelte">&lt;script&gt;
+  let count = 0;
+  let user = { name: 'Ada', age: 30 };
+  let items = [];
+
+  function increment() {
+    count += 1;
+    user.age += 1;
+    // works, but reassignment was safer:
+    // user = { ...user, age: user.age + 1 }
+    items = [...items, 1];
+    // had to reassign arrays
+  }
+&lt;/script&gt;</code></pre>
+        </div>
+
+        <div class="code-block new">
+          <div class="code-tag">Svelte 5 <span class="filename">component.svelte</span></div>
+          <pre><code class="language-typescript">&lt;script lang="ts"&gt;
+  let count = $state(0);
+  let user = $state({ name: 'Ada', age: 30 });
+  let items = $state&lt;number[]&gt;([]);
+
+  function increment() {
+    count += 1;
+    user.age += 1;       // proxy-tracked, just works
+    items.push(1);       // mutation works too
+  }
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Key shift</div>
+        <p><code>$state()</code> wraps the value in a proxy. Mutations to objects and arrays are tracked automatically —
+          no more reassignment dance.</p>
+      </div>
+    </section>
+
+    <!-- ============ 2. DERIVED ============ -->
+    <section id="derived">
+      <span class="section-num">§ 02</span>
+      <h2>Derived values</h2>
+      <p class="section-intro"><code>$derived</code> is lazy and cached. It only re-runs when its dependencies change —
+        your default for anything computed.</p>
+
+      <div class="code-pair side-by-side">
+        <div class="code-block">
+          <div class="code-tag">Svelte 4</div>
+          <pre><code class="language-svelte">&lt;script&gt;
+  let count = 0;
+  $: doubled = count * 2;
+  $: parity = count % 2 === 0
+    ? 'even'
+    : 'odd';
+&lt;/script&gt;</code></pre>
+        </div>
+
+        <div class="code-block new">
+          <div class="code-tag">Svelte 5</div>
+          <pre><code class="language-typescript">&lt;script lang="ts"&gt;
+  let count = $state(0);
+  let doubled = $derived(count * 2);
+  let parity = $derived(
+    count % 2 === 0 ? 'even' : 'odd'
+  );
+
+  // Multi-statement version:
+  let summary = $derived.by(() =&gt; {
+    const d = count * 2;
+    return `${count} doubled is ${d}`;
+  });
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3. EFFECTS ============ -->
+    <section id="effects">
+      <span class="section-num">§ 03</span>
+      <h2>Side effects</h2>
+      <p class="section-intro"><code>$effect</code> runs only in the browser, after DOM updates. Use it for DOM sync,
+        subscriptions, timers, or fetches tied to state — <em>not</em> for computing values.</p>
+
+      <div class="code-pair side-by-side">
+        <div class="code-block">
+          <div class="code-tag">Svelte 4</div>
+          <pre><code class="language-svelte">&lt;script&gt;
+  let count = 0;
+  $: console.log('count is', count);
+  $: if (count &gt; 10) alert('high!');
+&lt;/script&gt;</code></pre>
+        </div>
+
+        <div class="code-block new">
+          <div class="code-tag">Svelte 5</div>
+          <pre><code class="language-typescript">&lt;script lang="ts"&gt;
+  let count = $state(0);
+
+  $effect(() =&gt; {
+    console.log('count is', count);
+  });
+
+  $effect(() =&gt; {
+    if (count &gt; 10) alert('high!');
+  });
+
+  // With cleanup (intervals, listeners):
+  $effect(() =&gt; {
+    const id = setInterval(() =&gt; count++, 1000);
+    return () =&gt; clearInterval(id);
+  });
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="callout deep">
+        <div class="callout-label">Important</div>
+        <p>Don't reach for <code>$effect</code> to compute values — that's <code>$derived</code>'s job. Use effects only
+          for things that <em>do</em> something in the outside world.</p>
+      </div>
+    </section>
+
+    <!-- ============ 4. PROPS ============ -->
+    <section id="props">
+      <span class="section-num">§ 04</span>
+      <h2>Component props</h2>
+      <p class="section-intro">Props are now destructured from <code>$props()</code>. TypeScript inference is
+        dramatically better — props, generics, and snippet typing all just work.</p>
+
+      <div class="code-pair side-by-side">
+        <div class="code-block">
+          <div class="code-tag">Svelte 4</div>
+          <pre><code class="language-svelte">&lt;script&gt;
+  export let name;
+  export let age = 0;
+  export let onSave = () =&gt; {};
+&lt;/script&gt;</code></pre>
+        </div>
+
+        <div class="code-block new">
+          <div class="code-tag">Svelte 5</div>
+          <pre><code class="language-typescript">&lt;script lang="ts"&gt;
+  interface Props {
+    name: string;
+    age?: number;
+    onSave?: (data: string) =&gt; void;
+  }
+
+  let {
+    name,
+    age = 0,
+    onSave = () =&gt; {}
+  }: Props = $props();
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+
+      <p>For two-way binding from a parent, use <code>$bindable()</code>:</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Svelte 5 <span class="filename">bindable prop</span></div>
+        <pre><code class="language-typescript">let { value = $bindable() }: { value?: string } = $props();</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 5. STORES ============ -->
+    <section id="stores">
+      <span class="section-num">§ 05</span>
+      <h2>Stores — the big one</h2>
+      <p class="section-intro">In Svelte 4, stores were the answer to "share state across components." In Svelte 5,
+        runes mostly replace that need. Put <code>$state</code> in a regular module and export it.</p>
+
+      <div class="code-block">
+        <div class="code-tag">Svelte 4 <span class="filename">stores.js</span></div>
+        <pre><code class="language-javascript">import { writable, derived } from 'svelte/store';
+
+export const count = writable(0);
+export const doubled = derived(count, $c =&gt; $c * 2);</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-tag">Svelte 4 <span class="filename">component.svelte</span></div>
+        <pre><code class="language-svelte">&lt;script&gt;
+  import { count, doubled } from './stores.js';
+  count.update(c =&gt; c + 1);
+&lt;/script&gt;
+
+&lt;p&gt;{$count} {$doubled}&lt;/p&gt;</code></pre>
+      </div>
+
+      <p style="margin-top: 32px;"><strong>Svelte 5</strong> — the new way uses a <code>.svelte.ts</code> file, which
+        tells the compiler "runes allowed here." Plain <code>.ts</code> files cannot use runes.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Svelte 5 <span class="filename">counter.svelte.ts</span></div>
+        <pre><code class="language-typescript">export const counter = $state({ value: 0 });
+
+export const stats = $derived.by(() =&gt; ({
+  doubled: counter.value * 2,
+  parity: counter.value % 2 === 0 ? 'even' : 'odd'
+}));</code></pre>
+      </div>
+
+      <div class="code-block new">
+        <div class="code-tag">Svelte 5 <span class="filename">component.svelte</span></div>
+        <pre><code class="language-typescript">&lt;script lang="ts"&gt;
+  import { counter } from './counter.svelte.ts';
+&lt;/script&gt;
+
+&lt;button onclick={() =&gt; counter.value++}&gt;+&lt;/button&gt;
+&lt;p&gt;{counter.value}&lt;/p&gt;</code></pre>
+      </div>
+
+      <h3
+        style="font-family: 'losveka', serif; font-weight: 400; font-size: 22px; margin: 40px 0 16px; font-variation-settings: 'opsz' 36;">
+        Class-based stores — a pattern worth adopting</h3>
+      <p>This is, arguably, the single biggest ergonomic win of Svelte 5. No <code>$store</code> prefix, no
+        <code>.update()</code>/<code>.set()</code> ceremony, full TypeScript autocomplete.
+      </p>
+
+      <div class="code-block new">
+        <div class="code-tag">Svelte 5 <span class="filename">dashboard.svelte.ts</span></div>
+        <pre><code class="language-typescript">class DashboardState {
+  cpuTemp = $state(0);
+  unreadEmails = $state(0);
+  jobApps = $state&lt;JobApp[]&gt;([]);
+
+  totalAlerts = $derived(
+    (this.cpuTemp &gt; 80 ? 1 : 0) +
+    (this.unreadEmails &gt; 50 ? 1 : 0)
+  );
+
+  addJobApp(app: JobApp) {
+    this.jobApps.push(app);
+  }
+}
+
+export const dashboard = new DashboardState();</code></pre>
+      </div>
+
+      <div class="code-block new">
+        <div class="code-tag">Svelte 5 <span class="filename">any-component.svelte</span></div>
+        <pre><code class="language-typescript">&lt;script lang="ts"&gt;
+  import { dashboard } from './dashboard.svelte.ts';
+&lt;/script&gt;
+
+&lt;p&gt;CPU: {dashboard.cpuTemp}°C&lt;/p&gt;
+&lt;p&gt;Alerts: {dashboard.totalAlerts}&lt;/p&gt;</code></pre>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">When to still use classic stores</div>
+        <p>The <code>svelte/store</code> module still works fine. Use it for interop with libraries that expect a store
+          contract, or for <code>readable</code>/custom stores with subscribe semantics. For new app state, prefer
+          runes.</p>
+      </div>
+    </section>
+
+    <!-- ============ 6. UNTRACK ============ -->
+    <section id="untrack">
+      <span class="section-num">§ 06</span>
+      <h2>Effects & untracking</h2>
+      <p class="section-intro">When you need to <em>read</em> state inside an effect without subscribing to it, reach
+        for <code>untrack</code>.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Svelte 5</div>
+        <pre><code class="language-typescript">import { untrack } from 'svelte';
+
+let a = $state(0);
+let b = $state(0);
+
+$effect(() =&gt; {
+  console.log(a, untrack(() =&gt; b));
+  // re-runs on `a` only
+});</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 7. EVENTS ============ -->
+    <section id="events">
+      <span class="section-num">§ 07</span>
+      <h2>Event handlers</h2>
+      <p class="section-intro">Worth flagging since it touches every component you'll write.</p>
+
+      <div class="code-pair side-by-side">
+        <div class="code-block">
+          <div class="code-tag">Svelte 4</div>
+          <pre><code class="language-svelte">&lt;button on:click={handler}&gt;
+  Click
+&lt;/button&gt;
+
+&lt;form on:submit|preventDefault={save}&gt;
+  ...
+&lt;/form&gt;</code></pre>
+        </div>
+
+        <div class="code-block new">
+          <div class="code-tag">Svelte 5</div>
+          <pre><code class="language-svelte">&lt;button onclick={handler}&gt;
+  Click
+&lt;/button&gt;
+
+&lt;form onsubmit={(e) =&gt; {
+  e.preventDefault();
+  save();
+}}&gt;
+  ...
+&lt;/form&gt;</code></pre>
+        </div>
+      </div>
+
+      <p>Modifiers (<code>|preventDefault</code>, <code>|stopPropagation</code>) are gone. Call those methods inline on
+        the event object instead.</p>
+    </section>
+
+    <!-- ============ 8. SUMMARY ============ -->
+    <section id="summary">
+      <span class="section-num">§ 08</span>
+      <h2>Mental model summary</h2>
+      <p class="section-intro">The whole migration, in one table. Pin it somewhere visible while you build.</p>
+
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Concept</th>
+            <th>Svelte 4</th>
+            <th>Svelte 5</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="concept">Local mutable state</td>
+            <td><code>let x = 0</code></td>
+            <td><code>let x = $state(0)</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Computed value</td>
+            <td><code>$: y = x * 2</code></td>
+            <td><code>let y = $derived(x * 2)</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Side effect</td>
+            <td><code>$: doSomething(x)</code></td>
+            <td><code>$effect(() =&gt; doSomething(x))</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Props</td>
+            <td><code>export let foo</code></td>
+            <td><code>let { foo } = $props()</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Two-way bindable prop</td>
+            <td><code>export let foo</code></td>
+            <td><code>let { foo = $bindable() } = $props()</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Shared state</td>
+            <td><code>writable(0)</code> in <code>.js</code></td>
+            <td><code>$state(0)</code> in <code>.svelte.ts</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Derived store</td>
+            <td><code>derived(s, fn)</code></td>
+            <td><code>$derived(...)</code> in <code>.svelte.ts</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Event handler</td>
+            <td><code>on:click</code></td>
+            <td><code>onclick</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============ RULES ============ -->
+    <section class="rules">
+      <h3>Two rules to keep you out of trouble</h3>
+
+      <div class="rule-item">
+        <div class="rule-num">i.</div>
+        <p class="rule-text"><code>$derived</code> is your default for anything computed. Reach for <code>$effect</code>
+          only for DOM sync, subscriptions, or external side effects.</p>
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">ii.</div>
+        <p class="rule-text">Shared state belongs in a <code>.svelte.ts</code> (or <code>.svelte.js</code>) file —
+          <em>not</em> a plain <code>.ts</code>. The compiler needs that extension to enable runes.
+        </p>
+      </div>
+    </section>
+
+    <div class="colophon">
+      <span>Set in losveka, IBM Plex Sans &amp; JetBrains Mono</span>
+      <span>Reference · Svelte 5.x</span>
+    </div>
+
+  </div>
+
+  <script>
+    // highlight.js doesn't ship a 'svelte' language. Alias it to xml so the
+    // markup highlights as HTML and embedded <script> blocks fall through to JS.
+    hljs.registerAliases(['svelte'], { languageName: 'xml' });
+    hljs.highlightAll();
+  </script>
+</body>
+
+</html>

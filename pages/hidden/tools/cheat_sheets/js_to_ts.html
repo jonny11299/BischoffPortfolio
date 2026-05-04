@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript to TypeScript — A Cheat-Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=losveka:opsz,wght,SOFT@9..144,300..900,0..100&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Iosevka+Charon:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+  <style>
+    :root {
+      --paper: #f6f1e6;
+      --paper-deep: #ede5d2;
+      --ink: #1a1410;
+      --ink-soft: #3d342a;
+      --muted: #8a7e6e;
+      --rule: #d8cdb6;
+      --accent: #3178c6;
+      /* TypeScript blue */
+      --accent-deep: #1e5a9e;
+      --accent-soft: #5896d8;
+      --aubergine: #4a1a2c;
+      --code-bg: #1c1611;
+      --code-bg-soft: #251e16;
+      --code-text: #f6f1e6;
+      --tag-old: #6b6259;
+      --tag-new: var(--accent);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.65;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        radial-gradient(at 20% 10%, rgba(49, 120, 198, 0.05) 0px, transparent 50%),
+        radial-gradient(at 80% 80%, rgba(74, 26, 44, 0.04) 0px, transparent 50%);
+    }
+
+    .page {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 80px 56px 120px;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 48px;
+      margin-bottom: 64px;
+      position: relative;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1 {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: clamp(44px, 7vw, 76px);
+      line-height: 0.98;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 28px;
+      font-variation-settings: "opsz" 144, "SOFT" 30;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--accent);
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+    }
+
+    .lede {
+      font-family: 'losveka', serif;
+      font-weight: 300;
+      font-size: 21px;
+      line-height: 1.5;
+      color: var(--ink-soft);
+      max-width: 640px;
+      font-variation-settings: "opsz" 36, "SOFT" 50;
+    }
+
+    .meta {
+      margin-top: 32px;
+      display: flex;
+      gap: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      flex-wrap: wrap;
+    }
+
+    .meta span strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* ---------- TOC ---------- */
+    .toc {
+      background: var(--paper-deep);
+      border: 1px solid var(--rule);
+      padding: 28px 32px;
+      margin-bottom: 80px;
+      border-radius: 2px;
+    }
+
+    .toc-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .toc ol {
+      list-style: none;
+      counter-reset: toc;
+      columns: 2;
+      column-gap: 48px;
+    }
+
+    .toc li {
+      counter-increment: toc;
+      padding: 6px 0;
+      border-bottom: 1px dotted var(--rule);
+      break-inside: avoid;
+    }
+
+    .toc li:last-child {
+      border-bottom: none;
+    }
+
+    .toc a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 14.5px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      transition: color 0.15s;
+    }
+
+    .toc a::before {
+      content: counter(toc, decimal-leading-zero);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .toc a:hover {
+      color: var(--accent);
+    }
+
+    /* ---------- Sections ---------- */
+    section {
+      margin-bottom: 80px;
+      scroll-margin-top: 32px;
+    }
+
+    h2 {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: 36px;
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      margin-bottom: 8px;
+      font-variation-settings: "opsz" 72, "SOFT" 30;
+    }
+
+    h3 {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: 22px;
+      margin: 36px 0 14px;
+      font-variation-settings: 'opsz' 36;
+      color: var(--ink);
+    }
+
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .section-intro {
+      font-family: 'losveka', serif;
+      font-weight: 300;
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin: 24px 0 32px;
+      max-width: 680px;
+      font-variation-settings: "opsz" 24, "SOFT" 50;
+    }
+
+    /* ---------- Code blocks ---------- */
+    .code-pair {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin: 24px 0;
+    }
+
+    @media (min-width: 880px) {
+      .code-pair.side-by-side {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--code-bg-soft);
+      position: relative;
+    }
+
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      color: var(--code-text);
+      border-bottom: 1px solid rgba(246, 241, 230, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--code-bg-soft);
+    }
+
+    .code-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--tag-old);
+    }
+
+    .code-block.new .code-tag::before {
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(49, 120, 198, 0.6);
+    }
+
+    .code-tag .filename {
+      color: rgba(246, 241, 230, 0.5);
+      font-weight: 400;
+      margin-left: auto;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    pre code {
+      font-family: inherit !important;
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    /* Inline code */
+    p code,
+    li code,
+    td code,
+    h3 code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: var(--paper-deep);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: var(--accent-deep);
+      border: 1px solid var(--rule);
+      white-space: nowrap;
+    }
+
+    /* ---------- Body text ---------- */
+    p {
+      margin: 16px 0;
+      max-width: 680px;
+    }
+
+    ul,
+    ol {
+      margin: 12px 0 16px 24px;
+      max-width: 680px;
+    }
+
+    li {
+      margin: 4px 0;
+    }
+
+    strong {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    /* ---------- Callouts ---------- */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: linear-gradient(to right, rgba(49, 120, 198, 0.07), transparent 60%);
+      padding: 18px 24px;
+      margin: 28px 0;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .callout-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .callout p {
+      margin: 0;
+      font-size: 15px;
+      color: var(--ink-soft);
+    }
+
+    .callout.deep {
+      border-left-color: var(--aubergine);
+      background: linear-gradient(to right, rgba(74, 26, 44, 0.06), transparent 60%);
+    }
+
+    .callout.deep .callout-label {
+      color: var(--aubergine);
+    }
+
+    /* C++ note callout — distinct visual identity */
+    .callout.cpp {
+      border-left-color: #6b4f1d;
+      background: linear-gradient(to right, rgba(107, 79, 29, 0.07), transparent 60%);
+    }
+
+    .callout.cpp .callout-label {
+      color: #6b4f1d;
+    }
+
+    .callout.cpp .callout-label::before {
+      content: 'C++ ';
+      font-style: italic;
+    }
+
+    /* ---------- Big mental model table ---------- */
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 32px 0;
+      font-size: 14.5px;
+      background: var(--paper-deep);
+      border: 1px solid var(--rule);
+    }
+
+    .summary-table thead th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 16px 18px;
+      background: var(--ink);
+      color: var(--paper);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .summary-table thead th:nth-child(3) {
+      color: var(--accent-soft);
+    }
+
+    .summary-table tbody td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+
+    .summary-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .summary-table tbody tr:hover {
+      background: rgba(49, 120, 198, 0.04);
+    }
+
+    .summary-table .concept {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: 15.5px;
+      color: var(--ink);
+      font-variation-settings: "opsz" 24, "SOFT" 30;
+    }
+
+    /* ---------- Footer rules ---------- */
+    .rules {
+      margin-top: 80px;
+      padding: 40px 0 0;
+      border-top: 2px solid var(--ink);
+    }
+
+    .rules h3 {
+      font-family: 'losveka', serif;
+      font-weight: 400;
+      font-size: 28px;
+      margin-bottom: 24px;
+      font-variation-settings: "opsz" 48, "SOFT" 30;
+    }
+
+    .rule-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 24px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--rule);
+      align-items: start;
+    }
+
+    .rule-item:last-child {
+      border-bottom: none;
+    }
+
+    .rule-num {
+      font-family: 'losveka', serif;
+      font-weight: 300;
+      font-size: 56px;
+      line-height: 0.9;
+      color: var(--accent);
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+      font-style: italic;
+    }
+
+    .rule-text {
+      font-family: 'losveka', serif;
+      font-weight: 300;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--ink);
+      padding-top: 8px;
+      font-variation-settings: "opsz" 24, "SOFT" 50;
+    }
+
+    /* ---------- Colophon ---------- */
+    .colophon {
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--rule);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* ---------- Highlight.js theme override ---------- */
+    .hljs {
+      background: transparent !important;
+      color: #d4cfc1 !important;
+    }
+
+    .hljs-keyword,
+    .hljs-built_in {
+      color: #ff8a65 !important;
+      font-weight: 500;
+    }
+
+    .hljs-string {
+      color: #b5d18a !important;
+    }
+
+    .hljs-number,
+    .hljs-literal {
+      color: #d19a66 !important;
+    }
+
+    .hljs-function .hljs-title,
+    .hljs-title.function_ {
+      color: #82c4f0 !important;
+    }
+
+    .hljs-comment {
+      color: #6b6259 !important;
+      font-style: italic;
+    }
+
+    .hljs-attr,
+    .hljs-property {
+      color: #e6c07b !important;
+    }
+
+    .hljs-tag,
+    .hljs-name {
+      color: #ff8a65 !important;
+    }
+
+    .hljs-variable,
+    .hljs-template-variable {
+      color: #d4cfc1 !important;
+    }
+
+    .hljs-meta {
+      color: #c2410c !important;
+    }
+
+    .hljs-type {
+      color: #82c4f0 !important;
+    }
+
+    /* ---------- Print ---------- */
+    @media print {
+      body {
+        background: white;
+      }
+
+      .page {
+        padding: 24px;
+        max-width: 100%;
+      }
+
+      .code-block {
+        break-inside: avoid;
+      }
+
+      section {
+        break-inside: avoid;
+      }
+
+      .toc {
+        break-after: page;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+
+    /* ---------- Mobile ---------- */
+    @media (max-width: 720px) {
+      .page {
+        padding: 48px 24px 80px;
+      }
+
+      .toc ol {
+        columns: 1;
+      }
+
+      .meta {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      h2 {
+        font-size: 28px;
+      }
+
+      .summary-table {
+        font-size: 13px;
+      }
+
+      .summary-table thead th,
+      .summary-table tbody td {
+        padding: 10px 12px;
+      }
+    }
+
+
+    .eyebrowcustom {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .eyebrowcustom::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .eyebrowcustom:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <header>
+      <div class="eyebrowcustom" id="backbuttonincluded">A JS → TS Reference</div>
+
+      <script>
+        document.getElementById('backbuttonincluded').addEventListener('click', () => {
+          window.location.href = "cheat_sheets.html";
+        });
+      </script>
+
+
+      <h1>JavaScript to <em>TypeScript</em></h1>
+      <p class="lede">The mental shift, the syntax, and the surprises — written for someone who already knows what a
+        type is.</p>
+      <div class="meta">
+        <span><strong>SCOPE</strong> &nbsp;Daily-use TypeScript</span>
+        <span><strong>ASSUMES</strong> &nbsp;JS fluency, C/C++ background</span>
+        <span><strong>FORMAT</strong> &nbsp;Side-by-side reference</span>
+      </div>
+    </header>
+
+    <nav class="toc">
+      <div class="toc-label">Contents</div>
+      <ol>
+        <li><a href="#mental-shift">The mental shift</a></li>
+        <li><a href="#inference">Annotations &amp; inference</a></li>
+        <li><a href="#primitives">Primitives, arrays, objects</a></li>
+        <li><a href="#unions">Union &amp; literal types</a></li>
+        <li><a href="#interfaces">Interfaces vs type aliases</a></li>
+        <li><a href="#nullable">Optional &amp; nullable</a></li>
+        <li><a href="#narrowing">Narrowing &amp; type guards</a></li>
+        <li><a href="#generics">Generics</a></li>
+        <li><a href="#utility">Utility types</a></li>
+        <li><a href="#unknown">unknown / any / never</a></li>
+        <li><a href="#assertions">Assertions: as, satisfies</a></li>
+        <li><a href="#functions">Function types</a></li>
+        <li><a href="#modules">Modules &amp; type-only imports</a></li>
+        <li><a href="#summary">Mental model summary</a></li>
+      </ol>
+    </nav>
+
+    <!-- ============ 1. MENTAL SHIFT ============ -->
+    <section id="mental-shift">
+      <span class="section-num">§ 01</span>
+      <h2>The mental shift</h2>
+      <p class="section-intro">TypeScript is <em>JavaScript with types layered on top</em>. Internalize four facts
+        before you start, and the rest of the language makes sense.</p>
+
+      <ol>
+        <li><strong>Every valid JS file is valid TS.</strong> You can rename <code>.js</code> to <code>.ts</code> and
+          start adding types incrementally.</li>
+        <li><strong>Types are erased at compile time.</strong> The runtime is plain JavaScript. There's no
+          <code>typeof</code> at runtime in the C++ sense — the compiler checks, then strips.
+        </li>
+        <li><strong>Typing is structural, not nominal.</strong> Two unrelated types with the same shape are
+          interchangeable. This is the biggest C++ surprise.</li>
+        <li><strong>Inference is aggressive.</strong> Most of the time, the compiler figures out the type for you.
+          Annotate boundaries (function params, returns, exports) — let it infer the rest.</li>
+      </ol>
+
+      <div class="callout cpp">
+        <div class="callout-label">Note on structural typing</div>
+        <p>In C++, two classes with identical members are still distinct types. In TS, they aren't. If a function takes
+          <code>{ x: number; y: number }</code>, it accepts any object with those fields — regardless of whether it was
+          declared as a <code>Point</code>, <code>Vec2</code>, or an anonymous literal. This is "duck typing, but
+          checked."
+        </p>
+      </div>
+
+      <div class="code-block new">
+        <div class="code-tag">Structural typing in action</div>
+        <pre><code class="language-typescript">interface Point { x: number; y: number; }
+interface Vec2  { x: number; y: number; }
+
+function distance(p: Point) {
+  return Math.hypot(p.x, p.y);
+}
+
+const v: Vec2 = { x: 3, y: 4 };
+distance(v); // ✓ Compiles fine. Vec2 has the right shape.</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 2. INFERENCE ============ -->
+    <section id="inference">
+      <span class="section-num">§ 02</span>
+      <h2>Annotations &amp; inference</h2>
+      <p class="section-intro">The compiler infers the type of any value initialized at declaration. Annotate at the
+        edges of your code — function signatures, exported constants, generic parameters — and let the body type itself.
+      </p>
+
+      <div class="code-pair side-by-side">
+        <div class="code-block">
+          <div class="code-tag">Over-annotated (avoid)</div>
+          <pre><code class="language-typescript">const name: string = 'Ada';
+const count: number = 0;
+const items: number[] = [1, 2, 3];
+
+const total: number = items
+  .reduce((sum: number, n: number): number =&gt; sum + n, 0);</code></pre>
+        </div>
+
+        <div class="code-block new">
+          <div class="code-tag">Idiomatic (let TS infer)</div>
+          <pre><code class="language-typescript">const name = 'Ada';      // string
+const count = 0;         // number
+const items = [1, 2, 3]; // number[]
+
+const total = items
+  .reduce((sum, n) =&gt; sum + n, 0); // number</code></pre>
+        </div>
+      </div>
+
+      <p>The exception is functions. Annotate parameters always. Annotate return types when you want the compiler to
+        enforce a contract you might otherwise drift away from.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Annotate function boundaries</div>
+        <pre><code class="language-typescript">// Parameters: required. Return: optional but recommended for public APIs.
+function fetchUser(id: number): Promise&lt;User&gt; {
+  return fetch(`/api/users/${id}`).then(r =&gt; r.json());
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 3. PRIMITIVES & BASICS ============ -->
+    <section id="primitives">
+      <span class="section-num">§ 03</span>
+      <h2>Primitives, arrays, objects</h2>
+      <p class="section-intro">JavaScript's runtime types, plus a couple of structural extras. No <code>int</code> vs
+        <code>float</code> vs <code>double</code> — there's just <code>number</code>.
+      </p>
+
+      <div class="code-block new">
+        <div class="code-tag">Primitives</div>
+        <pre><code class="language-typescript">let s: string = 'hello';
+let n: number = 42;       // covers integers AND floats — only one numeric type
+let b: boolean = true;
+let nothing: null = null;
+let missing: undefined = undefined;
+let huge: bigint = 9007199254740993n;
+let sym: symbol = Symbol('id');</code></pre>
+      </div>
+
+      <h3>Arrays &amp; tuples</h3>
+      <div class="code-block new">
+        <div class="code-tag">Two array notations, plus tuples</div>
+        <pre><code class="language-typescript">let names: string[] = ['Ada', 'Linus'];
+let scores: Array&lt;number&gt; = [98, 87];   // equivalent
+
+// Tuples — fixed length, fixed types per slot
+let pair: [string, number] = ['Ada', 30];
+let rgb: readonly [number, number, number] = [255, 128, 0];
+
+// Variadic tuples
+let path: [string, ...number[]] = ['origin', 1, 2, 3];</code></pre>
+      </div>
+
+      <h3>Object types</h3>
+      <div class="code-block new">
+        <div class="code-tag">Inline object types</div>
+        <pre><code class="language-typescript">let user: { name: string; age: number; admin?: boolean } = {
+  name: 'Ada',
+  age: 30
+};
+
+// readonly fields — like C++ const data members
+let config: { readonly host: string; port: number } = {
+  host: 'localhost',
+  port: 8080
+};
+config.port = 9090;     // ✓
+config.host = 'remote'; // ✗ Cannot assign to 'host' — it is readonly</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 4. UNIONS & LITERALS ============ -->
+    <section id="unions">
+      <span class="section-num">§ 04</span>
+      <h2>Union &amp; literal types</h2>
+      <p class="section-intro">The single biggest unlock when moving from JS to TS. You can express "this value is one
+        of these specific things" without inheritance, enums, or runtime checks.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Union types</div>
+        <pre><code class="language-typescript">let id: string | number;
+id = 'abc';   // ✓
+id = 42;      // ✓
+id = true;    // ✗
+
+function format(value: string | number): string {
+  return typeof value === 'string' ? value.toUpperCase() : value.toFixed(2);
+}</code></pre>
+      </div>
+
+      <h3>Literal types</h3>
+      <p>A type can be a single specific value. Combined with unions, you get enum-like behavior with zero runtime cost.
+      </p>
+
+      <div class="code-block new">
+        <div class="code-tag">Literal unions replace enums</div>
+        <pre><code class="language-typescript">type Align = 'left' | 'right' | 'center';
+type DiceRoll = 1 | 2 | 3 | 4 | 5 | 6;
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
+function setAlignment(a: Align) { /* ... */ }
+
+setAlignment('left');     // ✓
+setAlignment('middle');   // ✗ Argument of type '"middle"' is not assignable</code></pre>
+      </div>
+
+      <h3>Discriminated unions</h3>
+      <p>The pattern that replaces most of what you'd reach for inheritance for in C++: a tag field that lets the
+        compiler narrow the type.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Discriminated union</div>
+        <pre><code class="language-typescript">type Result&lt;T&gt; =
+  | { kind: 'ok'; value: T }
+  | { kind: 'error'; message: string };
+
+function handle(r: Result&lt;number&gt;) {
+  if (r.kind === 'ok') {
+    console.log(r.value);   // TS knows r.value: number here
+  } else {
+    console.log(r.message); // TS knows r.message: string here
+  }
+}</code></pre>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Why this matters for your dashboard</div>
+        <p>Every API call can be modeled as <code>Result&lt;T&gt;</code> or as a union like
+          <code>{ status: 'loading' } | { status: 'ready'; data: T } | { status: 'error'; err: Error }</code>. The
+          compiler then forces you to handle every state.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 5. INTERFACES vs TYPES ============ -->
+    <section id="interfaces">
+      <span class="section-num">§ 05</span>
+      <h2>Interfaces vs type aliases</h2>
+      <p class="section-intro">Both name a type. They overlap heavily. Knowing when to reach for which is mostly
+        stylistic — but there are a few real differences.</p>
+
+      <div class="code-pair side-by-side">
+        <div class="code-block new">
+          <div class="code-tag">interface</div>
+          <pre><code class="language-typescript">interface User {
+  name: string;
+  age: number;
+}
+
+// Can be re-opened (declaration merging)
+interface User {
+  email: string;
+}
+// User now has all three fields.
+
+// Inheritance with extends
+interface Admin extends User {
+  permissions: string[];
+}</code></pre>
+        </div>
+
+        <div class="code-block new">
+          <div class="code-tag">type alias</div>
+          <pre><code class="language-typescript">type User = {
+  name: string;
+  age: number;
+};
+
+// Cannot re-open. But can do things interfaces can't:
+type ID = string | number;
+type Tuple = [number, number];
+type Keys = keyof User;
+type Readonly&lt;T&gt; = { readonly [K in keyof T]: T[K] };
+
+// Composition with intersection
+type Admin = User &amp; { permissions: string[] };</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Rule of thumb</div>
+        <p>Use <code>interface</code> for object shapes that describe contracts (component props, API responses, class
+          implementations). Use <code>type</code> for everything else — unions, intersections, primitives,
+          mapped/conditional types. The TypeScript team uses <code>interface</code> by default for public-facing types
+          because of declaration merging, but <code>type</code> for everything internal.</p>
+      </div>
+    </section>
+
+    <!-- ============ 6. NULLABLE ============ -->
+    <section id="nullable">
+      <span class="section-num">§ 06</span>
+      <h2>Optional &amp; nullable</h2>
+      <p class="section-intro">JavaScript has two empties — <code>null</code> and <code>undefined</code>. TS lets you
+        encode whether a field is genuinely absent (<code>?</code>) or present-but-nullable.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Optional vs nullable</div>
+        <pre><code class="language-typescript">interface User {
+  name: string;
+  email?: string;          // optional: may be missing entirely
+  middleName: string | null; // present, but may be null
+}
+
+const a: User = { name: 'Ada', middleName: null };          // ✓
+const b: User = { name: 'Ada', middleName: 'B', email: '@' }; // ✓</code></pre>
+      </div>
+
+      <h3>The four operators you'll use constantly</h3>
+
+      <div class="code-block new">
+        <div class="code-tag">?. ?? ! ?:</div>
+        <pre><code class="language-typescript">// Optional chaining: short-circuits if nullish
+const city = user?.address?.city;   // string | undefined
+
+// Nullish coalescing: fall back if null/undefined (NOT for empty string or 0)
+const port = config.port ?? 8080;
+
+// Non-null assertion: "trust me, this is defined" — use sparingly
+const el = document.getElementById('root')!;
+
+// Compare: || falls back on ANY falsy value (0, '', false), ?? only on null/undefined
+const count1 = value || 10;   // 10 if value is 0, '', false, null, or undefined
+const count2 = value ?? 10;   // 10 only if value is null or undefined</code></pre>
+      </div>
+
+      <div class="callout deep">
+        <div class="callout-label">Treat ! as a smell</div>
+        <p>Every <code>!</code> is a promise to the compiler that you've checked something it can't see. If you're
+          wrong, you crash at runtime. Prefer narrowing (next section) over assertions whenever possible.</p>
+      </div>
+    </section>
+
+    <!-- ============ 7. NARROWING ============ -->
+    <section id="narrowing">
+      <span class="section-num">§ 07</span>
+      <h2>Narrowing &amp; type guards</h2>
+      <p class="section-intro">When a value has a union type, the compiler tracks which branch you're in based on the
+        checks you write. This is "control-flow analysis," and it's smarter than you'd expect.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Built-in narrowing</div>
+        <pre><code class="language-typescript">function describe(x: string | number | string[] | Date | null) {
+  if (x === null)         return 'nothing';
+  if (typeof x === 'string') return x.toUpperCase();      // x: string here
+  if (typeof x === 'number') return x.toFixed(2);          // x: number here
+  if (Array.isArray(x))      return x.join(', ');          // x: string[] here
+  if (x instanceof Date)     return x.toISOString();       // x: Date here
+  // x: never here — all cases handled
+}</code></pre>
+      </div>
+
+      <h3>The <code>in</code> operator</h3>
+      <div class="code-block new">
+        <div class="code-tag">Narrowing by property presence</div>
+        <pre><code class="language-typescript">type Cat = { meow: () =&gt; void };
+type Dog = { bark: () =&gt; void };
+
+function speak(animal: Cat | Dog) {
+  if ('meow' in animal) animal.meow();  // animal: Cat
+  else animal.bark();                    // animal: Dog
+}</code></pre>
+      </div>
+
+      <h3>User-defined type guards</h3>
+      <p>When you need to narrow on something more complex, write a function that returns a <em>type predicate</em>
+        (<code>x is Foo</code>).</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Custom type guard</div>
+        <pre><code class="language-typescript">function isUser(value: unknown): value is User {
+  return (
+    typeof value === 'object' &amp;&amp;
+    value !== null &amp;&amp;
+    'name' in value &amp;&amp;
+    typeof (value as any).name === 'string'
+  );
+}
+
+const data: unknown = await fetch('/api/me').then(r =&gt; r.json());
+if (isUser(data)) {
+  console.log(data.name);  // data: User here
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 8. GENERICS ============ -->
+    <section id="generics">
+      <span class="section-num">§ 08</span>
+      <h2>Generics</h2>
+      <p class="section-intro">If you remember C++ templates, you already know 80% of TypeScript generics. The syntax
+        differs but the idea is the same: parameterize a function, class, or type by another type.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Basic generic function</div>
+        <pre><code class="language-typescript">function identity&lt;T&gt;(value: T): T {
+  return value;
+}
+
+const a = identity(42);       // T inferred as number
+const b = identity('hello');  // T inferred as string
+const c = identity&lt;boolean&gt;(true); // T explicit</code></pre>
+      </div>
+
+      <h3>Constraints — the equivalent of <code>std::enable_if</code></h3>
+
+      <div class="code-block new">
+        <div class="code-tag">Generic with constraint</div>
+        <pre><code class="language-typescript">// Constrain T to anything with a length property
+function logLength&lt;T extends { length: number }&gt;(x: T): T {
+  console.log(x.length);
+  return x;
+}
+
+logLength('hello');         // ✓ string has length
+logLength([1, 2, 3]);       // ✓ array has length
+logLength(42);              // ✗ number does not have length</code></pre>
+      </div>
+
+      <h3>Generics in interfaces and types</h3>
+
+      <div class="code-block new">
+        <div class="code-tag">Generic types</div>
+        <pre><code class="language-typescript">interface ApiResponse&lt;T&gt; {
+  data: T;
+  status: number;
+  timestamp: Date;
+}
+
+type Pair&lt;A, B = A&gt; = [A, B]; // B defaults to A
+
+const userResp: ApiResponse&lt;User&gt; = {
+  data: { name: 'Ada', age: 30 },
+  status: 200,
+  timestamp: new Date()
+};</code></pre>
+      </div>
+
+      <div class="callout cpp">
+        <div class="callout-label">Note vs templates</div>
+        <p>Two big differences from C++ templates: (1) TS generics are checked once at definition, not instantiated per
+          use, so you can't do C++-style template metaprogramming with overload resolution tricks. (2) TS has
+          <em>conditional types</em> (<code>T extends U ? X : Y</code>) which are roughly the equivalent of SFINAE /
+          <code>if constexpr</code>, and they're a lot more readable. You won't need them for a dashboard, but they're
+          there.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 9. UTILITY TYPES ============ -->
+    <section id="utility">
+      <span class="section-num">§ 09</span>
+      <h2>Utility types</h2>
+      <p class="section-intro">Built-in generic types that transform other types. The ones you'll use weekly:</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Object transformations</div>
+        <pre><code class="language-typescript">interface User { id: number; name: string; email: string; admin: boolean; }
+
+type PartialUser  = Partial&lt;User&gt;;   // every field optional
+type RequiredUser = Required&lt;User&gt;;  // every field required (strips ?)
+type FrozenUser   = Readonly&lt;User&gt;;  // every field readonly
+
+type PublicUser = Pick&lt;User, 'id' | 'name'&gt;;
+//   { id: number; name: string }
+
+type SafeUser = Omit&lt;User, 'admin'&gt;;
+//   { id: number; name: string; email: string }</code></pre>
+      </div>
+
+      <div class="code-block new">
+        <div class="code-tag">Record &amp; function-related</div>
+        <pre><code class="language-typescript">// Record: build an object type from key union and value type
+type CpuTemps = Record&lt;'core0' | 'core1' | 'core2' | 'core3', number&gt;;
+//  { core0: number; core1: number; core2: number; core3: number }
+
+type StatusColors = Record&lt;'ok' | 'warn' | 'error', string&gt;;
+
+// Function-related
+function greet(name: string, formal: boolean): string { return ''; }
+
+type GreetParams = Parameters&lt;typeof greet&gt;;  // [name: string, formal: boolean]
+type GreetReturn = ReturnType&lt;typeof greet&gt;;  // string
+
+// Promise unwrapping
+type UserData = Awaited&lt;ReturnType&lt;typeof fetchUser&gt;&gt;; // unwraps Promise&lt;User&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 10. UNKNOWN/ANY/NEVER ============ -->
+    <section id="unknown">
+      <span class="section-num">§ 10</span>
+      <h2><code>unknown</code> / <code>any</code> / <code>never</code></h2>
+      <p class="section-intro">Three types that look weird and behave differently. Knowing which is which prevents most
+        TS-related foot-shooting.</p>
+
+      <h3><code>any</code> — the escape hatch</h3>
+      <p>Disables all type checking for that value. Anything goes. Avoid it. Every <code>any</code> is a hole in your
+        type safety. If you find yourself reaching for it, reach for <code>unknown</code> first.</p>
+
+      <h3><code>unknown</code> — the safe top type</h3>
+      <p>Like <code>any</code>, but the compiler forces you to narrow it before doing anything. Perfect for values from
+        outside your program: <code>JSON.parse</code> results, fetch responses, third-party callbacks.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">unknown forces narrowing</div>
+        <pre><code class="language-typescript">const raw: unknown = JSON.parse(text);
+
+raw.toUpperCase();     // ✗ Object is of type 'unknown'
+
+if (typeof raw === 'string') {
+  raw.toUpperCase();   // ✓ narrowed to string
+}</code></pre>
+      </div>
+
+      <h3><code>never</code> — the bottom type</h3>
+      <p>The type of values that cannot exist. Useful for exhaustiveness checks and functions that don't return.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Exhaustiveness check</div>
+        <pre><code class="language-typescript">type Shape = { kind: 'circle'; r: number } | { kind: 'square'; side: number };
+
+function area(s: Shape): number {
+  switch (s.kind) {
+    case 'circle': return Math.PI * s.r ** 2;
+    case 'square': return s.side ** 2;
+    default: {
+      const _exhaustive: never = s; // ✗ if you add a new shape and forget here
+      return _exhaustive;
+    }
+  }
+}
+
+// Functions that throw or loop forever return 'never'
+function fail(msg: string): never { throw new Error(msg); }</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 11. ASSERTIONS ============ -->
+    <section id="assertions">
+      <span class="section-num">§ 11</span>
+      <h2>Assertions: <code>as</code>, <code>as const</code>, <code>satisfies</code></h2>
+      <p class="section-intro">Three different ways to tell the compiler something about a value's type. Each does
+        something subtly different — and <code>satisfies</code> is the newest and most often what you actually want.</p>
+
+      <h3><code>as Foo</code> — type assertion</h3>
+      <p>"Trust me, treat this as Foo." No runtime check. Use only when you know more than the compiler does.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Type assertion</div>
+        <pre><code class="language-typescript">const input = document.getElementById('email') as HTMLInputElement;
+input.value = 'hi';  // OK — without `as`, TS sees HTMLElement | null</code></pre>
+      </div>
+
+      <h3><code>as const</code> — literal narrowing</h3>
+      <p>Tells the compiler "treat every value here as its most specific literal." Without it, TS widens. Useful for
+        config objects and arrays.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">as const narrows literals</div>
+        <pre><code class="language-typescript">const colors1 = ['red', 'green', 'blue'];
+//    colors1: string[]
+
+const colors2 = ['red', 'green', 'blue'] as const;
+//    colors2: readonly ['red', 'green', 'blue']
+
+type Color = typeof colors2[number]; // 'red' | 'green' | 'blue'</code></pre>
+      </div>
+
+      <h3><code>satisfies</code> — validate without widening</h3>
+      <p>The newest of the three (TS 4.9+). Says "check that this value matches the type, but keep its more specific
+        inferred type."</p>
+
+      <div class="code-block new">
+        <div class="code-tag">satisfies in practice</div>
+        <pre><code class="language-typescript">type Routes = Record&lt;string, { path: string; auth: boolean }&gt;;
+
+// With `: Routes` — you lose the specific keys
+const routesA: Routes = {
+  home: { path: '/', auth: false },
+  admin: { path: '/admin', auth: true }
+};
+routesA.home;     // type: { path: string; auth: boolean } | undefined
+
+// With `satisfies Routes` — checked, but specific keys preserved
+const routesB = {
+  home: { path: '/', auth: false },
+  admin: { path: '/admin', auth: true }
+} satisfies Routes;
+routesB.home;     // type: { path: string; auth: boolean } — guaranteed present
+routesB.unknown;  // ✗ Property does not exist</code></pre>
+      </div>
+    </section>
+
+    <!-- ============ 12. FUNCTIONS ============ -->
+    <section id="functions">
+      <span class="section-num">§ 12</span>
+      <h2>Function types</h2>
+      <p class="section-intro">Function signatures get richer in TS — optional params, defaults, rest args, and named
+        function-type aliases.</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Function basics</div>
+        <pre><code class="language-typescript">// Required, optional, default
+function greet(name: string, title?: string, greeting = 'Hello'): string {
+  return `${greeting}, ${title ?? ''} ${name}`.trim();
+}
+
+// Rest parameters
+function sum(...nums: number[]): number {
+  return nums.reduce((a, b) =&gt; a + b, 0);
+}
+
+// Function type alias — like a typedef for a function pointer in C
+type Comparator&lt;T&gt; = (a: T, b: T) =&gt; number;
+
+const byLength: Comparator&lt;string&gt; = (a, b) =&gt; a.length - b.length;
+
+// Async functions return Promise&lt;T&gt;
+async function loadUser(id: number): Promise&lt;User&gt; {
+  const r = await fetch(`/users/${id}`);
+  return r.json();
+}</code></pre>
+      </div>
+
+      <div class="callout cpp">
+        <div class="callout-label">Note on overloading</div>
+        <p>TS does support function overloads, but the syntax is awkward and 95% of the time, a union type or generic
+          does the job better. Don't reach for overloads unless you've genuinely exhausted the alternatives.</p>
+      </div>
+    </section>
+
+    <!-- ============ 13. MODULES ============ -->
+    <section id="modules">
+      <span class="section-num">§ 13</span>
+      <h2>Modules &amp; type-only imports</h2>
+      <p class="section-intro">No headers, no <code>#include</code> — just ES modules. The wrinkle is that some imports
+        are values (functions, classes) and some are types (interfaces, type aliases).</p>
+
+      <div class="code-block new">
+        <div class="code-tag">Imports &amp; exports</div>
+        <pre><code class="language-typescript">// types.ts
+export interface User { id: number; name: string; }
+export type ID = string | number;
+
+// utils.ts
+export function formatId(id: ID): string { return String(id); }
+export const MAX_USERS = 100;
+
+// app.ts
+import { formatId, MAX_USERS } from './utils';
+import type { User, ID } from './types';   // erased at compile time
+import { type User, formatId } from './mixed'; // mixed value/type
+
+export type { User };
+export { formatId };</code></pre>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Why <code>import type</code> matters</div>
+        <p>Bundlers can drop type-only imports entirely from the output. If you import something only for its type, mark
+          it. This avoids accidental circular dependencies and produces leaner builds — relevant for any Tauri/SvelteKit
+          app where bundle size matters.</p>
+      </div>
+    </section>
+
+    <!-- ============ 14. SUMMARY ============ -->
+    <section id="summary">
+      <span class="section-num">§ 14</span>
+      <h2>Mental model summary</h2>
+      <p class="section-intro">The whole shift, in one table. Pin it next to the Svelte sheet.</p>
+
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Concept</th>
+            <th>JavaScript</th>
+            <th>TypeScript</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="concept">Variable typing</td>
+            <td><code>let x = 0</code> (any-ish)</td>
+            <td><code>let x = 0</code> (inferred <code>number</code>)</td>
+          </tr>
+          <tr>
+            <td class="concept">Function params</td>
+            <td>untyped</td>
+            <td><code>(x: string, y: number)</code></td>
+          </tr>
+          <tr>
+            <td class="concept">"One of these"</td>
+            <td>runtime checks</td>
+            <td><code>'a' | 'b' | 'c'</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Object shapes</td>
+            <td>by convention</td>
+            <td><code>interface</code> / <code>type</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Optional fields</td>
+            <td><code>obj.foo</code> may be undefined</td>
+            <td><code>foo?: T</code> or <code>T | null</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Generic container</td>
+            <td><code>Array</code></td>
+            <td><code>Array&lt;T&gt;</code> / <code>T[]</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Templates</td>
+            <td>—</td>
+            <td><code>function f&lt;T&gt;(x: T)</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Enum-like values</td>
+            <td>string constants</td>
+            <td>literal unions</td>
+          </tr>
+          <tr>
+            <td class="concept">External JSON</td>
+            <td><code>JSON.parse</code> → any</td>
+            <td><code>JSON.parse</code> → <code>unknown</code>, then narrow</td>
+          </tr>
+          <tr>
+            <td class="concept">Null guard</td>
+            <td><code>if (x &amp;&amp; x.foo)</code></td>
+            <td><code>x?.foo</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Default value</td>
+            <td><code>x || 'default'</code></td>
+            <td><code>x ?? 'default'</code></td>
+          </tr>
+          <tr>
+            <td class="concept">Type-only import</td>
+            <td>—</td>
+            <td><code>import type { Foo } from './x'</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============ RULES ============ -->
+    <section class="rules">
+      <h3>Three rules to keep you out of trouble</h3>
+
+      <div class="rule-item">
+        <div class="rule-num">i.</div>
+        <p class="rule-text"><strong>Annotate boundaries, infer the middle.</strong> Function parameters, exports, and
+          public API surfaces get explicit types. Local variables get inferred types. Over-annotating obscures real
+          errors.</p>
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">ii.</div>
+        <p class="rule-text"><strong>Reach for unions before classes, hierarchies, or <code>any</code>.</strong> Most
+          "polymorphism" problems in JS are better expressed as discriminated unions than as inheritance trees.</p>
+      </div>
+
+      <div class="rule-item">
+        <div class="rule-num">iii.</div>
+        <p class="rule-text"><strong>Treat <code>any</code> and <code>!</code> as smells.</strong> Both silence the
+          compiler. Use <code>unknown</code> + narrowing instead. If you genuinely need an escape hatch, leave a comment
+          explaining why.</p>
+      </div>
+    </section>
+
+    <div class="colophon">
+      <span>Set in losveka, IBM Plex Sans &amp; JetBrains Mono</span>
+      <span>Reference · TypeScript 5.x</span>
+    </div>
+
+  </div>
+
+  <script>
+    hljs.highlightAll();
+  </script>
+</body>
+
+</html>
