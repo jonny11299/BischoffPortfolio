@@ -252,15 +252,7 @@
 
 
 
-            // setting up the item logic in general
 
-            const item = {
-                name: "blank",
-                body: "blank body",
-                active: false
-            };
-
-            let items = getItemsLS();
             let addingNewEntry = false;
             let editingExistingEntry = false;
 
@@ -272,6 +264,16 @@
             // localStorage:
             const lsname = 'policynotes_bischoff_ls';
 
+
+
+            // setting up the item logic in general
+
+            const item = {
+                name: "blank",
+                body: "blank body",
+                active: false
+            };
+            let items = getItemsLS();
 
 
             /*
