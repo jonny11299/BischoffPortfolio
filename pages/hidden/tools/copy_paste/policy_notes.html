@@ -252,9 +252,25 @@
 
 
 
+            // setting up the item logic in general
+
+            const item = {
+                name: "blank",
+                body: "blank body",
+                active: false
+            };
+
+            let items = getItemsLS();
+            let addingNewEntry = false;
+            let editingExistingEntry = false;
 
 
 
+            // blob_location
+            const blob_location = 'policy_notes';
+
+            // localStorage:
+            const lsname = 'policynotes_bischoff_ls';
 
 
 
@@ -269,7 +285,6 @@
             // now I can post a blob and get a blob.
             // fo'geddablobit.
 
-            const blob_location = 'policy_notes';
 
             async function postCopyPasteBlob(blob) {
                 putConsole('posting ls to blob');
@@ -363,9 +378,6 @@
 
 
 
-            // Setting up localStorage:
-
-            const lsname = 'policynotes_bischoff_ls';
 
             function getItemsLS() {
                 const itemsList = JSON.parse(localStorage.getItem(lsname)).sort((a, b) => a.name.localeCompare(b.name));
@@ -479,15 +491,6 @@
             }, 50);
 
 
-            // setting up the item logic in general
-
-            const item = {
-                name: "blank",
-                body: "blank body",
-                active: false
-            };
-
-            let items = getItemsLS();
 
             /*
             items.push(item);
@@ -521,8 +524,6 @@
             }
 
 
-            let addingNewEntry = false;
-            let editingExistingEntry = false;
 
             function addNewEntry() {
                 // console.log("Running addNewEntry");
