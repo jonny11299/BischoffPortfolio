@@ -26,6 +26,11 @@ const blob_keys = [
         column: 'a'
     },
     {
+        name: 'policy_notes',
+        row: 11,
+        column: 'a'
+    },
+    {
         name: 'blank',
         row: 0,
         column: 'a'
