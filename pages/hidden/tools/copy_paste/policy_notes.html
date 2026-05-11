@@ -631,6 +631,8 @@
             }
 
             function copyToClipboard(text) {
+                // Copying is disabled for this app. 
+                // Function never runs (commented out in its respective block)
                 navigator.clipboard.writeText(text);
             }
 
@@ -751,8 +753,8 @@
                         // console.log("clicked on name");
 
                         if (!item.isLink) {
-                            copyToClipboard(item.body);
-                            replaceConsole(`copied: ${item.name}`);
+                            // copyToClipboard(item.body);
+                            replaceConsole(`Read: ${item.name}`);
                             putBodyPreview(item.body);
                             setActive(p);
                             // const ac = getActiveElement();
