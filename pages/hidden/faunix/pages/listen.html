@@ -37,6 +37,7 @@
 
           Bugs to fix:
           play/pause button doesn't change if I pause from the element itself
+          ^ FIXED: native 'play'/'pause' listeners now sync the button (see reflectPlayState)
 -->
 
 
@@ -314,6 +315,24 @@
                             }
                         }
 
+                        // NEW: single place that reflects the current play/pause state into
+                        // (a) the on-page play/pause button and (b) the OS lock-screen state.
+                        // Called by the audio element's native 'play'/'pause' events, so it
+                        // stays correct no matter WHERE the pause came from: our button, the
+                        // <audio> controls, the lock screen, or headphone buttons.
+                        function reflectPlayState() {
+                            const playpause = document.getElementById('playpause');
+                            try {
+                                const c = playpause.children[0];
+                                if (c) c.textContent = settings.playing ? 'pause' : 'play';
+                            } catch (error) {
+                                console.log("Probably don't have a child on playpause element yet.");
+                            }
+                            if ('mediaSession' in navigator) {
+                                navigator.mediaSession.playbackState = settings.playing ? 'playing' : 'paused';
+                            }
+                        }
+
                         function playOrPause() {
                             const a = settings.audioComponent;
 
@@ -331,13 +350,10 @@
                                 }
                             }
 
-                            const playpause = document.getElementById('playpause');
-                            try {
-                                const c = playpause.children[0];
-                                c.textContent = settings.playing ? 'pause' : 'play';
-                            } catch (error) {
-                                console.log("Probably don't have a child on playpause element yet.");
-                            }
+                            // CHANGED: button text is now handled by reflectPlayState (fired via the
+                            // audio element's native events), but we call it here too so a click with
+                            // no audio element yet still updates immediately.
+                            reflectPlayState();
                             // console.log(playpause.children[0].textContent);
                         }
 
@@ -505,6 +521,9 @@
                         }
 
 
+                        // CHANGED: this now runs ONCE (from getOrCreateAudio), not per-song.
+                        // The 'ended' handler is debounced, and we added native 'play'/'pause'
+                        // listeners so the UI + lock screen stay in sync with the real element.
                         function stuffWithEventListeners(audio) {
 
                             audio.addEventListener('timeupdate', () => {
@@ -533,11 +552,33 @@
                                 }
                             });
 
+                            // CHANGED: debounced 'ended'.
+                            // iOS throttles JS while the screen is locked and QUEUES the 'ended'
+                            // event, sometimes delivering a stale duplicate when you reopen the
+                            // page -> that was the "it skipped a song" bug. We advance at most
+                            // once per ~1.5s. (settings.lastAdvance is also stamped in launchSong,
+                            // so a stale 'ended' right after a manual skip is ignored too.)
                             audio.addEventListener('ended', () => {
-                                // Song finished - play next track!
-                                if (settings.autoplay) {
-                                    nextSong();
+                                if (!settings.autoplay) return;
+
+                                const now = Date.now();
+                                if (now - (settings.lastAdvance || 0) < 1500) {
+                                    console.log("Ignoring duplicate 'ended' (debounced).");
+                                    return;
                                 }
+                                settings.lastAdvance = now;
+                                nextSong();
+                            });
+
+                            // NEW: keep our state honest no matter who paused/played the audio
+                            // (our button, the <audio> controls, or the lock-screen buttons).
+                            audio.addEventListener('play', () => {
+                                settings.playing = true;
+                                reflectPlayState();
+                            });
+                            audio.addEventListener('pause', () => {
+                                settings.playing = false;
+                                reflectPlayState();
                             });
 
                             audio.addEventListener('loadedmetadata', () => {
@@ -595,10 +636,72 @@
                         }
 
 
+                        // NEW: create the ONE <audio> element and reuse it for the whole album.
+                        // The original code built a brand-new <audio> in every launchSong(). On
+                        // iOS, only an element whose playback was started by a real tap keeps its
+                        // background "audio session." A fresh element created while the phone is
+                        // locked has no session, so it silently refuses to start the next song --
+                        // that was the core reason autoplay died on a locked screen. By reusing
+                        // the element that the first "Start album order" tap unlocked, the session
+                        // survives across the whole album, so end-of-song advances keep working
+                        // even with the screen off.
+                        function getOrCreateAudio() {
+                            if (settings.audioComponent) return settings.audioComponent;
+
+                            const audio = document.createElement('audio');
+                            audio.controls = true; // show play/pause controls
+
+                            // Fallback if a source fails, guarded so it can't loop on itself.
+                            audio.addEventListener('error', () => {
+                                if (!audio.src || audio.src.indexOf('womp.m4a') !== -1) return;
+                                console.error("Audio failed to load:", audio.src);
+                                audio.src = '/pages/hidden/faunix/audios/womp.m4a';
+                                audio.load(); // Important! Forces reload with new src
+                                audio.play().catch(err => console.log('Even the womp womp failed!'));
+                            }, true);
+
+                            // Attach the persistent listeners EXACTLY ONCE.
+                            stuffWithEventListeners(audio);
+
+                            settings.audioComponent = audio;
+                            return audio;
+                        }
+
+
+                        // NEW: tell the OS what's playing so the lock-screen controls drive our
+                        // own next/prev/play/pause. This is also why the metadata on the lock
+                        // screen shows the right song/version.
+                        function updateMediaSession(song) {
+                            if (!('mediaSession' in navigator)) return;
+                            try {
+                                navigator.mediaSession.metadata = new MediaMetadata({
+                                    title: song.version.song_name || song.name || 'Unknown',
+                                    artist: song.version.version_name || '',
+                                    album: settings.album_order_name || 'Faunix'
+                                    // artwork: [{ src: '/pages/hidden/faunix/imgs/logo.png',
+                                    //             sizes: '512x512', type: 'image/png' }]
+                                });
+
+                                navigator.mediaSession.setActionHandler('play', () => {
+                                    if (settings.audioComponent) settings.audioComponent.play();
+                                    // settings.playing + button handled by the native 'play' event
+                                });
+                                navigator.mediaSession.setActionHandler('pause', () => {
+                                    if (settings.audioComponent) settings.audioComponent.pause();
+                                    // settings.playing + button handled by the native 'pause' event
+                                });
+                                navigator.mediaSession.setActionHandler('nexttrack', nextSong);
+                                navigator.mediaSession.setActionHandler('previoustrack', prevSong);
+                            } catch (e) {
+                                console.log('Media Session not fully supported:', e);
+                            }
+                        }
 
 
                         // load all the metadata, setup the player.
                         // song is from object {order, name, version}
+                        // CHANGED: reuses the single persistent <audio> element (see getOrCreateAudio)
+                        // instead of creating a new one each time, and updates the OS media session.
                         function launchSong(song) {
                             let autoplay = settings.autoplay;
                             curSong = song;
@@ -623,55 +726,44 @@
                             const player = document.getElementById('player');
                             const embedLink = song.version.s3_url;
 
-                            let audioComponent;
                             try {
-                                // build out a functional audio component
-                                const audio = document.createElement('audio');
-                                audio.addEventListener('error', (e) => {
-                                    console.error("Audio failed to load:", audio.src);
-                                    audio.src = '/pages/hidden/faunix/audios/womp.m4a';
-                                    audio.load(); // Important! Forces reload with new src
-                                    audio.play().catch(err => console.log('Even the womp womp failed!'));
-                                }, true)
-                                audio.src = embedLink;
-                                audio.controls = true; // show play/pause controls
+                                // CHANGED: grab the ONE reusable element instead of making a new one.
+                                const audio = getOrCreateAudio();
 
-                                // Later when you want to play/pause:
-                                // audio.play()
-                                // audio.pause()
-
-                                audioComponent = audio;
-                                settings.audioComponent = audioComponent;
-
-                                /* audioComponent.addEventListener('loadedmetadata', () => {
-                                    console.log(`loaded song ${version.song_name}: ${version.version_name}\nfrom ${embedLink}`);
-                                    console.log('Duration:', audioComponent.duration);
-                                });*/
-                                if (!autoplay) {
-                                    audioComponent.pause();
-                                } else {
-                                    audioComponent.play();
+                                // Make sure it's mounted in the player <li> (only actually moves it once).
+                                if (audio.parentElement !== player) {
+                                    replaceChild(player, audio);
                                 }
 
+                                // Stamp the transition time so a stale, queued 'ended' from the
+                                // song we just left can't immediately trigger another skip.
+                                settings.lastAdvance = Date.now();
 
-                                stuffWithEventListeners(audio);
+                                audio.src = embedLink;
+                                audio.load(); // Important! Forces reload with the new src
 
+                                if (!autoplay) {
+                                    audio.pause();
+                                } else {
+                                    // play() returns a Promise; swallow the rejection if the browser
+                                    // blocks it (e.g. first load outside a user gesture).
+                                    audio.play().catch(err => console.log('play() blocked:', err));
+                                }
+
+                                updateMediaSession(song);
 
                             } catch (error) {
                                 // replace with a standard red feedback text
                                 console.log("Catching failed launchSong here (1): ");
                                 console.log(error);
-                                audioComponent = document.createElement('h2');
-                                audioComponent.style = "color: red";
-                                audioComponent.textContent = `Failed to get embed link because ${error.message}`;
+                                const fail = document.createElement('h2');
+                                fail.style = "color: red";
+                                fail.textContent = `Failed to get embed link because ${error.message}`;
                                 settings.playing = false;
                                 settings.status = 'failed to play';
                                 curSong = null;
+                                replaceChild(player, fail);
                             }
-
-                            // append child
-                            replaceChild(player, audioComponent);
-
                         }
 
                         function startAlbumOrder(albumOrder) {
@@ -710,6 +802,7 @@
                             returnToAutoPlay: true, // this is used for submitting notes, so we don't autoplay to the next song while typing up a note
                             playing: false,
                             audioComponent: null, // will be replaced by a reference to the actual component
+                            lastAdvance: 0, // NEW: timestamp of the last song transition, used to debounce 'ended'
                         }
 
                         // would like a decent system for keeping track of the current album order and what's being played
